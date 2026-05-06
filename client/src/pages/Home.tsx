@@ -41,6 +41,9 @@ export default function Home() {
                 <Button onClick={() => setLocation("/governance")} className="bg-blue-600 hover:bg-blue-700">
                   Go to Governance
                 </Button>
+                <Button onClick={() => setLocation("/mk121")} variant="outline" className="border-purple-300 text-purple-600">
+                  🗳️ ח"כ 121
+                </Button>
                 <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300">
                   📊 Dashboards
                 </Button>
@@ -67,8 +70,8 @@ export default function Home() {
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setLocation("/governance")}>
                   Enter Governance System
                 </Button>
-                <Button size="lg" variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-50">
-                  Learn More
+                <Button size="lg" variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50" onClick={() => setLocation("/mk121")}>
+                  🗳️ ח"כ 121
                 </Button>
               </div>
               <div className="flex gap-8 pt-4">

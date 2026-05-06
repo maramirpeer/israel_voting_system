@@ -1,0 +1,154 @@
+import { z } from "zod";
+import { publicProcedure, router } from "./_core/trpc";
+import {
+  getCurrentCycle,
+  createCycle,
+  createBillProposal,
+  createQuestionProposal,
+  getBillsForCycle,
+  getQuestionsForCycle,
+  voteBill,
+  voteQuestion,
+  completeCycle,
+  getUserBillVotes,
+  getUserQuestionVotes,
+} from "./mk121";
+
+export const mk121Router = router({
+  // Get current active cycle
+  getCurrentCycle: publicProcedure.query(async () => {
+    return await getCurrentCycle();
+  }),
+
+  // Create a new cycle (admin only)
+  createCycle: publicProcedure
+    .input(
+      z.object({
+        cycleNumber: z.number(),
+        startDate: z.date(),
+        endDate: z.date(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const cycle = await createCycle(input.cycleNumber, input.startDate, input.endDate);
+      return { success: !!cycle, cycle };
+    }),
+
+  // Propose a bill
+  proposeBill: publicProcedure
+    .input(
+      z.object({
+        cycleId: z.number(),
+        title: z.string(),
+        description: z.string(),
+        proposedBy: z.number(),
+        category: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const bill = await createBillProposal(
+        input.cycleId,
+        input.title,
+        input.description,
+        input.proposedBy,
+        input.category
+      );
+      return { success: !!bill, bill };
+    }),
+
+  // Propose a question
+  proposeQuestion: publicProcedure
+    .input(
+      z.object({
+        cycleId: z.number(),
+        title: z.string(),
+        description: z.string(),
+        proposedBy: z.number(),
+        targetMinistry: z.string().optional(),
+        urgency: z.enum(["low", "medium", "high"]).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const question = await createQuestionProposal(
+        input.cycleId,
+        input.title,
+        input.description,
+        input.proposedBy,
+        input.targetMinistry,
+        input.urgency || "medium"
+      );
+      return { success: !!question, question };
+    }),
+
+  // Get bills for a cycle
+  getBillsForCycle: publicProcedure
+    .input(z.object({ cycleId: z.number() }))
+    .query(async ({ input }) => {
+      return await getBillsForCycle(input.cycleId);
+    }),
+
+  // Get questions for a cycle
+  getQuestionsForCycle: publicProcedure
+    .input(z.object({ cycleId: z.number() }))
+    .query(async ({ input }) => {
+      return await getQuestionsForCycle(input.cycleId);
+    }),
+
+  // Vote for a bill
+  voteBill: publicProcedure
+    .input(
+      z.object({
+        billId: z.number(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const success = await voteBill(input.billId, input.userId);
+      return { success };
+    }),
+
+  // Vote for a question
+  voteQuestion: publicProcedure
+    .input(
+      z.object({
+        questionId: z.number(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const success = await voteQuestion(input.questionId, input.userId);
+      return { success };
+    }),
+
+  // Complete a cycle (determine winners)
+  completeCycle: publicProcedure
+    .input(z.object({ cycleId: z.number() }))
+    .mutation(async ({ input }) => {
+      const success = await completeCycle(input.cycleId);
+      return { success };
+    }),
+
+  // Get user's bill votes for a cycle
+  getUserBillVotes: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        cycleId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getUserBillVotes(input.userId, input.cycleId);
+    }),
+
+  // Get user's question votes for a cycle
+  getUserQuestionVotes: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        cycleId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getUserQuestionVotes(input.userId, input.cycleId);
+    }),
+});

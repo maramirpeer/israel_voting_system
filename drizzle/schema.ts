@@ -134,3 +134,75 @@ export const delegateVotes = mysqlTable("delegateVotes", {
 
 export type DelegateVote = typeof delegateVotes.$inferSelect;
 export type InsertDelegateVote = typeof delegateVotes.$inferInsert;
+// MK 121 - Voting cycles (quarterly)
+export const mk121Cycles = mysqlTable("mk121Cycles", {
+  id: int("id").autoincrement().primaryKey(),
+  cycleNumber: int("cycleNumber").notNull().unique(),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
+  status: mysqlEnum("status", ["active", "completed", "archived"]).default("active").notNull(),
+  winningBillId: int("winningBillId"),
+  winningQuestionId: int("winningQuestionId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MK121Cycle = typeof mk121Cycles.$inferSelect;
+export type InsertMK121Cycle = typeof mk121Cycles.$inferInsert;
+
+// MK 121 - Bill proposals
+export const mk121Bills = mysqlTable("mk121Bills", {
+  id: int("id").autoincrement().primaryKey(),
+  cycleId: int("cycleId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  proposedBy: int("proposedBy").notNull(),
+  category: varchar("category", { length: 100 }),
+  votes: int("votes").default(0),
+  isWinner: boolean("isWinner").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MK121Bill = typeof mk121Bills.$inferSelect;
+export type InsertMK121Bill = typeof mk121Bills.$inferInsert;
+
+// MK 121 - Parliamentary questions
+export const mk121Questions = mysqlTable("mk121Questions", {
+  id: int("id").autoincrement().primaryKey(),
+  cycleId: int("cycleId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  targetMinistry: varchar("targetMinistry", { length: 255 }),
+  proposedBy: int("proposedBy").notNull(),
+  urgency: mysqlEnum("urgency", ["low", "medium", "high"]).default("medium").notNull(),
+  votes: int("votes").default(0),
+  isWinner: boolean("isWinner").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MK121Question = typeof mk121Questions.$inferSelect;
+export type InsertMK121Question = typeof mk121Questions.$inferInsert;
+
+// MK 121 - Bill votes
+export const mk121BillVotes = mysqlTable("mk121BillVotes", {
+  id: int("id").autoincrement().primaryKey(),
+  billId: int("billId").notNull(),
+  userId: int("userId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MK121BillVote = typeof mk121BillVotes.$inferSelect;
+export type InsertMK121BillVote = typeof mk121BillVotes.$inferInsert;
+
+// MK 121 - Question votes
+export const mk121QuestionVotes = mysqlTable("mk121QuestionVotes", {
+  id: int("id").autoincrement().primaryKey(),
+  questionId: int("questionId").notNull(),
+  userId: int("userId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MK121QuestionVote = typeof mk121QuestionVotes.$inferSelect;
+export type InsertMK121QuestionVote = typeof mk121QuestionVotes.$inferInsert;
