@@ -37,9 +37,14 @@ export default function Home() {
             <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">Features</a>
             <a href="#faq" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">FAQ</a>
             {isAuthenticated && (
-              <Button onClick={() => setLocation("/governance")} className="bg-blue-600 hover:bg-blue-700">
-                Go to Governance →
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={() => setLocation("/governance")} className="bg-blue-600 hover:bg-blue-700">
+                  Go to Governance
+                </Button>
+                <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300">
+                  📊 Dashboards
+                </Button>
+              </div>
             )}
           </nav>
         </div>

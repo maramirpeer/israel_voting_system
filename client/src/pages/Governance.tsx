@@ -178,6 +178,12 @@ export default function Governance() {
       </header>
 
       <main className="container py-8">
+        <div className="mb-6 flex justify-between items-center">
+          <div></div>
+          <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300 text-blue-600">
+            📊 לוח בקרה משרדי
+          </Button>
+        </div>
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="overview">סקירה כללית</TabsTrigger>
