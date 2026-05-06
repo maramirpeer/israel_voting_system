@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { ArrowLeft, TrendingUp, TrendingDown, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function MinistryDashboard() {
@@ -35,9 +35,11 @@ export default function MinistryDashboard() {
   const trends = trendsQuery.data || [];
 
   // Initialize first ministry on load
-  if (!selectedMinistryId && ministries.length > 0) {
-    setSelectedMinistryId(ministries[0].id);
-  }
+  useEffect(() => {
+    if (!selectedMinistryId && ministries.length > 0) {
+      setSelectedMinistryId(ministries[0].id);
+    }
+  }, [ministries, selectedMinistryId]);
 
   if (!isAuthenticated) {
     return (

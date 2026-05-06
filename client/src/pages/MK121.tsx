@@ -310,7 +310,8 @@ export default function MK121() {
                 )}
               </TabsContent>
             </Tabs>
-          </>        )})
+          </>
+        )}
       </main>
 
       {/* Proposal Submission Modal */}

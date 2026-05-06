@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, CheckCircle, Users, Target } from "lucide-react";
@@ -44,9 +44,11 @@ export default function DelegateSelection() {
   const assignments = assignmentsQuery.data || [];
 
   // Initialize first ministry on load
-  if (!selectedMinistryId && ministries.length > 0) {
-    setSelectedMinistryId(ministries[0].id);
-  }
+  useEffect(() => {
+    if (!selectedMinistryId && ministries.length > 0) {
+      setSelectedMinistryId(ministries[0].id);
+    }
+  }, [ministries, selectedMinistryId]);
 
   const currentAssignment = selectedMinistryId
     ? assignments.find((a) => a.ministryId === selectedMinistryId)
