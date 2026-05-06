@@ -15,6 +15,13 @@
       "when": 1778065222652,
       "tag": "0001_regular_sister_grimm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1778077744310,
+      "tag": "0002_hard_newton_destine",
+      "breakpoints": true
     }
   ]
 }

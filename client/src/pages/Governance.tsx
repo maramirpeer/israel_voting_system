@@ -180,9 +180,14 @@ export default function Governance() {
       <main className="container py-8">
         <div className="mb-6 flex justify-between items-center">
           <div></div>
-          <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300 text-blue-600">
-            📊 לוח בקרה משרדי
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setLocation("/delegate-selection")} variant="outline" className="border-purple-300 text-purple-600">
+              🗳️ בחירת נציגים
+            </Button>
+            <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300 text-blue-600">
+              📊 לוח בקרה משרדי
+            </Button>
+          </div>
         </div>
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">

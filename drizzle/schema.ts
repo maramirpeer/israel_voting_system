@@ -87,3 +87,50 @@ export const decisionHistory = mysqlTable("decisionHistory", {
 
 export type DecisionHistory = typeof decisionHistory.$inferSelect;
 export type InsertDecisionHistory = typeof decisionHistory.$inferInsert;
+
+// Delegates/Representatives table
+export const delegates = mysqlTable("delegates", {
+  id: int("id").autoincrement().primaryKey(),
+  ministryId: int("ministryId").notNull(),
+  userId: int("userId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  bio: text("bio"),
+  values: text("values"), // JSON string of delegate values
+  expertise: text("expertise"), // JSON string of expertise areas
+  profileImage: varchar("profileImage", { length: 500 }),
+  endorsements: int("endorsements").default(0),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Delegate = typeof delegates.$inferSelect;
+export type InsertDelegate = typeof delegates.$inferInsert;
+
+// Citizen delegate assignments table
+export const citizenDelegates = mysqlTable("citizenDelegates", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  ministryId: int("ministryId").notNull(),
+  delegateId: int("delegateId"),
+  delegateUserId: int("delegateUserId"), // Direct user ID if delegating to another citizen
+  votingMethod: mysqlEnum("votingMethod", ["direct", "delegate"]).default("direct").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CitizenDelegate = typeof citizenDelegates.$inferSelect;
+export type InsertCitizenDelegate = typeof citizenDelegates.$inferInsert;
+
+// Delegate votes table (votes cast by delegates on behalf of citizens)
+export const delegateVotes = mysqlTable("delegateVotes", {
+  id: int("id").autoincrement().primaryKey(),
+  decisionId: int("decisionId").notNull(),
+  delegateId: int("delegateId").notNull(),
+  vote: mysqlEnum("vote", ["for", "against"]).notNull(),
+  votesRepresented: int("votesRepresented").default(1), // How many citizens this delegate represents
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type DelegateVote = typeof delegateVotes.$inferSelect;
+export type InsertDelegateVote = typeof delegateVotes.$inferInsert;
