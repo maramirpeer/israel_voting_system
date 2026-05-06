@@ -2,8 +2,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, Lock, Eye, Users, Shield, Zap } from "lucide-react";
-import { useState } from "react";
+import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight } from "lucide-react";
+import { useLocation } from "wouter";
 
 /**
  * Design Philosophy: Modern Tech-Forward Governance
@@ -14,11 +14,8 @@ import { useState } from "react";
  */
 
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
-
-  const [activeDemo, setActiveDemo] = useState("auth");
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50">
@@ -35,10 +32,15 @@ export default function Home() {
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-8">
+            <a href="#systems" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">Systems</a>
             <a href="#architecture" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">Architecture</a>
             <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">Features</a>
-            <a href="#demo" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">Demo</a>
             <a href="#faq" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">FAQ</a>
+            {isAuthenticated && (
+              <Button onClick={() => setLocation("/governance")} className="bg-blue-600 hover:bg-blue-700">
+                Go to Governance →
+              </Button>
+            )}
           </nav>
         </div>
       </header>
@@ -53,15 +55,15 @@ export default function Home() {
                   Secure. Transparent. <span className="text-cyan-500">Trusted.</span>
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  A blockchain-powered voting system for Israel that combines cutting-edge cryptography with democratic principles. Your vote. Your voice. Our future.
+                  A comprehensive democratic system for Israel combining blockchain voting with transparent government operations. From elections to daily governance.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Explore Architecture
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setLocation("/governance")}>
+                  Enter Governance System
                 </Button>
                 <Button size="lg" variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-50">
-                  View Documentation
+                  Learn More
                 </Button>
               </div>
               <div className="flex gap-8 pt-4">
@@ -74,8 +76,8 @@ export default function Home() {
                   <p className="text-sm text-gray-600">Immutable Records</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-blue-900">1</p>
-                  <p className="text-sm text-gray-600">Vote Per Citizen</p>
+                  <p className="text-3xl font-bold text-blue-900">51%</p>
+                  <p className="text-sm text-gray-600">Citizen Veto Power</p>
                 </div>
               </div>
             </div>
@@ -90,17 +92,93 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Key Principles Section */}
-      <section className="py-20 bg-white">
+      {/* Two Systems Section */}
+      <section id="systems" className="py-20 bg-white">
         <div className="container">
-          <h2 className="text-4xl font-bold text-center text-blue-900 mb-16">Core Principles</h2>
+          <h2 className="text-4xl font-bold text-center text-blue-900 mb-4">Two Integrated Systems</h2>
+          <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
+            A complete democratic infrastructure: secure elections and transparent daily governance with citizen participation.
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* System 1: Elections */}
+            <Card className="p-8 border-2 border-blue-200 hover:shadow-xl transition">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-blue-900">Part 1: Blockchain Elections</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Secure, decentralized voting for the Knesset using blockchain technology with biometric authentication.
+              </p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Biometric GovID authentication</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">One-time voting tokens</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Zero-knowledge proofs for anonymity</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Immutable audit trail</span>
+                </li>
+              </ul>
+              <p className="text-xs text-gray-500">Foundation: Secure, verifiable elections</p>
+            </Card>
+
+            {/* System 2: Governance */}
+            <Card className="p-8 border-2 border-cyan-200 hover:shadow-xl transition">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                  <Shield className="w-6 h-6 text-cyan-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-blue-900">Part 2: Transparent Governance</h3>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Daily government operations with full transparency and citizen participation through direct voting.
+              </p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">9 Israeli ministries</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Ministers propose decisions</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">Citizens vote with 51% veto power</span>
+                </li>
+                <li className="flex gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-700">72-hour voting windows</span>
+                </li>
+              </ul>
+              <p className="text-xs text-gray-500">Operational: Transparent daily governance</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Principles Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
+        <div className="container">
+          <h2 className="text-4xl font-bold text-center text-blue-900 mb-16">Democratic Principles</h2>
           <div className="grid md:grid-cols-5 gap-6">
             {[
               { icon: Users, title: "Voter Anonymity", desc: "Votes cannot be linked to voters" },
-              { icon: Eye, title: "Verifiability", desc: "Anyone can audit the results" },
+              { icon: Eye, title: "Transparency", desc: "All decisions visible to citizens" },
               { icon: Lock, title: "Immutability", desc: "Tamper-proof records" },
               { icon: Shield, title: "Security", desc: "Resists cyberattacks" },
-              { icon: Zap, title: "Accessibility", desc: "Easy for all citizens" }
+              { icon: Zap, title: "Accessibility", desc: "Easy participation for all" }
             ].map((item, i) => (
               <Card key={i} className="p-6 border-blue-100 hover:shadow-lg transition">
                 <item.icon className="w-8 h-8 text-cyan-500 mb-4" />
@@ -113,7 +191,7 @@ export default function Home() {
       </section>
 
       {/* Architecture Section */}
-      <section id="architecture" className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
+      <section id="architecture" className="py-20 bg-white">
         <div className="container">
           <h2 className="text-4xl font-bold text-blue-900 mb-4">System Architecture</h2>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl">
@@ -130,19 +208,19 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section id="features" className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
         <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-16">Key Features</h2>
+          <h2 className="text-4xl font-bold text-blue-900 mb-16">How It Works</h2>
           <Tabs defaultValue="registration" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-12 bg-blue-50">
-              <TabsTrigger value="registration" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">Registration</TabsTrigger>
-              <TabsTrigger value="voting" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">Voting</TabsTrigger>
-              <TabsTrigger value="blockchain" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">Blockchain</TabsTrigger>
-              <TabsTrigger value="tallying" className="data-[state=active]:bg-white data-[state=active]:text-blue-600">Tallying</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 mb-12 bg-white">
+              <TabsTrigger value="registration" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600">Registration</TabsTrigger>
+              <TabsTrigger value="voting" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600">Voting</TabsTrigger>
+              <TabsTrigger value="blockchain" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600">Blockchain</TabsTrigger>
+              <TabsTrigger value="governance" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600">Governance</TabsTrigger>
             </TabsList>
 
             <TabsContent value="registration" className="space-y-6">
-              <Card className="p-8 border-blue-100">
+              <Card className="p-8 bg-white border-blue-100">
                 <h3 className="text-2xl font-bold text-blue-900 mb-4">Voter Registration & Eligibility</h3>
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -171,7 +249,7 @@ export default function Home() {
             </TabsContent>
 
             <TabsContent value="voting" className="space-y-6">
-              <Card className="p-8 border-blue-100">
+              <Card className="p-8 bg-white border-blue-100">
                 <h3 className="text-2xl font-bold text-blue-900 mb-4">Voting Client Application</h3>
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -200,7 +278,7 @@ export default function Home() {
             </TabsContent>
 
             <TabsContent value="blockchain" className="space-y-6">
-              <Card className="p-8 border-blue-100">
+              <Card className="p-8 bg-white border-blue-100">
                 <h3 className="text-2xl font-bold text-blue-900 mb-4">Blockchain Network</h3>
                 <div className="space-y-4">
                   <div className="flex gap-4">
@@ -228,29 +306,36 @@ export default function Home() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="tallying" className="space-y-6">
-              <Card className="p-8 border-blue-100">
-                <h3 className="text-2xl font-bold text-blue-900 mb-4">Tallying & Audit</h3>
+            <TabsContent value="governance" className="space-y-6">
+              <Card className="p-8 bg-white border-cyan-100">
+                <h3 className="text-2xl font-bold text-blue-900 mb-4">Transparent Government Operations</h3>
                 <div className="space-y-4">
                   <div className="flex gap-4">
                     <CheckCircle2 className="w-6 h-6 text-cyan-500 flex-shrink-0 mt-1" />
                     <div>
-                      <p className="font-semibold text-blue-900">Multi-Party Decryption</p>
-                      <p className="text-gray-600">Votes are decrypted collaboratively by multiple trusted authorities, preventing any single entity from knowing individual votes.</p>
+                      <p className="font-semibold text-blue-900">Ministers Propose Decisions</p>
+                      <p className="text-gray-600">Each of the 9 ministries can propose decisions affecting their domain, with full transparency and public visibility.</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <CheckCircle2 className="w-6 h-6 text-cyan-500 flex-shrink-0 mt-1" />
                     <div>
-                      <p className="font-semibold text-blue-900">Public Auditability</p>
-                      <p className="text-gray-600">All encrypted votes and final tally are publicly auditable on the blockchain for complete transparency.</p>
+                      <p className="font-semibold text-blue-900">Citizens Vote with Veto Power</p>
+                      <p className="text-gray-600">Citizens can vote on major decisions. If 51% vote against, the decision is automatically rejected regardless of ministerial intent.</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <CheckCircle2 className="w-6 h-6 text-cyan-500 flex-shrink-0 mt-1" />
                     <div>
-                      <p className="font-semibold text-blue-900">Individual Verification</p>
-                      <p className="text-gray-600">Voters can verify their encrypted vote was recorded correctly using a unique receipt.</p>
+                      <p className="font-semibold text-blue-900">72-Hour Voting Windows</p>
+                      <p className="text-gray-600">Each decision has a 72-hour voting period, allowing citizens adequate time to review and participate.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <CheckCircle2 className="w-6 h-6 text-cyan-500 flex-shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold text-blue-900">No Process Delays</p>
+                      <p className="text-gray-600">Routine decisions bypass voting, ensuring government efficiency while maintaining transparency for important matters.</p>
                     </div>
                   </div>
                 </div>
@@ -260,99 +345,54 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Voting Flow Section */}
-      <section id="demo" className="py-20 bg-gradient-to-r from-cyan-50 to-blue-50">
-        <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-4">The Voting Process</h2>
-          <p className="text-lg text-gray-600 mb-12 max-w-2xl">
-            A step-by-step walkthrough of how the blockchain voting system works, from authentication to verification.
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
+        <div className="container text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">Ready to Experience Democratic Governance?</h2>
+          <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
+            Enter the governance system to see how transparent, citizen-powered government can work in practice.
           </p>
-          <div className="rounded-2xl overflow-hidden shadow-2xl">
-            <img 
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663429815346/U6pRes7wCe3Tq4MFFrBU3d/voting-flow-visual-i2SMz3WcAxW7LTSytgHR9G.webp"
-              alt="Voting Process Flow"
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Security Features Section */}
-      <section className="py-20 bg-white">
-        <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-16">Security Features</h2>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <img 
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663429815346/U6pRes7wCe3Tq4MFFrBU3d/security-features-visual-GrBs7DguuFMBgTm9pPRFNL.webp"
-                alt="Security Features"
-                className="w-full h-auto"
-              />
-            </div>
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-2xl font-bold text-blue-900 mb-4">Comprehensive Protection</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Our system employs multiple layers of security to protect against fraud, coercion, and cyberattacks.
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="border-l-4 border-cyan-500 pl-4">
-                  <h4 className="font-bold text-blue-900 mb-1">Biometric Authentication</h4>
-                  <p className="text-sm text-gray-600">Leverages Israel's biometric Teudat Zehut to prevent identity theft and impersonation.</p>
-                </div>
-                
-                <div className="border-l-4 border-cyan-500 pl-4">
-                  <h4 className="font-bold text-blue-900 mb-1">One-Time Tokens</h4>
-                  <p className="text-sm text-gray-600">Prevents selling or transferring voting rights, eliminating vote buying schemes.</p>
-                </div>
-                
-                <div className="border-l-4 border-cyan-500 pl-4">
-                  <h4 className="font-bold text-blue-900 mb-1">Vote Secrecy</h4>
-                  <p className="text-sm text-gray-600">zk-SNARKs ensure votes remain private even if voters are coerced.</p>
-                </div>
-                
-                <div className="border-l-4 border-cyan-500 pl-4">
-                  <h4 className="font-bold text-blue-900 mb-1">Quantum-Resistant Cryptography</h4>
-                  <p className="text-sm text-gray-600">Considered for long-term security against future computational threats.</p>
-                </div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50" onClick={() => setLocation("/governance")}>
+              Enter Governance System <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              Learn More About Architecture
+            </Button>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-blue-50">
+      <section id="faq" className="py-20 bg-white">
         <div className="container max-w-3xl">
           <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center">Frequently Asked Questions</h2>
           
           <div className="space-y-4">
             {[
               {
-                q: "How does the system ensure voter anonymity?",
-                a: "The system uses zero-knowledge proofs (zk-SNARKs) to verify that a voter is eligible and has a valid token without revealing their identity. Votes are encrypted client-side and decrypted only after the election closes using multi-party computation."
+                q: "How does the 51% veto threshold work?",
+                a: "If more than 51% of voting citizens vote against a decision, it is automatically rejected regardless of the minister's position. This ensures citizen participation in government decisions."
               },
               {
-                q: "What is a one-time voting token?",
-                a: "Upon authentication through GovID, each voter receives a unique, cryptographically generated token that can only be used once. This token is linked to voter eligibility but decoupled from their identity, preventing double-voting."
+                q: "What happens if a decision is rejected?",
+                a: "The minister receives feedback about citizen concerns and can either revise the decision or explain their reasoning to the public. The decision is logged for transparency."
               },
               {
-                q: "Can voters verify their vote was counted?",
-                a: "Yes. Voters receive a unique receipt during voting that allows them to verify their encrypted vote was correctly recorded on the blockchain, without revealing their actual vote choice."
+                q: "Do all decisions require citizen voting?",
+                a: "No. Only major and medium-level decisions require voting. Routine operational decisions bypass voting to maintain government efficiency."
               },
               {
-                q: "Is the blockchain truly decentralized?",
-                a: "We propose a permissioned consortium blockchain managed by the Central Elections Committee and other trusted entities. This balances decentralization with the control necessary for national elections."
+                q: "How is voter anonymity maintained?",
+                a: "Votes are encrypted and decoupled from voter identity using zero-knowledge proofs. Even the government cannot link votes to specific citizens."
               },
               {
-                q: "What about cybersecurity threats?",
-                a: "The entire system undergoes rigorous security audits and penetration testing. We employ quantum-resistant cryptography and distributed architecture to prevent single points of failure."
+                q: "What prevents government shutdown?",
+                a: "The system is designed so that routine decisions proceed without delay. Only significant policy decisions require citizen input, preventing gridlock."
               },
               {
-                q: "How will this integrate with current Israeli law?",
-                a: "Adapting existing election laws to accommodate blockchain voting is a significant undertaking. This proposal serves as a technical blueprint for legal and policy discussions."
+                q: "How is this different from direct democracy?",
+                a: "This is representative democracy enhanced with citizen veto power. Ministers still lead and propose decisions, but citizens can reject them through voting."
               }
             ].map((item, i) => (
               <Card key={i} className="p-6 border-blue-100 hover:border-cyan-300 transition">
@@ -364,46 +404,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
-        <div className="container text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">Ready to Learn More?</h2>
-          <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
-            This proposal represents a comprehensive approach to modernizing democratic voting through blockchain technology. Explore the full technical documentation to understand every component.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-              Download Full Architecture
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-              Contact Us
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-blue-900 text-blue-100 py-12">
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h4 className="font-bold text-white mb-4">VoteChain</h4>
-              <p className="text-sm">A blockchain-based voting system for Israel, designed for security, transparency, and trust.</p>
+              <p className="text-sm">A comprehensive democratic system for Israel, designed for security, transparency, and citizen participation.</p>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Architecture</h4>
+              <h4 className="font-bold text-white mb-4">Systems</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition">System Design</a></li>
-                <li><a href="#" className="hover:text-white transition">Components</a></li>
-                <li><a href="#" className="hover:text-white transition">Security</a></li>
+                <li><a href="#systems" className="hover:text-white transition">Overview</a></li>
+                <li><a href="#" onClick={() => setLocation("/governance")} className="hover:text-white transition">Governance</a></li>
+                <li><a href="#architecture" className="hover:text-white transition">Architecture</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">Resources</h4>
               <ul className="space-y-2 text-sm">
+                <li><a href="#features" className="hover:text-white transition">How It Works</a></li>
+                <li><a href="#faq" className="hover:text-white transition">FAQ</a></li>
                 <li><a href="#" className="hover:text-white transition">Documentation</a></li>
-                <li><a href="#" className="hover:text-white transition">Research</a></li>
-                <li><a href="#" className="hover:text-white transition">FAQ</a></li>
               </ul>
             </div>
             <div>
@@ -416,7 +438,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-blue-800 pt-8 text-center text-sm">
-            <p>&copy; 2026 VoteChain. A proposal for secure democratic voting in Israel.</p>
+            <p>© 2026 VoteChain. A proposal for secure democratic governance in Israel.</p>
           </div>
         </div>
       </footer>
