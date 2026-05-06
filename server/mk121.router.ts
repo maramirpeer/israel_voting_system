@@ -151,4 +151,50 @@ export const mk121Router = router({
     .query(async ({ input }) => {
       return await getUserQuestionVotes(input.userId, input.cycleId);
     }),
+
+  // Submit a new bill proposal
+  submitBillProposal: publicProcedure
+    .input(
+      z.object({
+        cycleId: z.number(),
+        title: z.string().min(5, "כותרת חייבת להיות לפחות 5 תווים").max(255),
+        description: z.string().min(20, "תיאור חייב להיות לפחות 20 תווים").max(2000),
+        category: z.string().max(100).optional(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const bill = await createBillProposal(
+        input.cycleId,
+        input.title,
+        input.description,
+        input.userId,
+        input.category
+      );
+      return { success: !!bill, bill };
+    }),
+
+  // Submit a new question proposal
+  submitQuestionProposal: publicProcedure
+    .input(
+      z.object({
+        cycleId: z.number(),
+        title: z.string().min(5, "כותרת חייבת להיות לפחות 5 תווים").max(255),
+        description: z.string().min(20, "תיאור חייב להיות לפחות 20 תווים").max(2000),
+        targetMinistry: z.string().max(255).optional(),
+        urgency: z.enum(["low", "medium", "high"]).optional(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const question = await createQuestionProposal(
+        input.cycleId,
+        input.title,
+        input.description,
+        input.userId,
+        input.targetMinistry,
+        input.urgency || "medium"
+      );
+      return { success: !!question, question };
+    }),
 });

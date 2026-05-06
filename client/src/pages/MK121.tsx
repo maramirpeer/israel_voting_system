@@ -6,12 +6,14 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle } from "lucide-react";
+import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
 
 export default function MK121() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
 
   // Queries
   const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery();
@@ -105,9 +107,20 @@ export default function MK121() {
             חזרה לעמוד הבית
           </Button>
           <h1 className="text-3xl font-bold text-slate-900">🗳️ ח"כ 121</h1>
-          <div className="text-right">
-            <p className="text-sm text-slate-600">מחזור {cycle?.cycleNumber}</p>
-            {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}
+          <div className="text-right flex items-center gap-4">
+            <div>
+              <p className="text-sm text-slate-600">מחזור {cycle?.cycleNumber}</p>
+              {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}
+            </div>
+            {isAuthenticated && cycle && (
+              <Button
+                onClick={() => setShowSubmissionForm(true)}
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                הגש הצעה
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -297,9 +310,22 @@ export default function MK121() {
                 )}
               </TabsContent>
             </Tabs>
-          </>
-        )}
+          </>        )})
       </main>
+
+      {/* Proposal Submission Modal */}
+      {showSubmissionForm && cycle && user && (
+        <ProposalSubmissionForms
+          cycleId={cycle.id}
+          userId={user.id}
+          onSuccess={() => {
+            setShowSubmissionForm(false);
+            billsQuery.refetch();
+            questionsQuery.refetch();
+          }}
+          onClose={() => setShowSubmissionForm(false)}
+        />
+      )}
     </div>
   );
 }
