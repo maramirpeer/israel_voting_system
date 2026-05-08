@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -15,24 +15,26 @@ export default function MK121() {
   const [, setLocation] = useLocation();
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
 
-  // Queries
+  // Queries with auto-refresh polling (every 30 seconds for live updates)
   const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery();
   const billsQuery = trpc.mk121.getBillsForCycle.useQuery(
     { cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!currentCycleQuery.data?.id }
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 } // Refresh every 30 seconds
   );
   const questionsQuery = trpc.mk121.getQuestionsForCycle.useQuery(
     { cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!currentCycleQuery.data?.id }
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 } // Refresh every 30 seconds
   );
   const userBillVotesQuery = trpc.mk121.getUserBillVotes.useQuery(
     { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!user?.id && !!currentCycleQuery.data?.id }
+    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
   const userQuestionVotesQuery = trpc.mk121.getUserQuestionVotes.useQuery(
     { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!user?.id && !!currentCycleQuery.data?.id }
+    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
+
+  // Note: refetchInterval automatically stops when component unmounts
 
   // Mutations
   const voteBillMutation = trpc.mk121.voteBill.useMutation({

@@ -23,10 +23,16 @@ export default function Governance() {
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
   const decisionsQuery = trpc.governance.decisions.list.useQuery();
   const activeDecisionsQuery = trpc.governance.decisions.active.useQuery();
+  const activePublicVotingQuery = trpc.governance.publicVotes.active.useQuery(undefined, { refetchInterval: 30000 }); // Refresh every 30 seconds
 
   // Mutations
   const createDecisionMutation = trpc.governance.decisions.create.useMutation();
   const castVoteMutation = trpc.governance.votes.cast.useMutation();
+  const castPublicVoteMutation = trpc.governance.publicVotes.cast.useMutation({
+    onSuccess: () => {
+      activePublicVotingQuery.refetch();
+    },
+  });
 
   const ministries = ministriesQuery.data || [];
   const decisions = decisionsQuery.data || [];
@@ -402,6 +408,58 @@ export default function Governance() {
                             הצביעו נגד
                           </Button>
                         </div>
+
+                        {/* Public Voting Display */}
+                        {decision.publicVotingStartsAt && (
+                          <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 p-4 rounded-lg">
+                            <h4 className="font-bold text-purple-900 mb-3">🗣️ קול ציבורי דינמי</h4>
+                            {(() => {
+                              const publicVote = activePublicVotingQuery.data?.find((v) => v.id === decision.id);
+                              const publicFor = publicVote?.votesFor || 0;
+                              const publicAgainst = publicVote?.votesAgainst || 0;
+                              const publicTotal = publicFor + publicAgainst;
+                              const publicPercentageFor = publicTotal > 0 ? (publicFor / publicTotal) * 100 : 0;
+                              const publicPercentageAgainst = publicTotal > 0 ? (publicAgainst / publicTotal) * 100 : 0;
+
+                              return (
+                                <div className="space-y-2">
+                                  <div>
+                                    <div className="flex justify-between mb-1">
+                                      <span className="text-sm font-medium text-purple-600">בעד: {publicFor}</span>
+                                      <span className="text-sm font-medium text-slate-600">{publicPercentageFor.toFixed(1)}%</span>
+                                    </div>
+                                    <Progress value={publicPercentageFor} className="h-2" />
+                                  </div>
+                                  <div>
+                                    <div className="flex justify-between mb-1">
+                                      <span className="text-sm font-medium text-pink-600">נגד: {publicAgainst}</span>
+                                      <span className="text-sm font-medium text-slate-600">{publicPercentageAgainst.toFixed(1)}%</span>
+                                    </div>
+                                    <Progress value={publicPercentageAgainst} className="h-2" />
+                                  </div>
+                                  <div className="flex gap-2 mt-3">
+                                    <Button
+                                      onClick={() => castPublicVoteMutation.mutate({ decisionId: decision.id, vote: "for" })}
+                                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                                      disabled={castPublicVoteMutation.isPending}
+                                    >
+                                      <ThumbsUp className="w-3 h-3 mr-1" />
+                                      קול אזרחי בעד
+                                    </Button>
+                                    <Button
+                                      onClick={() => castPublicVoteMutation.mutate({ decisionId: decision.id, vote: "against" })}
+                                      className="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-sm"
+                                      disabled={castPublicVoteMutation.isPending}
+                                    >
+                                      <ThumbsDown className="w-3 h-3 mr-1" />
+                                      קול אזרחי נגד
+                                    </Button>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        )}
                       </Card>
                     );
                   })}

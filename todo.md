@@ -48,16 +48,16 @@
   - [x] Add budget field to decisions table in schema
   - [x] Implement logic: budget > threshold → minimum medium category (1M NIS threshold)
   - [ ] Update decision creation form with budget input (FRONTEND)
-- [ ] Real-time public voting on ministerial decisions (72-hour window)
+- [x] Real-time public voting on ministerial decisions (72-hour window)
   - [x] Add publicVotes table for tracking citizen votes on decisions
   - [x] Add publicVotingStartsAt/publicVotingEndsAt timestamps to schema
   - [x] Implement server-side vote aggregation with deduplication
   - [x] Add tRPC procedures for public voting (cast, getByDecision, getUserVote, active)
   - [x] Wire publicVotingStartsAt/publicVotingEndsAt when decision enters voting
-  - [ ] Display dynamic public voice percentage in Governance page (FRONTEND)
-  - [ ] Show vote count, percentage for/against, and time remaining (FRONTEND)
-- [ ] MK121 live updates during 3-month cycle
-  - [ ] Display current bills and questions with live vote counts
-  - [ ] Real-time vote aggregation from citizen votes
-  - [ ] Show top proposals with dynamic ranking by votes
-  - [ ] Update vote counts without page refresh
+  - [x] Display dynamic public voice percentage in Governance page (purple section with live updates)
+  - [x] Show vote count, percentage for/against, and time remaining (30-second polling)
+- [x] MK121 live updates during 3-month cycle
+  - [x] Display current bills and questions with live vote counts
+  - [x] Real-time vote aggregation from other users' votes (30-second polling)
+  - [x] Show top proposals with dynamic ranking by votes (sorted by votes DESC in DB)
+  - [x] Auto-refresh vote counts every 30 seconds during voting (refetchInterval: 30000)
