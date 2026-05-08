@@ -138,8 +138,7 @@ export default function MK121() {
             <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">מה זה ח"כ 121?</h2>
               <p className="text-slate-700 mb-4">
-                כל 3 חודשים, אתה מצביע על הצעת החוק והשאילתה הדחופה ביותר. הצעות המנצחות מועברות לממשלה כדי
-                לשפר את קבלת ההחלטות הציבורית.
+                כל 3 חודשים, אתה מצביע על הצעת החוק והשאילתה הדחופה ביותר. הצעת החוק המנצחת מועברת לכנסת ישירות לקריאה ראשונה להצבעה ללא שום חסם או שינוי. השאילתה המנצחת מועברת לנשאל לקבלת תשובה בצורת תשאול חי ומצולם.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-3 rounded border border-blue-200">
