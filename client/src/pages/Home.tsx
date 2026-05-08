@@ -80,8 +80,8 @@ export default function Home() {
             </div>
             <div className="relative order-1 md:order-2">
               <img 
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663429815346/U6pRes7wCe3Tq4MFFrBU3d/hero-blockchain-voting-QZMGzn4EM44k5Skr4RYqWZ.webp"
-                alt="מערכת דמוקרטיה מבוזרת"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663429815346/U6pRes7wCe3Tq4MFFrBU3d/hero-hebrew-unity-G7JpP3e2DszaSLnYAavFBb.webp"
+                alt="לא מחלוקות. מחברים. - שיתוף הציבור וחיבור בין אנשים"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
             </div>

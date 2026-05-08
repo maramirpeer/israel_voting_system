@@ -61,3 +61,12 @@
   - [x] Real-time vote aggregation from other users' votes (30-second polling)
   - [x] Show top proposals with dynamic ranking by votes (sorted by votes DESC in DB)
   - [x] Auto-refresh vote counts every 30 seconds during voting (refetchInterval: 30000)
+
+## Phase 2: Design & Visual Improvements
+
+- [x] Replace hero section image with Hebrew version
+  - [x] Generate new hero image with Hebrew text "לא מחלוקות. מחברים."
+  - [x] Add unity/connection symbols (hands, hearts, people)
+  - [x] Use warm positive colors (gold, orange, green)
+  - [x] Upload image to S3 storage
+  - [x] Update Home.tsx to use new image URL
