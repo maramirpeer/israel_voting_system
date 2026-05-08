@@ -49,10 +49,10 @@ export default function Home() {
             <div className="space-y-8 order-2 md:order-1">
               <div className="text-right">
                 <h2 className="text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-4">
-                  ישראל <span className="text-cyan-500">משותפת</span>
+                  מתחברים <span className="text-cyan-500">ומתקנים</span>
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  יחד מעצבים עתיד טוב לכולם
+                  את השיטה
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
