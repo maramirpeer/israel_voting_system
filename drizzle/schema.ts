@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json, decimal } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -49,11 +49,16 @@ export const decisions = mysqlTable("decisions", {
   category: mysqlEnum("category", ["major", "medium", "routine"]).default("medium").notNull(),
   status: mysqlEnum("status", ["proposed", "voting", "approved", "rejected", "implemented"]).default("proposed").notNull(),
   proposedBy: int("proposedBy").notNull(),
+  budget: decimal("budget", { precision: 12, scale: 2 }), // Budget amount in NIS
   votingStartsAt: timestamp("votingStartsAt"),
   votingEndsAt: timestamp("votingEndsAt"),
+  publicVotingStartsAt: timestamp("publicVotingStartsAt"), // When public voting begins (72 hours)
+  publicVotingEndsAt: timestamp("publicVotingEndsAt"), // When public voting ends
   totalVoters: int("totalVoters").default(0),
   votesFor: int("votesFor").default(0),
   votesAgainst: int("votesAgainst").default(0),
+  publicVotesFor: int("publicVotesFor").default(0), // Public votes for
+  publicVotesAgainst: int("publicVotesAgainst").default(0), // Public votes against
   vetoed: boolean("vetoed").default(false),
   rejectionReason: text("rejectionReason"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -74,6 +79,18 @@ export const citizenVotes = mysqlTable("citizenVotes", {
 
 export type CitizenVote = typeof citizenVotes.$inferSelect;
 export type InsertCitizenVote = typeof citizenVotes.$inferInsert;
+
+// Public votes table (citizen votes on ministerial decisions during 72-hour window)
+export const publicVotes = mysqlTable("publicVotes", {
+  id: int("id").autoincrement().primaryKey(),
+  decisionId: int("decisionId").notNull(),
+  userId: int("userId").notNull(),
+  vote: mysqlEnum("vote", ["for", "against"]).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PublicVote = typeof publicVotes.$inferSelect;
+export type InsertPublicVote = typeof publicVotes.$inferInsert;
 
 // Decision history/audit log
 export const decisionHistory = mysqlTable("decisionHistory", {

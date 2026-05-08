@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `publicVotes` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`decisionId` int NOT NULL,\n\t`userId` int NOT NULL,\n\t`vote` enum('for','against') NOT NULL,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `publicVotes_id` PRIMARY KEY(`id`)\n);\nALTER TABLE `decisions` ADD `budget` decimal(12,2);\nALTER TABLE `decisions` ADD `publicVotingStartsAt` timestamp;\nALTER TABLE `decisions` ADD `publicVotingEndsAt` timestamp;\nALTER TABLE `decisions` ADD `publicVotesFor` int DEFAULT 0;\nALTER TABLE `decisions` ADD `publicVotesAgainst` int DEFAULT 0;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute CREATE TABLE `publicVotes` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`decisionId` int NOT NULL,\n\t`userId` int NOT NULL,\n\t`vote` enum('for','against') NOT NULL,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `publicVotes_id` PRIMARY KEY(`id`)\n);\nALTER TABLE `decisions` ADD `budget` decimal(12,2);\nALTER TABLE `decisions` ADD `publicVotingStartsAt` timestamp;\nALTER TABLE `decisions` ADD `publicVotingEndsAt` timestamp;\nALTER TABLE `decisions` ADD `publicVotesFor` int DEFAULT 0;\nALTER TABLE `decisions` ADD `publicVotesAgainst` int DEFAULT 0;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1618
+}

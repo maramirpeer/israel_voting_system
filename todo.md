@@ -40,3 +40,22 @@
 - All 10 vitest tests passing
 - Dev server running without errors
 - No TypeScript errors
+
+
+## Phase 1: Budget-Based Decision Classification & Real-Time Public Voting
+
+- [ ] Budget-based decision classification
+  - [ ] Add budget field to decisions table in schema
+  - [ ] Implement logic: budget > threshold → minimum medium category
+  - [ ] Update decision creation form with budget input
+- [ ] Real-time public voting on ministerial decisions (72-hour window)
+  - [ ] Add public_votes table for tracking citizen votes on decisions
+  - [ ] Create 72-hour countdown timer from decision creation
+  - [ ] Implement real-time vote aggregation and display
+  - [ ] Display dynamic public voice percentage in Governance page
+  - [ ] Show vote count, percentage for/against, and time remaining
+- [ ] MK121 live updates during 3-month cycle
+  - [ ] Display current bills and questions with live vote counts
+  - [ ] Real-time vote aggregation from citizen votes
+  - [ ] Show top proposals with dynamic ranking by votes
+  - [ ] Update vote counts without page refresh

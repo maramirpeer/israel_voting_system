@@ -1,5 +1,5 @@
 import { eq, and, gte, lte, desc } from "drizzle-orm";
-import { ministries, decisions, citizenVotes, decisionHistory, InsertMinistry, InsertDecision, InsertCitizenVote } from "../drizzle/schema";
+import { ministries, decisions, citizenVotes, decisionHistory, publicVotes, InsertMinistry, InsertDecision, InsertCitizenVote, InsertPublicVote } from "../drizzle/schema";
 import { getDb } from "./db";
 
 // Ministry helpers
@@ -156,4 +156,80 @@ export async function getDecisionHistory(decisionId: number) {
   return await db.select().from(decisionHistory)
     .where(eq(decisionHistory.decisionId, decisionId))
     .orderBy(desc(decisionHistory.createdAt));
+}
+
+// Public voting helpers (72-hour citizen voting on ministerial decisions)
+export async function castPublicVote(decisionId: number, userId: number, vote: "for" | "against") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Check if user already voted
+  const existing = await db.select().from(publicVotes)
+    .where(and(
+      eq(publicVotes.decisionId, decisionId),
+      eq(publicVotes.userId, userId)
+    ))
+    .limit(1);
+  
+  if (existing.length > 0) {
+    throw new Error("User has already voted on this decision");
+  }
+  
+  // Insert vote
+  const result = await db.insert(publicVotes).values({
+    decisionId,
+    userId,
+    vote
+  });
+  
+  // Update decision vote counts
+  const allVotes = await db.select().from(publicVotes).where(eq(publicVotes.decisionId, decisionId));
+  const votesFor = allVotes.filter(v => v.vote === "for").length;
+  const votesAgainst = allVotes.filter(v => v.vote === "against").length;
+  
+  await db.update(decisions)
+    .set({ publicVotesFor: votesFor, publicVotesAgainst: votesAgainst })
+    .where(eq(decisions.id, decisionId));
+  
+  return result;
+}
+
+export async function getPublicVotes(decisionId: number) {
+  const db = await getDb();
+  if (!db) return { for: 0, against: 0 };
+  const votes = await db.select().from(publicVotes).where(eq(publicVotes.decisionId, decisionId));
+  
+  return {
+    for: votes.filter(v => v.vote === "for").length,
+    against: votes.filter(v => v.vote === "against").length
+  };
+}
+
+export async function getUserPublicVote(decisionId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(publicVotes)
+    .where(and(
+      eq(publicVotes.decisionId, decisionId),
+      eq(publicVotes.userId, userId)
+    ))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+// Get decisions with active public voting (72-hour window)
+export async function getActivePublicVotingDecisions() {
+  const db = await getDb();
+  if (!db) return [];
+  const now = new Date();
+  return await db.select().from(decisions)
+    .where(
+      and(
+        eq(decisions.status, "voting"),
+        lte(decisions.publicVotingStartsAt, now),
+        gte(decisions.publicVotingEndsAt, now)
+      )
+    )
+    .orderBy(desc(decisions.publicVotingEndsAt));
 }

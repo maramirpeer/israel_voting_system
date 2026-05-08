@@ -15,6 +15,10 @@ import {
   getUserVote,
   logDecisionHistory,
   getDecisionHistory,
+  castPublicVote,
+  getPublicVotes,
+  getUserPublicVote,
+  getActivePublicVotingDecisions,
 } from "./governance";
 import { TRPCError } from "@trpc/server";
 
@@ -202,6 +206,52 @@ export const governanceRouter = router({
       .query(async ({ input, ctx }) => {
         return await getUserVote(input.decisionId, ctx.user.id);
       }),
+  }),
+
+  // Public voting procedures (72-hour citizen voting window)
+  publicVotes: router({
+    cast: protectedProcedure
+      .input(
+        z.object({
+          decisionId: z.number(),
+          vote: z.enum(["for", "against"]),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        const decision = await getDecisionById(input.decisionId);
+        if (!decision) throw new TRPCError({ code: "NOT_FOUND" });
+
+        // Check if public voting is active
+        const now = new Date();
+        if (!decision.publicVotingStartsAt || !decision.publicVotingEndsAt) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Public voting has not been opened for this decision" });
+        }
+
+        if (now < decision.publicVotingStartsAt || now > decision.publicVotingEndsAt) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Public voting is not active for this decision" });
+        }
+
+        await castPublicVote(input.decisionId, ctx.user.id, input.vote);
+        await logDecisionHistory(input.decisionId, "public_vote_cast", ctx.user.id, { vote: input.vote });
+
+        return { success: true };
+      }),
+
+    getByDecision: publicProcedure
+      .input(z.object({ decisionId: z.number() }))
+      .query(async ({ input }) => {
+        return await getPublicVotes(input.decisionId);
+      }),
+
+    getUserVote: protectedProcedure
+      .input(z.object({ decisionId: z.number() }))
+      .query(async ({ input, ctx }) => {
+        return await getUserPublicVote(input.decisionId, ctx.user.id);
+      }),
+
+    active: publicProcedure.query(async () => {
+      return await getActivePublicVotingDecisions();
+    }),
   }),
 
   // History procedures

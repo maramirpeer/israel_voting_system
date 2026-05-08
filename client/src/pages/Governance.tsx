@@ -212,8 +212,8 @@ export default function Governance() {
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Cards */}
             <div className="grid md:grid-cols-4 gap-4">
-              <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                <div className="flex items-center justify-between">
+              <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 text-right">
+                <div className="flex items-center justify-between flex-row-reverse">
                   <div>
                     <p className="text-sm text-blue-600 font-medium">החלטות פעילות</p>
                     <p className="text-3xl font-bold text-blue-900">{activeDecisions.length}</p>
@@ -222,8 +222,8 @@ export default function Governance() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-                <div className="flex items-center justify-between">
+              <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200 text-right">
+                <div className="flex items-center justify-between flex-row-reverse">
                   <div>
                     <p className="text-sm text-green-600 font-medium">החלטות מאושרות</p>
                     <p className="text-3xl font-bold text-green-900">
@@ -234,8 +234,8 @@ export default function Governance() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-                <div className="flex items-center justify-between">
+              <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200 text-right">
+                <div className="flex items-center justify-between flex-row-reverse">
                   <div>
                     <p className="text-sm text-red-600 font-medium">החלטות שנדחו</p>
                     <p className="text-3xl font-bold text-red-900">
@@ -246,10 +246,10 @@ export default function Governance() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-                <div className="flex items-center justify-between">
+              <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 text-right">
+                <div className="flex items-center justify-between flex-row-reverse">
                   <div>
-                    <p className="text-sm text-purple-600 font-medium">סה״כ החלטות</p>
+                    <p className="text-sm text-purple-600 font-medium">סה"כ החלטות</p>
                     <p className="text-3xl font-bold text-purple-900">{decisions.length}</p>
                   </div>
                   <BarChart3 className="w-8 h-8 text-purple-400" />
@@ -259,11 +259,11 @@ export default function Governance() {
 
             {/* Ministries Grid */}
             <div>
-              <h2 className="text-2xl font-bold mb-4">המשרדים</h2>
+              <h2 className="text-2xl font-bold mb-4 text-right">המשרדים</h2>
               <div className="grid md:grid-cols-3 gap-4">
                 {ministries.map((ministry) => (
-                  <Card key={ministry.id} className="p-4 hover:shadow-lg transition cursor-pointer border-2 hover:border-blue-300">
-                    <div className="text-4xl mb-2">{ministry.icon}</div>
+                  <Card key={ministry.id} className="p-4 hover:shadow-lg transition cursor-pointer border-2 hover:border-blue-300 text-right">
+                    <div className="text-4xl mb-2 text-right">{ministry.icon}</div>
                     <h3 className="font-bold text-slate-900 text-sm">{ministry.name}</h3>
                     <p className="text-xs text-slate-600 mt-2 line-clamp-2">{ministry.description}</p>
                     <div className="mt-3 text-xs font-medium text-slate-500">
@@ -275,7 +275,7 @@ export default function Governance() {
             </div>
 
             {/* How It Works */}
-            <Card className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
+            <Card className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h3 className="text-xl font-bold text-slate-900 mb-4">🔄 איך זה עובד?</h3>
               <div className="grid md:grid-cols-4 gap-4">
                 <div className="text-center">

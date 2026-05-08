@@ -29,6 +29,13 @@
       "when": 1778081946855,
       "tag": "0003_unusual_sentinels",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1778244948498,
+      "tag": "0004_fearless_magma",
+      "breakpoints": true
     }
   ]
 }
