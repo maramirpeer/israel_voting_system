@@ -99,28 +99,28 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* MK 121 Channel */}
-            <Card className="p-8 border-2 border-purple-200 hover:border-purple-400 transition">
-              <div className="flex items-center gap-3 mb-6">
+            <Card className="p-8 border-2 border-purple-200 hover:border-purple-400 transition text-right">
+              <div className="flex items-center gap-3 mb-6 justify-end">
+                <h3 className="text-2xl font-bold text-purple-900">ח"כ 121</h3>
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                   <Megaphone className="w-6 h-6 text-purple-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-purple-900">ח"כ 121</h3>
               </div>
               <p className="text-gray-600 mb-6">
                 ערוץ אזרחי לכנסת - הציבור בוחר כל 3 חודשים את הצעת החוק והשאילתה הדחופה ביותר לקידום ציבורי
               </p>
               <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 justify-end">
                   <span className="text-gray-700">הצבעה כל 3 חודשים</span>
-                </div>
-                <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                </div>
+                <div className="flex items-start gap-3 justify-end">
                   <span className="text-gray-700">בחירת הצעת חוק + שאילתה</span>
-                </div>
-                <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                </div>
+                <div className="flex items-start gap-3 justify-end">
                   <span className="text-gray-700">האצלת קול גמישה</span>
+                  <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                 </div>
               </div>
               <Button 
@@ -132,28 +132,28 @@ export default function Home() {
             </Card>
 
             {/* Dynamic Civic Voice Channel */}
-            <Card className="p-8 border-2 border-blue-200 hover:border-blue-400 transition">
-              <div className="flex items-center gap-3 mb-6">
+            <Card className="p-8 border-2 border-blue-200 hover:border-blue-400 transition text-right">
+              <div className="flex items-center gap-3 mb-6 justify-end">
+                <h3 className="text-2xl font-bold text-blue-900">קול ציבורי דינמי</h3>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                   <BarChart3 className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-blue-900">קול ציבורי דינמי</h3>
               </div>
               <p className="text-gray-600 mb-6">
                 ערוץ אזרחי למשרדי ממשלה - השר מחויב לשמוע את עמדת הציבור לפני החלטות משמעותיות בתחום משרדו
               </p>
               <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 justify-end">
                   <span className="text-gray-700">הצבעה יומית על החלטות</span>
-                </div>
-                <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">51% כוח מחייב אזרחי</span>
                 </div>
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 justify-end">
+                  <span className="text-gray-700">כוח מחייב אזרחי</span>
                   <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                </div>
+                <div className="flex items-start gap-3 justify-end">
                   <span className="text-gray-700">שקיפות מלאה של תהליך</span>
+                  <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 </div>
               </div>
               <Button 
@@ -170,7 +170,7 @@ export default function Home() {
       {/* Vision Section */}
       <section id="vision" className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center text-right">
             <h2 className="text-4xl font-bold text-blue-900 mb-8">משפט החזון</h2>
             <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
               "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול אזרחי חי, דינמי ומבוזר."
@@ -185,11 +185,11 @@ export default function Home() {
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">
         <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center">תכונות מרכזיות</h2>
+          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center text-right">תכונות מרכזיות</h2>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-6">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+            <Card className="p-6 text-right">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Lock className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">אבטחה מלאה</h3>
@@ -198,8 +198,8 @@ export default function Home() {
               </p>
             </Card>
 
-            <Card className="p-6">
-              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4">
+            <Card className="p-6 text-right">
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Eye className="w-6 h-6 text-cyan-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">שקיפות מלאה</h3>
@@ -208,8 +208,8 @@ export default function Home() {
               </p>
             </Card>
 
-            <Card className="p-6">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <Card className="p-6 text-right">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">כוח אזרחי</h3>
@@ -218,8 +218,8 @@ export default function Home() {
               </p>
             </Card>
 
-            <Card className="p-6">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+            <Card className="p-6 text-right">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Shield className="w-6 h-6 text-green-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">אנונימיות מלאה</h3>
@@ -228,8 +228,8 @@ export default function Home() {
               </p>
             </Card>
 
-            <Card className="p-6">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+            <Card className="p-6 text-right">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Zap className="w-6 h-6 text-orange-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">דינמיקה חיה</h3>
@@ -238,11 +238,11 @@ export default function Home() {
               </p>
             </Card>
 
-            <Card className="p-6">
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+            <Card className="p-6 text-right">
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <ArrowRight className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגתית</h3>
+              <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגטית</h3>
               <p className="text-gray-600">
                 מערכת זו מחברת את הממשל לקול הציבור בהדרגה, ללא שינוי דרמטי
               </p>
@@ -254,47 +254,47 @@ export default function Home() {
       {/* FAQ Section */}
       <section id="faq" className="py-20 bg-gray-50">
         <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center">שאלות נפוצות</h2>
+          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center text-right">שאלות נפוצות</h2>
           
           <div className="max-w-2xl mx-auto">
             <Tabs defaultValue="tab1" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="tab1">על המערכת</TabsTrigger>
                 <TabsTrigger value="tab2">על ההצבעה</TabsTrigger>
+                <TabsTrigger value="tab1">על המערכת</TabsTrigger>
               </TabsList>
               
               <TabsContent value="tab1" className="space-y-4">
-                <Card className="p-6">
+                <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה ההבדל בין ח"כ 121 לקול דינמי?</h3>
                   <p className="text-gray-600">
                     ח"כ 121 הוא ערוץ לכנסת - אזרחים בוחרים כל 3 חודשים הצעת חוק ושאילתה. קול דינמי הוא ערוץ למשרדי ממשלה - אזרחים מצביעים על החלטות יומיות של השרים.
                   </p>
                 </Card>
 
-                <Card className="p-6">
+                <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">האם זה מחליף את הממשל הקיים?</h3>
                   <p className="text-gray-600">
                     לא. המערכת מחברת את הממשל הקיים לקול אזרחי בהדרגה. השרים נשארים בתפקידם, אך חייבים לשמוע את הציבור לפני החלטות משמעותיות.
                   </p>
                 </Card>
 
-                <Card className="p-6">
+                <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה קורה כשהציבור מתנגד להחלטה?</h3>
                   <p className="text-gray-600">
-                    ההחלטה נדחית אוטומטית. זה כוח מחייב אזרחי - אם הציבור מתנגד, ההחלטה לא תעבור.
+                    החלטה נדחטת אוטומטית. זה כוח מחייב אזרחי - אם הציבור מתנגד, החלטה לא תעבור.
                   </p>
                 </Card>
               </TabsContent>
 
               <TabsContent value="tab2" className="space-y-4">
-                <Card className="p-6">
+                <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">איך אני מצביע?</h3>
                   <p className="text-gray-600">
-                    אתה מחובר למערכת עם ת.ז שלך. כשיש הצבעה, אתה יכול להצביע ישירות או להאציל את קולך לאזרח אחר שאתה סומך עליו.
+                    אתה מחובר למערכת עם ת.ז. שלך. כשיש הצבעה, אתה יכול להצביע ישירות או להאציל את קולך לאזרח אחר שאתה סומך עליו.
                   </p>
                 </Card>
 
-                <Card className="p-6">
+                <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">האם הקול שלי נשמר בסוד?</h3>
                   <p className="text-gray-600">
                     כן, בהחלט. הקול שלך מוגן בהצפנה חזקה - אף אחד לא יודע איך הצבעת, רק שהצבעת.
