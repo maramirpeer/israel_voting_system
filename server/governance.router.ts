@@ -71,6 +71,7 @@ export const governanceRouter = router({
           title: z.string().min(1),
           description: z.string().min(1),
           category: z.enum(["major", "medium", "routine"]),
+          budget: z.number().optional(), // Budget in NIS
         })
       )
       .mutation(async ({ input, ctx }) => {
@@ -79,11 +80,19 @@ export const governanceRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
 
+        // Budget-based classification: budget > 1,000,000 NIS = at least medium category
+        const BUDGET_THRESHOLD = 1000000; // 1 million NIS
+        let finalCategory = input.category;
+        if (input.budget && input.budget > BUDGET_THRESHOLD && finalCategory === "routine") {
+          finalCategory = "medium";
+        }
+
         const result = await createDecision({
           ministryId: input.ministryId,
           title: input.title,
           description: input.description,
-          category: input.category,
+          category: finalCategory,
+          budget: input.budget ? String(input.budget) : null,
           status: "proposed",
           proposedBy: ctx.user.id,
         });
@@ -116,6 +125,10 @@ export const governanceRouter = router({
 
         const votingStartsAt = new Date();
         const votingEndsAt = new Date(votingStartsAt.getTime() + 72 * 60 * 60 * 1000); // 72 hours
+        
+        // Public voting also opens for 72 hours (citizen voice)
+        const publicVotingStartsAt = votingStartsAt;
+        const publicVotingEndsAt = votingEndsAt;
 
         await updateDecisionStatus(input.id, "voting");
 
@@ -124,7 +137,7 @@ export const governanceRouter = router({
         if (db) {
           await db
             .update((await import("../drizzle/schema")).decisions)
-            .set({ votingStartsAt, votingEndsAt })
+            .set({ votingStartsAt, votingEndsAt, publicVotingStartsAt, publicVotingEndsAt })
             .where(
               (await import("drizzle-orm")).eq(
                 (await import("../drizzle/schema")).decisions.id,

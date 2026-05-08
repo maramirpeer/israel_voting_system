@@ -45,15 +45,17 @@
 ## Phase 1: Budget-Based Decision Classification & Real-Time Public Voting
 
 - [ ] Budget-based decision classification
-  - [ ] Add budget field to decisions table in schema
-  - [ ] Implement logic: budget > threshold → minimum medium category
-  - [ ] Update decision creation form with budget input
+  - [x] Add budget field to decisions table in schema
+  - [x] Implement logic: budget > threshold → minimum medium category (1M NIS threshold)
+  - [ ] Update decision creation form with budget input (FRONTEND)
 - [ ] Real-time public voting on ministerial decisions (72-hour window)
-  - [ ] Add public_votes table for tracking citizen votes on decisions
-  - [ ] Create 72-hour countdown timer from decision creation
-  - [ ] Implement real-time vote aggregation and display
-  - [ ] Display dynamic public voice percentage in Governance page
-  - [ ] Show vote count, percentage for/against, and time remaining
+  - [x] Add publicVotes table for tracking citizen votes on decisions
+  - [x] Add publicVotingStartsAt/publicVotingEndsAt timestamps to schema
+  - [x] Implement server-side vote aggregation with deduplication
+  - [x] Add tRPC procedures for public voting (cast, getByDecision, getUserVote, active)
+  - [x] Wire publicVotingStartsAt/publicVotingEndsAt when decision enters voting
+  - [ ] Display dynamic public voice percentage in Governance page (FRONTEND)
+  - [ ] Show vote count, percentage for/against, and time remaining (FRONTEND)
 - [ ] MK121 live updates during 3-month cycle
   - [ ] Display current bills and questions with live vote counts
   - [ ] Real-time vote aggregation from citizen votes
