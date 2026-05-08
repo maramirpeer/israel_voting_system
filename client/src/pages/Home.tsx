@@ -47,7 +47,7 @@ export default function Home() {
         <div className="container py-20 md:py-32">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 order-2 md:order-1">
-              <div>
+              <div className="text-right">
                 <h2 className="text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-4">
                   לא מחליפים. <span className="text-cyan-500">מחברים.</span>
                 </h2>
@@ -92,7 +92,7 @@ export default function Home() {
       {/* Two Channels Section */}
       <section id="channels" className="py-20 bg-white">
         <div className="container">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 text-right">
             <h2 className="text-4xl font-bold text-blue-900 mb-4">שני ערוצי שיתוף מעשיים</h2>
             <p className="text-lg text-gray-600">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל לאזרח אחר</p>
           </div>
