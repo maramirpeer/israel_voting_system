@@ -70,7 +70,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-blue-900">51%</p>
-                  <p className="text-sm text-gray-600">כוח וטו אזרחי</p>
+                  <p className="text-sm text-gray-600">כוח מחייב אזרחי</p>
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-blue-900">∞</p>
@@ -149,7 +149,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">51% כוח וטו אזרחי</span>
+                  <span className="text-gray-700">51% כוח מחייב אזרחי</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -281,7 +281,7 @@ export default function Home() {
                 <Card className="p-6">
                   <h3 className="font-bold text-blue-900 mb-2">מה קורה אם 51% מהאזרחים מתנגדים להחלטה?</h3>
                   <p className="text-gray-600">
-                    ההחלטה נדחית אוטומטית. זה כוח הוטו אזרחי - אם רוב הציבור מתנגד, ההחלטה לא תעבור.
+                    ההחלטה נדחית אוטומטית. זה כוח מחייב אזרחי - אם רוב הציבור מתנגד, ההחלטה לא תעבור.
                   </p>
                 </Card>
               </TabsContent>
