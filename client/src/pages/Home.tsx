@@ -80,7 +80,7 @@ export default function Home() {
             </div>
             <div className="relative order-1 md:order-2">
               <img 
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663429815346/U6pRes7wCe3Tq4MFFrBU3d/hero-hebrew-unity-G7JpP3e2DszaSLnYAavFBb.webp"
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663429815346/U6pRes7wCe3Tq4MFFrBU3d/hero-israel-united-2xV9okANBvxsdNuUNJv3vv.webp"
                 alt="ישראל משותפת - יחד מעצבים עתיד טוב לכולם"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
