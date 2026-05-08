@@ -5,6 +5,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { governanceRouter } from "./governance.router";
 import { analyticsRouter } from "./analytics.router";
 import { delegatesRouter } from "./delegates.router";
+import { delegationAnalyticsRouter } from "./delegation-analytics.router";
 import { mk121Router } from "./mk121.router";
 
 export const appRouter = router({
@@ -13,6 +14,7 @@ export const appRouter = router({
   governance: governanceRouter,
   analytics: analyticsRouter,
   delegates: delegatesRouter,
+  delegationAnalytics: delegationAnalyticsRouter,
   mk121: mk121Router,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

@@ -170,9 +170,19 @@ export default function Governance() {
             </Button>
           </div>
           <h1 className="text-3xl font-bold text-slate-900">🏛️ מערכת ממשל שקופה</h1>
-          <div className="text-right">
-            <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
-            <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setLocation("/delegation-analytics")}
+              className="flex items-center gap-2"
+            >
+              <BarChart3 className="w-4 h-4" />
+              ניתוח שרשראות
+            </Button>
+            <div className="text-right">
+              <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
+              <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
+            </div>
           </div>
         </div>
       </header>
