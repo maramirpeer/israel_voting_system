@@ -120,4 +120,34 @@ export const delegatesRouter = router({
     .query(async ({ input }) => {
       return await getDelegateStats(input.delegateId);
     }),
+
+  // Search for a citizen by ID (for direct delegation)
+  searchCitizen: publicProcedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      const db = await (await import("./db")).getDb();
+      if (!db) return null;
+      const { users } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      const result = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+      return result.length > 0 ? { id: result[0].id, name: result[0].name, email: result[0].email } : null;
+    }),
+
+  // Validate citizen delegation (check if user exists and is not the delegator)
+  validateCitizenDelegation: publicProcedure
+    .input(z.object({ delegatorId: z.number(), delegateUserId: z.number() }))
+    .query(async ({ input }) => {
+      if (input.delegatorId === input.delegateUserId) {
+        return { valid: false, error: "לא ניתן להאציל קול לעצמך" };
+      }
+      const db = await (await import("./db")).getDb();
+      if (!db) return { valid: false, error: "שגיאה בחיבור למסד הנתונים" };
+      const { users } = await import("../drizzle/schema");
+      const { eq } = await import("drizzle-orm");
+      const result = await db.select().from(users).where(eq(users.id, input.delegateUserId)).limit(1);
+      if (result.length === 0) {
+        return { valid: false, error: "אזרח זה לא קיים במערכת" };
+      }
+      return { valid: true, citizen: { id: result[0].id, name: result[0].name, email: result[0].email } };
+    }),
 });

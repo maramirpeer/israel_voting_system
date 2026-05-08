@@ -2,12 +2,13 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, CheckCircle, Users, Target } from "lucide-react";
+import { ArrowLeft, CheckCircle, Users, Target, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DelegateSelection() {
@@ -15,7 +16,9 @@ export default function DelegateSelection() {
   const [, setLocation] = useLocation();
   const [selectedMinistryId, setSelectedMinistryId] = useState<number | null>(null);
   const [selectedDelegateId, setSelectedDelegateId] = useState<number | null>(null);
-  const [votingMethod, setVotingMethod] = useState<"direct" | "delegate">("direct");
+  const [votingMethod, setVotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
+  const [citizenSearchId, setCitizenSearchId] = useState<string>("");
+  const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
@@ -33,11 +36,18 @@ export default function DelegateSelection() {
     onSuccess: () => {
       toast.success("נציג השתנה בהצלחה!");
       assignmentsQuery.refetch();
+      setSelectedCitizen(null);
+      setCitizenSearchId("");
     },
     onError: () => {
       toast.error("שגיאה בשינוי הנציג");
     },
   });
+
+  const validateCitizenQuery = trpc.delegates.validateCitizenDelegation.useQuery(
+    { delegatorId: user?.id || 0, delegateUserId: 0 },
+    { enabled: false }
+  );
 
   const ministries = ministriesQuery.data || [];
   const delegates = delegatesQuery.data || [];
@@ -73,6 +83,36 @@ export default function DelegateSelection() {
       ministryId: selectedMinistryId,
       delegateId: null,
       delegateUserId: null,
+    });
+  };
+
+  const handleSearchCitizen = async () => {
+    const citizenId = parseInt(citizenSearchId);
+    if (!citizenId || !user?.id) {
+      toast.error("הכנס מספר ת.ז תקין");
+      return;
+    }
+    try {
+      const result = await validateCitizenQuery.refetch();
+      if (result.data?.valid && result.data.citizen) {
+        setSelectedCitizen(result.data.citizen as { id: number; name: string; email: string });
+        toast.success(`בחרת את ${result.data.citizen?.name} כנציג`);
+      } else {
+        toast.error(result.data?.error || "שגיאה בחיפוש");
+      }
+    } catch (error) {
+      toast.error("שגיאה בחיפוש אזרח");
+    }
+  };
+
+  const handleAssignCitizen = () => {
+    if (!user?.id || !selectedMinistryId || !selectedCitizen) return;
+
+    assignDelegateMutation.mutate({
+      userId: user.id,
+      ministryId: selectedMinistryId,
+      delegateId: null,
+      delegateUserId: selectedCitizen.id,
     });
   };
 
@@ -144,10 +184,11 @@ export default function DelegateSelection() {
         )}
 
         {/* Voting Method Selection */}
-        <Tabs defaultValue="direct" className="w-full mb-8">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs value={votingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full mb-8">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="direct">הצבעה ישירה</TabsTrigger>
-            <TabsTrigger value="delegate">האצלת קול</TabsTrigger>
+            <TabsTrigger value="delegate">בחירת נציג</TabsTrigger>
+            <TabsTrigger value="citizen">האצלה לאזרח</TabsTrigger>
           </TabsList>
 
           {/* Direct Voting Tab */}
@@ -158,7 +199,7 @@ export default function DelegateSelection() {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold text-slate-900 mb-2">הצבעה ישירה</h3>
                   <p className="text-slate-700 mb-4">
-                    בחר להצביע ישירות על כל החלטה. אתה תקבל הודעות על הצבעות חדשות ותוכל להחליט בעצמך.
+                    בחר להצביע ישירות על כל החלטה. זה דורה מעורבות אך נותן לך שליטה מלאה.
                   </p>
                   <Button
                     onClick={handleVoteDirect}
@@ -178,9 +219,9 @@ export default function DelegateSelection() {
               <div className="flex items-start gap-4 mb-6">
                 <Users className="w-8 h-8 text-purple-600 mt-1" />
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">האצלת קול</h3>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">בחירת נציג מרשימה</h3>
                   <p className="text-slate-700">
-                    בחר נציג שתאציל לו את קולך. הנציג יצביע בשמך על החלטות. אתה יכול לשנות את בחירתך בכל עת.
+                    בחר נציג מוסמך שתאציל לו את קולך. הנציג יצביע בשמך על החלטות. אתה יכול לשנות את בחירתך בכל עת.
                   </p>
                 </div>
               </div>
@@ -258,6 +299,63 @@ export default function DelegateSelection() {
               </div>
             </Card>
           </TabsContent>
+
+          {/* Citizen Delegation Tab */}
+          <TabsContent value="citizen" className="space-y-6">
+            <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
+              <div className="flex items-start gap-4 mb-6">
+                <Users className="w-8 h-8 text-orange-600 mt-1" />
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">האצלה לאזרח אחר</h3>
+                  <p className="text-slate-700">
+                    אתה יכול להאציל את קולך לאזרח אחר בעל ת.ז. זה מאפשר לך להאציל לחבר, משפחה, או כל אזרח אחר שבו אתה סומך.
+                  </p>
+                </div>
+              </div>
+
+              {/* Citizen Search */}
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="הכנס ת.ז של האזרח"
+                    value={citizenSearchId}
+                    onChange={(e) => setCitizenSearchId(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={handleSearchCitizen}
+                    disabled={validateCitizenQuery.isLoading || !citizenSearchId}
+                    className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
+                  >
+                    <Search className="w-4 h-4" />
+                    חיפוש
+                  </Button>
+                </div>
+
+                {/* Selected Citizen */}
+                {selectedCitizen && (
+                  <Card className="p-4 border-2 border-orange-500 bg-orange-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-slate-900">{selectedCitizen.name}</h4>
+                        <p className="text-sm text-slate-600">{selectedCitizen.email}</p>
+                      </div>
+                      <Badge className="bg-orange-600">✓ נבחר</Badge>
+                    </div>
+
+                    <Button
+                      onClick={handleAssignCitizen}
+                      disabled={assignDelegateMutation.isPending}
+                      className="w-full mt-4 bg-orange-600 hover:bg-orange-700"
+                    >
+                      {assignDelegateMutation.isPending ? "שומר..." : "אשר האצלה לאזרח זה"}
+                    </Button>
+                  </Card>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* Info Section */}
@@ -268,10 +366,13 @@ export default function DelegateSelection() {
               <strong>הצבעה ישירה:</strong> אתה מצביע ישירות על כל החלטה. זה דורה מעורבות אך נותן לך שליטה מלאה.
             </p>
             <p>
-              <strong>האצלת קול:</strong> אתה בוחר נציג שיצביע בשמך. אתה יכול לשנות את בחירתך בכל עת.
+              <strong>בחירת נציג:</strong> אתה בוחר נציג מוסמך שיצביע בשמך. הנציג יצביע בהתאם לערכיו ומומחיותו.
             </p>
             <p>
-              <strong>גמישות:</strong> אתה יכול להחליף בין הצבעה ישירה להאצלת קול בכל רגע, לכל משרד בנפרד.
+              <strong>האצלה לאזרח:</strong> אתה מאציל את קולך לאזרח אחר שבו אתה סומך. הוא יצביע בשמך על כל החלטה.
+            </p>
+            <p>
+              <strong>גמישות:</strong> אתה יכול להחליף בין כל שלוש האפשרויות בכל רגע, לכל משרד בנפרד.
             </p>
           </div>
         </Card>
