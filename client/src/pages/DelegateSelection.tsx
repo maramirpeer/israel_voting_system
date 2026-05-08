@@ -147,7 +147,7 @@ export default function DelegateSelection() {
         <Tabs defaultValue="direct" className="w-full mb-8">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="direct">הצבעה ישירה</TabsTrigger>
-            <TabsTrigger value="delegate">אצלת קול</TabsTrigger>
+            <TabsTrigger value="delegate">האצלת קול</TabsTrigger>
           </TabsList>
 
           {/* Direct Voting Tab */}
@@ -178,7 +178,7 @@ export default function DelegateSelection() {
               <div className="flex items-start gap-4 mb-6">
                 <Users className="w-8 h-8 text-purple-600 mt-1" />
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">אצלת קול</h3>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">האצלת קול</h3>
                   <p className="text-slate-700">
                     בחר נציג שתאציל לו את קולך. הנציג יצביע בשמך על החלטות. אתה יכול לשנות את בחירתך בכל עת.
                   </p>
@@ -268,10 +268,10 @@ export default function DelegateSelection() {
               <strong>הצבעה ישירה:</strong> אתה מצביע ישירות על כל החלטה. זה דורה מעורבות אך נותן לך שליטה מלאה.
             </p>
             <p>
-              <strong>אצלת קול:</strong> אתה בוחר נציג שיצביע בשמך. אתה יכול לשנות את בחירתך בכל עת.
+              <strong>האצלת קול:</strong> אתה בוחר נציג שיצביע בשמך. אתה יכול לשנות את בחירתך בכל עת.
             </p>
             <p>
-              <strong>גמישות:</strong> אתה יכול להחליף בין הצבעה ישירה לאצלת קול בכל רגע, לכל משרד בנפרד.
+              <strong>גמישות:</strong> אתה יכול להחליף בין הצבעה ישירה להאצלת קול בכל רגע, לכל משרד בנפרד.
             </p>
           </div>
         </Card>
