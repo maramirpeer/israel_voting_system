@@ -78,7 +78,7 @@ export default function Home() {
             </div>
             <div className="relative order-1 md:order-2">
               <img 
-                src="/manus-storage/hero-israel-united-final_3a139528.png"
+                src="/manus-storage/hero-israel-clean_c99641c5.png"
                 alt="ישראל משותפת - יחד מעצבים עתיד טוב לכולם"
                 className="w-full h-auto rounded-2xl shadow-2xl"
               />
