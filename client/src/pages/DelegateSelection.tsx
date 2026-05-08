@@ -118,12 +118,12 @@ export default function DelegateSelection() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
         <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
           <div className="container py-4">
-            <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
+            <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2 justify-end">
               חזרה
+              <ArrowLeft className="w-4 h-4" />
             </Button>
           </div>
         </header>
@@ -137,13 +137,13 @@ export default function DelegateSelection() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="container py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
+        <div className="container py-4 flex items-center justify-between flex-row-reverse">
+          <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2 justify-end">
             חזרה לממשל
+            <ArrowLeft className="w-4 h-4" />
           </Button>
           <h1 className="text-3xl font-bold text-slate-900">🗳️ בחירת נציגים</h1>
           <div className="w-48">

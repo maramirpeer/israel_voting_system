@@ -17,6 +17,10 @@
 ## Pending Features
 
 - [ ] Complete RTL alignment on all remaining pages (MK121, Governance, DelegateSelection)
+  - [x] Added RTL wrapper and header alignment to MK121, Governance, DelegateSelection
+  - [ ] Complete RTL pass for all tabs, cards, forms, and content sections in MK121
+  - [ ] Complete RTL pass for all tabs, cards, forms, and content sections in Governance
+  - [ ] Complete RTL pass for all tabs, cards, forms, and content sections in DelegateSelection
 - [ ] Interactive decision timeline with real-time status updates
 - [ ] Citizen testimonials section with user stories
 - [ ] Detailed FAQ expansion with edge case explanations

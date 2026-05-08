@@ -75,12 +75,12 @@ export default function MK121() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
         <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
           <div className="container py-4">
-            <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
+            <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2 justify-end">
               חזרה
+              <ArrowLeft className="w-4 h-4" />
             </Button>
           </div>
         </header>
@@ -98,16 +98,16 @@ export default function MK121() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="container py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
+        <div className="container py-4 flex items-center justify-between flex-row-reverse">
+          <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2 justify-end">
             חזרה לעמוד הבית
+            <ArrowLeft className="w-4 h-4" />
           </Button>
           <h1 className="text-3xl font-bold text-slate-900">🗳️ ח"כ 121</h1>
-          <div className="text-right flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <div>
               <p className="text-sm text-slate-600">מחזור {cycle?.cycleNumber}</p>
               {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}
@@ -135,7 +135,7 @@ export default function MK121() {
         ) : (
           <>
             {/* Info Card */}
-            <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
+            <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">מה זה ח"כ 121?</h2>
               <p className="text-slate-700 mb-4">
                 כל 3 חודשים, אתה מצביע על הצעת החוק והשאילתה הדחופה ביותר. הצעת החוק הנבחרת מועברת לכנסת ישירות לקריאה ראשונה להצבעה ללא שום חסם או שינוי. השאילתה הנבחרת מועברת לנשאל לקבלת תשובה בצורת תשאול חי ומצולם.
@@ -155,8 +155,8 @@ export default function MK121() {
             {/* Voting Tabs */}
             <Tabs defaultValue="bills" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="bills">📋 הצעות חוק ({bills.length})</TabsTrigger>
                 <TabsTrigger value="questions">❓ שאילתות ({questions.length})</TabsTrigger>
+                <TabsTrigger value="bills">📋 הצעות חוק ({bills.length})</TabsTrigger>
               </TabsList>
 
               {/* Bills Tab */}
@@ -173,11 +173,11 @@ export default function MK121() {
                     return (
                       <Card
                         key={bill.id}
-                        className={`p-6 transition border-2 ${
+                        className={`p-6 transition border-2 text-right ${
                           hasVoted ? "border-green-500 bg-green-50" : "border-slate-200"
                         } ${isWinner ? "ring-2 ring-yellow-400" : ""}`}
                       >
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between mb-3 flex-row-reverse">
                           <div className="flex-1">
                             <h3 className="text-xl font-bold text-slate-900">{bill.title}</h3>
                             {bill.category && (
@@ -186,7 +186,7 @@ export default function MK121() {
                               </Badge>
                             )}
                           </div>
-                          <div className="text-right ml-4">
+                          <div className="mr-4">
                             <div className="text-3xl font-bold text-blue-600">{bill.votes}</div>
                             <p className="text-xs text-slate-600">קולות</p>
                             {isWinner && (
@@ -201,7 +201,7 @@ export default function MK121() {
                           onClick={() => handleVoteBill(bill.id)}
                           disabled={hasVoted || voteBillMutation.isPending}
                           variant={hasVoted ? "default" : "outline"}
-                          className={`w-full ${
+                          className={`w-full flex justify-center ${
                             hasVoted
                               ? "bg-green-600 hover:bg-green-700"
                               : "border-blue-300 text-blue-600 hover:bg-blue-50"
@@ -209,13 +209,13 @@ export default function MK121() {
                         >
                           {hasVoted ? (
                             <>
-                              <CheckCircle className="w-4 h-4 mr-2" />
                               ✓ הצבעת
+                              <CheckCircle className="w-4 h-4 ml-2" />
                             </>
                           ) : (
                             <>
-                              <ThumbsUp className="w-4 h-4 mr-2" />
                               הצבע בעד הצעה זו
+                              <ThumbsUp className="w-4 h-4 ml-2" />
                             </>
                           )}
                         </Button>
@@ -245,14 +245,14 @@ export default function MK121() {
                     return (
                       <Card
                         key={question.id}
-                        className={`p-6 transition border-2 ${
+                        className={`p-6 transition border-2 text-right ${
                           hasVoted ? "border-green-500 bg-green-50" : "border-slate-200"
                         } ${isWinner ? "ring-2 ring-yellow-400" : ""}`}
                       >
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between mb-3 flex-row-reverse">
                           <div className="flex-1">
                             <h3 className="text-xl font-bold text-slate-900">{question.title}</h3>
-                            <div className="mt-2 flex gap-2">
+                            <div className="mt-2 flex gap-2 flex-row-reverse">
                               {question.targetMinistry && (
                                 <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
                                   {question.targetMinistry}
@@ -270,7 +270,7 @@ export default function MK121() {
                               </Badge>
                             </div>
                           </div>
-                          <div className="text-right ml-4">
+                          <div className="mr-4">
                             <div className="text-3xl font-bold text-purple-600">{question.votes}</div>
                             <p className="text-xs text-slate-600">קולות</p>
                             {isWinner && (
@@ -285,7 +285,7 @@ export default function MK121() {
                           onClick={() => handleVoteQuestion(question.id)}
                           disabled={hasVoted || voteQuestionMutation.isPending}
                           variant={hasVoted ? "default" : "outline"}
-                          className={`w-full ${
+                          className={`w-full flex justify-center ${
                             hasVoted
                               ? "bg-green-600 hover:bg-green-700"
                               : "border-purple-300 text-purple-600 hover:bg-purple-50"
@@ -293,8 +293,8 @@ export default function MK121() {
                         >
                           {hasVoted ? (
                             <>
-                              <CheckCircle className="w-4 h-4 mr-2" />
                               ✓ הצבעת
+                              <CheckCircle className="w-4 h-4 ml-2" />
                             </>
                           ) : (
                             <>

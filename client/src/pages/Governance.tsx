@@ -134,16 +134,16 @@ export default function Governance() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
         <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-          <div className="container py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2">
-                <Home className="w-4 h-4" />
+          <div className="container py-4 flex items-center justify-between flex-row-reverse">
+            <div className="flex items-center gap-3 flex-row-reverse">
+              <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2 justify-end">
                 חזרה לעמוד הבית
+                <Home className="w-4 h-4" />
               </Button>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">🏛️ מערכת ממשל שקופה</h1>
+            <h1 className="text-2xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
           </div>
         </header>
 
@@ -159,27 +159,27 @@ export default function Governance() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="container py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2">
-              <Home className="w-4 h-4" />
+        <div className="container py-4 flex items-center justify-between flex-row-reverse">
+          <div className="flex items-center gap-3 flex-row-reverse">
+            <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2 justify-end">
               חזרה
+              <Home className="w-4 h-4" />
             </Button>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">🏛️ מערכת ממשל שקופה</h1>
-          <div className="flex items-center gap-2">
+          <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
+          <div className="flex items-center gap-2 flex-row-reverse">
             <Button 
               variant="outline" 
               onClick={() => setLocation("/delegation-analytics")}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 justify-end"
             >
-              <BarChart3 className="w-4 h-4" />
               ניתוח שרשראות
+              <BarChart3 className="w-4 h-4" />
             </Button>
-            <div className="text-right">
+            <div>
               <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
               <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
             </div>
@@ -188,14 +188,14 @@ export default function Governance() {
       </header>
 
       <main className="container py-8">
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex justify-between items-center flex-row-reverse">
           <div></div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-row-reverse">
             <Button onClick={() => setLocation("/delegate-selection")} variant="outline" className="border-purple-300 text-purple-600">
               🗳️ בחירת נציגים
             </Button>
             <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300 text-blue-600">
-              📊 לוח בקרה משרדי
+              📋 לוח בקרה משרדי
             </Button>
           </div>
         </div>
