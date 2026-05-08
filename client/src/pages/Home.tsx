@@ -49,10 +49,10 @@ export default function Home() {
             <div className="space-y-8 order-2 md:order-1">
               <div className="text-right">
                 <h2 className="text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-4">
-                  לא מחליפים. <span className="text-cyan-500">מחברים.</span>
+                  ישראל <span className="text-cyan-500">משותפת</span>
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  מערכת דמוקרטיה מבוזרת המחברת את הממשל בהדרגה לקול אזרחי חי, דינמי ומבוזר. שני ערוצי שיתוף מעשיים בין אזרחים לממשל.
+                  יחד מעצבים עתיד טוב לכולם
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
