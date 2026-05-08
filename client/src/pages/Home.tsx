@@ -51,9 +51,7 @@ export default function Home() {
                 <h2 className="text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-4">
                   מתחברים <span className="text-cyan-500">ומתקנים</span>
                 </h2>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  את השיטה
-                </p>
+
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setLocation("/mk121")}>
