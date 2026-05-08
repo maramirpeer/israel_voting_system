@@ -68,11 +68,13 @@ export default function Governance() {
     const formData = new FormData(e.currentTarget);
 
     try {
+      const budgetStr = formData.get("budget") as string;
       await createDecisionMutation.mutateAsync({
         ministryId: parseInt(formData.get("ministryId") as string),
         title: formData.get("title") as string,
         description: formData.get("description") as string,
         category: formData.get("category") as "major" | "medium" | "routine",
+        budget: budgetStr ? parseInt(budgetStr) : undefined,
       });
 
       decisionsQuery.refetch();
@@ -511,6 +513,12 @@ export default function Governance() {
                         <SelectItem value="routine">🔵 החלטה שגרתית (ללא הצבעה)</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">תקציב (בשקלים חדשים - אופציונלי)</label>
+                    <Input name="budget" type="number" placeholder="לדוגמה: 1000000" min="0" step="1" />
+                    <p className="text-xs text-slate-500 mt-1">הערה: החלטות עם תקציב מעל 1,000,000 ש"ח יוקצו אוטומטית לקטגוריה בינונית לפחות</p>
                   </div>
 
                   <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={createDecisionMutation.isPending}>

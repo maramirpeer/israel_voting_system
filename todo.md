@@ -44,10 +44,10 @@
 
 ## Phase 1: Budget-Based Decision Classification & Real-Time Public Voting
 
-- [ ] Budget-based decision classification
+- [x] Budget-based decision classification
   - [x] Add budget field to decisions table in schema
   - [x] Implement logic: budget > threshold → minimum medium category (1M NIS threshold)
-  - [ ] Update decision creation form with budget input (FRONTEND)
+  - [x] Update decision creation form with budget input (FRONTEND)
 - [x] Real-time public voting on ministerial decisions (72-hour window)
   - [x] Add publicVotes table for tracking citizen votes on decisions
   - [x] Add publicVotingStartsAt/publicVotingEndsAt timestamps to schema
