@@ -69,7 +69,7 @@ export default function Home() {
                   <p className="text-sm text-gray-600">קול לכל אזרח</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-blue-900">51%</p>
+                  <p className="text-3xl font-bold text-blue-900">✓</p>
                   <p className="text-sm text-gray-600">כוח מחייב אזרחי</p>
                 </div>
                 <div>
@@ -279,9 +279,9 @@ export default function Home() {
                 </Card>
 
                 <Card className="p-6">
-                  <h3 className="font-bold text-blue-900 mb-2">מה קורה אם 51% מהאזרחים מתנגדים להחלטה?</h3>
+                  <h3 className="font-bold text-blue-900 mb-2">מה קורה כשהציבור מתנגד להחלטה?</h3>
                   <p className="text-gray-600">
-                    ההחלטה נדחית אוטומטית. זה כוח מחייב אזרחי - אם רוב הציבור מתנגד, ההחלטה לא תעבור.
+                    ההחלטה נדחית אוטומטית. זה כוח מחייב אזרחי - אם הציבור מתנגד, ההחלטה לא תעבור.
                   </p>
                 </Card>
               </TabsContent>

@@ -290,8 +290,8 @@ export default function Governance() {
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">3</div>
-                  <p className="text-sm font-medium text-slate-900">51% נגד = דחייה</p>
-                  <p className="text-xs text-slate-600">אם יותר מ-51% מצביעים נגד</p>
+                  <p className="text-sm font-medium text-slate-900">כוח מחייב אזרחי נגד = דחייה</p>
+                  <p className="text-xs text-slate-600">אם יותר מ-כוח מחייב אזרחי מצביעים נגד</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">4</div>
@@ -378,7 +378,7 @@ export default function Governance() {
 
                           {willBeVetoed && (
                             <div className="bg-red-50 border border-red-200 p-2 rounded text-xs text-red-700 font-medium">
-                              ⚠️ ההחלטה תידחה בהצלת קול אזרחית (יותר מ-51% נגד)
+                              ⚠️ ההחלטה תידחה בהצלת קול אזרחית (יותר מ-כוח מחייב אזרחי נגד)
                             </div>
                           )}
                         </div>
