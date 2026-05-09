@@ -108,3 +108,65 @@
   - [ ] Add sorting by votes, date, status
   - [ ] Add filtering options
   - [ ] Replace card-based layout with table layout
+
+
+## Phase 7: Proposal Lifecycle System (Preliminary Stage + Voting Quorum + Sunset Clause)
+
+### Requirements:
+- [ ] Preliminary Stage (Daf Makdim)
+  - [ ] Every new proposal starts as "preliminary" (draft status)
+  - [ ] Requires minimum 100 supporters to advance to voting stage
+  - [ ] Citizens can support/unsupport proposals (tracked in real-time)
+  - [ ] Support count updates dynamically in UI
+  
+- [ ] Voting Quorum (Reff Hatzbaot)
+  - [ ] Minimum votes required to activate proposal = (Total Voters ÷ 120)
+  - [ ] If winning proposal doesn't meet quorum → carries to next cycle
+  - [ ] Quorum check happens at end of each 3-month cycle
+  
+- [ ] Multi-Cycle Carryover
+  - [ ] Winning proposal that doesn't meet quorum → goes to next cycle
+  - [ ] Proposal can carry over multiple cycles
+  - [ ] Citizens vote on it again in next cycle
+  
+- [ ] 4-Year Sunset Clause
+  - [ ] If proposal doesn't meet quorum within 4 years (8 cycles) → archived/deleted
+  - [ ] Final decision on project success: Politicians only (not automatic)
+  - [ ] After 4 years, politicians decide if system brought public interest
+  - [ ] If yes → system continues; If no → project archived
+  
+- [ ] Database Schema Updates
+  - [ ] Add proposal_status field (preliminary, voting, approved, archived)
+  - [ ] Add supporters table (user_id, proposal_id, created_at)
+  - [ ] Add cycle_number to proposals (track which cycle it was created)
+  - [ ] Add quorum_met field (boolean)
+  - [ ] Add archived_at timestamp
+  
+- [ ] Backend Implementation
+  - [ ] Create tRPC procedure: addSupport (user supports proposal)
+  - [ ] Create tRPC procedure: removeSupport (user removes support)
+  - [ ] Create tRPC procedure: checkQuorum (calculate if proposal meets threshold)
+  - [ ] Create tRPC procedure: advanceProposals (move to next cycle if needed)
+  - [ ] Create tRPC procedure: archiveExpiredProposals (4-year check)
+  - [ ] Update getBillsForCycle to filter by status (preliminary vs voting)
+  
+- [ ] Frontend UI Updates
+  - [ ] Show proposal status badge (preliminary, voting, approved, archived)
+  - [ ] Show support count and progress bar (X/100 supporters)
+  - [ ] Add "Support" button for preliminary proposals
+  - [ ] Show quorum requirement (e.g., "Needs 100+ votes to activate")
+  - [ ] Show cycle history (which cycle was it created, carried over)
+  
+- [ ] Home Page Updates
+  - [ ] Add section explaining preliminary stage (100 supporters requirement)
+  - [ ] Add section explaining voting quorum (voters ÷ 120)
+  - [ ] Add section explaining 4-year sunset clause
+  - [ ] Add section explaining multi-cycle carryover
+  
+- [ ] Testing
+  - [ ] Test preliminary stage: proposal created with 0 supporters
+  - [ ] Test support tracking: add/remove supporters
+  - [ ] Test 100 supporter threshold: proposal advances to voting
+  - [ ] Test quorum calculation: (voters ÷ 120)
+  - [ ] Test multi-cycle carryover: proposal carries to next cycle
+  - [ ] Test 4-year expiration: proposal archived after 8 cycles

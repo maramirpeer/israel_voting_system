@@ -177,6 +177,11 @@ export const mk121Bills = mysqlTable("mk121Bills", {
   category: varchar("category", { length: 100 }),
   votes: int("votes").default(0),
   isWinner: boolean("isWinner").default(false),
+  status: mysqlEnum("status", ["preliminary", "voting", "approved", "archived"]).default("preliminary").notNull(),
+  supporters: int("supporters").default(0),
+  quorumMet: boolean("quorumMet").default(false),
+  createdCycleNumber: int("createdCycleNumber").notNull(),
+  archivedAt: timestamp("archivedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -195,6 +200,11 @@ export const mk121Questions = mysqlTable("mk121Questions", {
   urgency: mysqlEnum("urgency", ["low", "medium", "high"]).default("medium").notNull(),
   votes: int("votes").default(0),
   isWinner: boolean("isWinner").default(false),
+  status: mysqlEnum("status", ["preliminary", "voting", "approved", "archived"]).default("preliminary").notNull(),
+  supporters: int("supporters").default(0),
+  quorumMet: boolean("quorumMet").default(false),
+  createdCycleNumber: int("createdCycleNumber").notNull(),
+  archivedAt: timestamp("archivedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -223,3 +233,25 @@ export const mk121QuestionVotes = mysqlTable("mk121QuestionVotes", {
 
 export type MK121QuestionVote = typeof mk121QuestionVotes.$inferSelect;
 export type InsertMK121QuestionVote = typeof mk121QuestionVotes.$inferInsert;
+
+// MK 121 - Bill supporters (for preliminary stage)
+export const mk121BillSupporters = mysqlTable("mk121BillSupporters", {
+  id: int("id").autoincrement().primaryKey(),
+  billId: int("billId").notNull(),
+  userId: int("userId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MK121BillSupporter = typeof mk121BillSupporters.$inferSelect;
+export type InsertMK121BillSupporter = typeof mk121BillSupporters.$inferInsert;
+
+// MK 121 - Question supporters (for preliminary stage)
+export const mk121QuestionSupporters = mysqlTable("mk121QuestionSupporters", {
+  id: int("id").autoincrement().primaryKey(),
+  questionId: int("questionId").notNull(),
+  userId: int("userId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MK121QuestionSupporter = typeof mk121QuestionSupporters.$inferSelect;
+export type InsertMK121QuestionSupporter = typeof mk121QuestionSupporters.$inferInsert;

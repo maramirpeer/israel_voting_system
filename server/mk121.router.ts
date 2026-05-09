@@ -12,6 +12,15 @@ import {
   completeCycle,
   getUserBillVotes,
   getUserQuestionVotes,
+  supportBill,
+  removeBillSupport,
+  supportQuestion,
+  removeQuestionSupport,
+  calculateQuorumThreshold,
+  checkAndAdvanceProposals,
+  archiveExpiredProposals,
+  getUserBillSupports,
+  getUserQuestionSupports,
 } from "./mk121";
 
 export const mk121Router = router({
@@ -196,5 +205,103 @@ export const mk121Router = router({
         input.urgency || "medium"
       );
       return { success: !!question, question };
+    }),
+
+  // Support a bill proposal (preliminary stage)
+  supportBill: publicProcedure
+    .input(
+      z.object({
+        billId: z.number(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const success = await supportBill(input.billId, input.userId);
+      return { success };
+    }),
+
+  // Remove support from a bill proposal
+  removeBillSupport: publicProcedure
+    .input(
+      z.object({
+        billId: z.number(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const success = await removeBillSupport(input.billId, input.userId);
+      return { success };
+    }),
+
+  // Support a question proposal (preliminary stage)
+  supportQuestion: publicProcedure
+    .input(
+      z.object({
+        questionId: z.number(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const success = await supportQuestion(input.questionId, input.userId);
+      return { success };
+    }),
+
+  // Remove support from a question proposal
+  removeQuestionSupport: publicProcedure
+    .input(
+      z.object({
+        questionId: z.number(),
+        userId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const success = await removeQuestionSupport(input.questionId, input.userId);
+      return { success };
+    }),
+
+  // Calculate quorum threshold for a cycle
+  calculateQuorumThreshold: publicProcedure
+    .input(z.object({ cycleId: z.number() }))
+    .query(async ({ input }) => {
+      const quorum = await calculateQuorumThreshold(input.cycleId);
+      return { quorum };
+    }),
+
+  // Check and advance proposals to next cycle if quorum not met
+  checkAndAdvanceProposals: publicProcedure
+    .input(z.object({ cycleId: z.number() }))
+    .mutation(async ({ input }) => {
+      await checkAndAdvanceProposals(input.cycleId);
+      return { success: true };
+    }),
+
+  // Archive expired proposals (older than 4 years)
+  archiveExpiredProposals: publicProcedure.mutation(async () => {
+    await archiveExpiredProposals();
+    return { success: true };
+  }),
+
+  // Get user's bill supports for a cycle
+  getUserBillSupports: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        cycleId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getUserBillSupports(input.userId, input.cycleId);
+    }),
+
+  // Get user's question supports for a cycle
+  getUserQuestionSupports: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        cycleId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getUserQuestionSupports(input.userId, input.cycleId);
     }),
 });
