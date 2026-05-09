@@ -80,3 +80,10 @@
   - [x] Create public voting data (72-hour windows)
   - [x] Populate ministry data (4 ministries)
   - [ ] Add delegate representatives (optional)
+
+
+## Phase 4: Additional Bills & Governance Rules
+
+- [x] Add two new bills to MK121 demo data
+  - [x] Bill 1: Maximum 8-year term limit for Prime Minister (2,847 votes)
+  - [x] Bill 2: Mandatory voting for all MKs (double voting if absent) (3,156 votes)

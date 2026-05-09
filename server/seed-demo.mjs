@@ -1,5 +1,5 @@
 import { getDb } from './db.ts';
-import { decisions, mk121Bills, mk121Questions, ministries, publicVotes, citizenVotes } from '../drizzle/schema.ts';
+import { decisions, mk121Bills, mk121Questions, ministries } from '../drizzle/schema.ts';
 
 async function seedDemoData() {
   console.log('🌱 Starting demo data seeding...');
@@ -74,11 +74,9 @@ async function seedDemoData() {
       },
     ];
 
-    const createdDecisions = [];
     for (const decision of decisionData) {
       try {
-        const result = await db.insert(decisions).values(decision);
-        createdDecisions.push(result);
+        await db.insert(decisions).values(decision);
       } catch (e) {
         // Ignore duplicate key errors
       }
@@ -87,6 +85,20 @@ async function seedDemoData() {
     // Create demo bills for MK121
     console.log('📜 Creating demo bills...');
     const billData = [
+      {
+        title: 'חוק כהונה מקסימלית לראש ממשלה',
+        description: 'הצעה להגבלת כהונה של ראש ממשלה ל-8 שנים מקסימום',
+        submittedBy: 'ח"כים מהאופוזיציה',
+        votes: 2847,
+        status: 'active',
+      },
+      {
+        title: 'חוק הצבעה חובה לכל ח"כ',
+        description: 'הצעה להטלת חובה הצבעה על כל חברי כנסת - הצבעה כפולה אם לא במליאה',
+        submittedBy: 'ועדת הכנסת',
+        votes: 3156,
+        status: 'active',
+      },
       {
         title: 'חוק שוויון זכויות',
         description: 'הצעה לשיפור שוויון זכויות בחברה הישראלית',
@@ -162,7 +174,7 @@ async function seedDemoData() {
     console.log('✅ Demo data seeding completed successfully!');
     console.log(`   - 4 ministries created`);
     console.log(`   - 3 active decisions with public voting`);
-    console.log(`   - 4 bills for MK121`);
+    console.log(`   - 6 bills for MK121 (including 2 governance bills)`);
     console.log(`   - 3 questions for MK121`);
     process.exit(0);
   } catch (error) {
