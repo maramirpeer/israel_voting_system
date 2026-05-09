@@ -221,22 +221,22 @@
 - [ ] getVotingHistory - Returns user's voting/delegation history
 
 **Frontend Components:**
-- [ ] ActiveVotingSection - Display active decisions in 72-hour window
-- [ ] VotingCard - Show decision details, countdown timer, vote progress
-- [ ] VotingInterface - Let user choose: Direct Vote or Delegate
-- [ ] DirectVoteForm - Simple for/against voting
-- [ ] DelegationForm - Choose delegate from list or enter citizen ID
-- [ ] DelegateSelector - Dropdown with approved delegates
-- [ ] CitizenIdInput - Input field for peer delegation with validation
-- [ ] CountdownTimer - Display hours/minutes remaining
-- [ ] VoteProgressBar - Show vote counts and percentages
+- [x] ActiveVotingSection - Display active decisions in 72-hour window
+- [x] VotingCard - Show decision details, countdown timer, vote progress
+- [x] VotingInterface - Let user choose: Direct Vote or Delegate
+- [x] DirectVoteForm - Simple for/against voting
+- [x] DelegationForm - Choose delegate from list or enter citizen ID
+- [x] DelegateSelector - Dropdown with approved delegates
+- [x] CitizenIdInput - Input field for peer delegation with validation
+- [x] CountdownTimer - Display hours/minutes remaining
+- [x] VoteProgressBar - Show vote counts and percentages
 
 **Seed Demo Data:**
-- [ ] Create eligibleVoters table with 100 demo citizens (ID numbers)
-- [ ] Create 3-4 decisions in active voting stage
-- [ ] Set voting windows within 72 hours from now
-- [ ] Create 2-3 approved delegates per ministry
-- [ ] Add sample votes to show progress
+- [x] Create eligibleVoters table with 100 demo citizens (ID numbers)
+- [x] Create 3-4 decisions in active voting stage
+- [x] Set voting windows within 72 hours from now
+- [x] Create 2-3 approved delegates per ministry
+- [x] Add sample votes to show progress
 
 **Testing:**
 - [x] Test direct voting records correctly
@@ -247,3 +247,55 @@
 - [x] Test countdown timer accuracy
 - [x] Test voting window boundary conditions
 - [x] Test eligible voter validation
+
+
+## Phase 15: Delegation Dashboard & User Delegation Management
+
+**Requirements:** Create a dashboard where users can:
+- View their current delegations per ministry
+- Change/update their delegation choices
+- See who is voting on their behalf
+- View delegation history
+
+**Backend Procedures:**
+- [ ] getUserDelegations - Get user's current delegations per ministry
+- [ ] updateUserDelegation - Change delegation for a ministry
+- [ ] getDelegationStats - Get delegation statistics per ministry
+
+**Frontend Components:**
+- [ ] DelegationDashboard - Main dashboard showing all delegations
+- [ ] DelegationCard - Show current delegation for one ministry
+- [ ] DelegationHistory - Show past delegation changes
+- [ ] DelegationStats - Show delegation statistics
+
+**Integration:**
+- [ ] Add delegation dashboard link to main navigation
+- [ ] Create dedicated delegation management page
+- [ ] Add delegation status indicators to MK121 page
+
+---
+
+## Phase 16: Analytics & Reporting
+
+**Requirements:** Create analytics dashboard showing:
+- Voting participation rates
+- Delegation chains and statistics
+- Ministry-specific voting trends
+- Citizen engagement metrics
+
+**Components:**
+- [ ] VotingAnalytics - Overall voting statistics
+- [ ] DelegationAnalytics - Delegation chain visualization
+- [ ] MinistryVotingTrends - Per-ministry voting trends
+- [ ] EngagementMetrics - Citizen participation metrics
+
+---
+
+## Phase 17: Advanced Features
+
+**Requirements:**
+- [ ] Implement vote expiration (votes expire after decision ends)
+- [ ] Add voting notifications
+- [ ] Implement vote audit trail
+- [ ] Add voting result announcements
+- [ ] Create decision outcome tracking
