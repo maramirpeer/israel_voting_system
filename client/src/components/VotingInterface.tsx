@@ -20,7 +20,8 @@ export function VotingInterface({ decisionId, ministryId, onClose }: VotingInter
   const [userId, setUserId] = useState(1); // Demo user ID
 
   // Fetch approved delegates
-  const { data: delegates } = trpc.mk121.getApprovedDelegates.useQuery({ ministryId });
+  const { data: delegatesResponse, isLoading: delegatesLoading } = trpc.mk121.getApprovedDelegates.useQuery({ ministryId });
+  const delegates = delegatesResponse || [];
 
   // Mutations
   const castVoteMutation = trpc.mk121.castDirectVote.useMutation();
@@ -126,7 +127,9 @@ export function VotingInterface({ decisionId, ministryId, onClose }: VotingInter
             <TabsContent value="list" className="space-y-3">
               <p className="text-sm text-gray-700">בחר נציג מאומת:</p>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {delegates && delegates.length > 0 ? (
+                {delegatesLoading ? (
+                  <p className="text-sm text-gray-500">טוען נציגים...</p>
+                ) : delegates && delegates.length > 0 ? (
                   delegates.map((delegate) => (
                     <button
                       key={delegate.id}
