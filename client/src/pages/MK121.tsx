@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
+import { ActiveVotingSection } from "@/components/ActiveVotingSection";
 
 export default function MK121() {
   const { user, isAuthenticated } = useAuth();
@@ -213,9 +214,12 @@ export default function MK121() {
               </div>
             </Card>
 
+            {/* Active Voting Section - 72 Hour Window */}
+            <ActiveVotingSection />
+
             {/* Voting Tabs */}
-            <Tabs defaultValue="bills" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
+            <Tabs defaultValue="bills" className="w-full mt-8">
+              <TabsList className="grid w-full grid-cols-2 mb-8 mt-8">
                 <TabsTrigger value="questions">❓ שאילתות ({questions.length})</TabsTrigger>
                 <TabsTrigger value="bills">📋 הצעות חוק ({bills.length})</TabsTrigger>
               </TabsList>
