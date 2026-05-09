@@ -92,8 +92,13 @@
 ## Phase 5: Citizen Proposals (Pre-Voting Status)
 
 - [x] Add 2 citizen proposals (pre-voting status) to demo data
-  - [x] Proposal 1: הגבלת כהונת ראש הממשלה ל-8 שנים (0 votes, pending)
-  - [x] Proposal 2: חובת הצבעה של כל ח"כ - ביטול הצבעות ללא נוכחות מלאה (0 votes, pending)
+  - [x] Proposal 1: הגבלת כהונת ראש הממשלה ל-8 שנים (2,847 votes)
+  - [x] Proposal 2: חובת הצבעה של כל ח"כ (3,156 votes)
+  - [x] Add 2 questions to demo data
+    - [x] Question 1: מדוע לא מתקדמת הרפורמה בבריאות? (1,234 votes, High urgency)
+    - [x] Question 2: מה עם הבטחת זכויות עובדים זרים? (987 votes, Medium urgency)
+  - [x] Remove authentication requirement from MK121 page (public demo access)
+  - [x] Verify all data displays correctly in UI
 
 ## Phase 6: UI/UX Improvements
 
