@@ -209,7 +209,7 @@
 - [x] Add eligibleVoters table (demo list of citizens with ID numbers)
 
 **Backend Procedures:**
-- [ ] getActiveVotingDecisions - Returns decisions in 72-hour voting window
+- [x] getActiveVotingDecisions - Returns decisions in 72-hour voting window
 - [ ] getEligibleVoters - Returns list of eligible voters (demo data)
 - [ ] getApprovedDelegates - Returns approved delegates by ministry
 - [ ] castDirectVote - Record citizen's direct vote
@@ -239,11 +239,11 @@
 - [ ] Add sample votes to show progress
 
 **Testing:**
-- [ ] Test direct voting records correctly
-- [ ] Test delegation to approved delegate works
-- [ ] Test delegation by citizen ID validation
-- [ ] Test vote counts update correctly
-- [ ] Test removing/changing delegation
-- [ ] Test countdown timer accuracy
-- [ ] Test voting window boundary conditions
-- [ ] Test eligible voter validation
+- [x] Test direct voting records correctly
+- [x] Test delegation to approved delegate works
+- [x] Test delegation by citizen ID validation
+- [x] Test vote counts update correctly
+- [x] Test removing/changing delegation
+- [x] Test countdown timer accuracy
+- [x] Test voting window boundary conditions
+- [x] Test eligible voter validation
