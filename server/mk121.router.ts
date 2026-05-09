@@ -26,6 +26,18 @@ import {
   getMinistriesList,
   getQuestionsByMinistry,
 } from "./mk121";
+import {
+  getActiveVotingDecisions,
+  getEligibleVoters,
+  getApprovedDelegates,
+  castDirectVote,
+  delegateVoteToDelegateFromList,
+  delegateVoteByCitizenId,
+  removeDelegation,
+  calculateVotingProgress,
+  calculateTimeRemaining,
+  getVotingHistory,
+} from "./activeVoting";
 
 export const mk121Router = router({
   // Get current active cycle
@@ -344,5 +356,107 @@ export const mk121Router = router({
     .input(z.object({ ministryId: z.number() }))
     .query(async ({ input }) => {
       return await getQuestionsByMinistry(input.ministryId);
+    }),
+
+  // Active Voting Procedures (72-hour window)
+  // Get all decisions in active voting
+  getActiveVotingDecisions: publicProcedure.query(async () => {
+    return await getActiveVotingDecisions();
+  }),
+
+  // Get list of eligible voters (demo data)
+  getEligibleVoters: publicProcedure.query(async () => {
+    return await getEligibleVoters();
+  }),
+
+  // Get approved delegates for a ministry
+  getApprovedDelegates: publicProcedure
+    .input(z.object({ ministryId: z.number() }))
+    .query(async ({ input }) => {
+      return await getApprovedDelegates(input.ministryId);
+    }),
+
+  // Cast a direct vote on a decision
+  castDirectVote: publicProcedure
+    .input(
+      z.object({
+        decisionId: z.number(),
+        userId: z.number(),
+        vote: z.enum(["for", "against"]),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await castDirectVote(input.decisionId, input.userId, input.vote);
+    }),
+
+  // Delegate vote to an approved delegate
+  delegateVoteToDelegateFromList: publicProcedure
+    .input(
+      z.object({
+        decisionId: z.number(),
+        userId: z.number(),
+        delegateId: z.number(),
+        ministryId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await delegateVoteToDelegateFromList(
+        input.decisionId,
+        input.userId,
+        input.delegateId,
+        input.ministryId
+      );
+    }),
+
+  // Delegate vote to another citizen by ID
+  delegateVoteByCitizenId: publicProcedure
+    .input(
+      z.object({
+        decisionId: z.number(),
+        userId: z.number(),
+        delegateCitizenId: z.string(),
+        ministryId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await delegateVoteByCitizenId(
+        input.decisionId,
+        input.userId,
+        input.delegateCitizenId,
+        input.ministryId
+      );
+    }),
+
+  // Remove or change delegation
+  removeDelegation: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        ministryId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await removeDelegation(input.userId, input.ministryId);
+    }),
+
+  // Calculate voting progress for a decision
+  calculateVotingProgress: publicProcedure
+    .input(z.object({ decisionId: z.number() }))
+    .query(async ({ input }) => {
+      return await calculateVotingProgress(input.decisionId);
+    }),
+
+  // Calculate time remaining for voting
+  calculateTimeRemaining: publicProcedure
+    .input(z.object({ decisionId: z.number() }))
+    .query(async ({ input }) => {
+      return await calculateTimeRemaining(input.decisionId);
+    }),
+
+  // Get user's voting history
+  getVotingHistory: publicProcedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      return await getVotingHistory(input.userId);
     }),
 });

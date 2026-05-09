@@ -190,3 +190,60 @@
 - [ ] Add ministry-specific voting statistics
 - [ ] Implement ministry representative dashboard
 - [ ] Add ministry response/comment system for questions
+
+## Phase 14: Active Voting Decisions with Dynamic Delegation (72-Hour Window)
+
+**Requirements:** Display ministerial decisions in active voting (72-hour window) with dynamic delegation:
+- **Permanent Delegation per Ministry** - Each citizen can delegate their vote to another citizen per ministry
+- **Change Anytime** - Citizens can change their delegation choice at any time
+- **Direct Voting Override** - Citizens can vote directly, which overrides their current delegation
+- **Return to Delegation** - After voting, citizens can re-delegate to someone else
+- **Delegation Dashboard** - Show who is voting on behalf of the citizen for each ministry
+
+**Database Schema:**
+- [x] decisions table (already has votingStartsAt, votingEndsAt)
+- [x] delegates table (already exists - approved delegates per ministry)
+- [x] citizenDelegates table (already exists - tracks delegation choices)
+- [x] delegateVotes table (already exists - delegate votes)
+- [x] publicVotes table (already exists - citizen direct votes)
+- [x] Add eligibleVoters table (demo list of citizens with ID numbers)
+
+**Backend Procedures:**
+- [ ] getActiveVotingDecisions - Returns decisions in 72-hour voting window
+- [ ] getEligibleVoters - Returns list of eligible voters (demo data)
+- [ ] getApprovedDelegates - Returns approved delegates by ministry
+- [ ] castDirectVote - Record citizen's direct vote
+- [ ] delegateVoteToDelegateFromList - Delegate to approved delegate
+- [ ] delegateVoteByCitizenId - Delegate to another citizen by ID (with validation)
+- [ ] removeDelegation - Citizen can change delegation
+- [ ] calculateVotingProgress - Returns vote counts and percentages
+- [ ] calculateTimeRemaining - Returns hours/minutes remaining
+- [ ] getVotingHistory - Returns user's voting/delegation history
+
+**Frontend Components:**
+- [ ] ActiveVotingSection - Display active decisions in 72-hour window
+- [ ] VotingCard - Show decision details, countdown timer, vote progress
+- [ ] VotingInterface - Let user choose: Direct Vote or Delegate
+- [ ] DirectVoteForm - Simple for/against voting
+- [ ] DelegationForm - Choose delegate from list or enter citizen ID
+- [ ] DelegateSelector - Dropdown with approved delegates
+- [ ] CitizenIdInput - Input field for peer delegation with validation
+- [ ] CountdownTimer - Display hours/minutes remaining
+- [ ] VoteProgressBar - Show vote counts and percentages
+
+**Seed Demo Data:**
+- [ ] Create eligibleVoters table with 100 demo citizens (ID numbers)
+- [ ] Create 3-4 decisions in active voting stage
+- [ ] Set voting windows within 72 hours from now
+- [ ] Create 2-3 approved delegates per ministry
+- [ ] Add sample votes to show progress
+
+**Testing:**
+- [ ] Test direct voting records correctly
+- [ ] Test delegation to approved delegate works
+- [ ] Test delegation by citizen ID validation
+- [ ] Test vote counts update correctly
+- [ ] Test removing/changing delegation
+- [ ] Test countdown timer accuracy
+- [ ] Test voting window boundary conditions
+- [ ] Test eligible voter validation
