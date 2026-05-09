@@ -29,13 +29,14 @@ export async function getCurrentCycle() {
   }
 }
 
-export async function createCycle(cycleNumber: number, startDate: Date, endDate: Date) {
+export async function createCycle(cycleNumber: number, seasonName: "אביב" | "קיץ" | "סתיו" | "חורף", startDate: Date, endDate: Date) {
   const db = await getDb();
   if (!db) return null;
 
   try {
     await db.insert(mk121Cycles).values({
       cycleNumber,
+      seasonName,
       startDate,
       endDate,
       status: "active",

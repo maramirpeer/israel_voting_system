@@ -1,0 +1,1 @@
+ALTER TABLE `mk121Cycles` ADD `seasonName` enum('אביב','קיץ','סתיו','חורף') NOT NULL;

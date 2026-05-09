@@ -34,12 +34,13 @@ export const mk121Router = router({
     .input(
       z.object({
         cycleNumber: z.number(),
+        seasonName: z.enum(["אביב", "קיץ", "סתיו", "חורף"]),
         startDate: z.date(),
         endDate: z.date(),
       })
     )
     .mutation(async ({ input }) => {
-      const cycle = await createCycle(input.cycleNumber, input.startDate, input.endDate);
+      const cycle = await createCycle(input.cycleNumber, input.seasonName, input.startDate, input.endDate);
       return { success: !!cycle, cycle };
     }),
 

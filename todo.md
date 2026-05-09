@@ -170,3 +170,13 @@
   - [ ] Test quorum calculation: (voters ÷ 120)
   - [ ] Test multi-cycle carryover: proposal carries to next cycle
   - [ ] Test 4-year expiration: proposal archived after 8 cycles
+
+
+## Phase 8: Update Cycle Names to Seasons
+
+- [x] Update database schema to support cycle names (Spring/Summer/Fall/Winter)
+- [x] Update cycle display in UI from numbers to season names
+- [x] Update MK121 page header to show current season
+- [x] Update all tRPC procedures to return season names
+- [ ] Update Home page cycle explanation (optional)
+- [ ] Update seed data to use season names (optional)

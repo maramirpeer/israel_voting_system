@@ -165,7 +165,7 @@ export default function MK121() {
           <h1 className="text-3xl font-bold text-slate-900">🗳️ ח"כ 121</h1>
           <div className="flex items-center gap-4">
             <div>
-              <p className="text-sm text-slate-600">מחזור {cycle?.cycleNumber}</p>
+              <p className="text-sm text-slate-600">מחזור {cycle?.seasonName}</p>
               {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}
             </div>
             {isAuthenticated && cycle && (

@@ -155,6 +155,7 @@ export type InsertDelegateVote = typeof delegateVotes.$inferInsert;
 export const mk121Cycles = mysqlTable("mk121Cycles", {
   id: int("id").autoincrement().primaryKey(),
   cycleNumber: int("cycleNumber").notNull().unique(),
+  seasonName: mysqlEnum("seasonName", ["אביב", "קיץ", "סתיו", "חורף"]).notNull(),
   startDate: timestamp("startDate").notNull(),
   endDate: timestamp("endDate").notNull(),
   status: mysqlEnum("status", ["active", "completed", "archived"]).default("active").notNull(),
