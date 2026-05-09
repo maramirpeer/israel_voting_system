@@ -70,3 +70,13 @@
   - [x] Use warm positive colors (gold, orange, green)
   - [x] Upload image to S3 storage
   - [x] Update Home.tsx to use new image URL
+
+
+## Phase 3: Demo Data & System Activity
+
+- [x] Add seed data script to populate demo content
+  - [x] Create 3 active decisions with votes (72-hour voting windows)
+  - [x] Create 4 bills for MK121 with citizen votes
+  - [x] Create public voting data (72-hour windows)
+  - [x] Populate ministry data (4 ministries)
+  - [ ] Add delegate representatives (optional)
