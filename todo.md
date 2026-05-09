@@ -206,3 +206,12 @@
 - [x] Update MK121 page to display cycle dates
 - [ ] Update Home page to show cycle schedule (optional)
 - [x] Update seed data with cycle dates (via SQL)
+
+
+## Phase 11: Add Preliminary Stage Explanation to Proposal Forms
+
+- [x] Add preliminary stage explanation to bill proposal form
+- [x] Add preliminary stage explanation to question proposal form
+- [x] Display 100 supporter requirement clearly
+- [x] Explain when proposals become public
+- [x] Use purple styling to match preliminary stage theme
