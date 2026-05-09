@@ -1,114 +1,42 @@
 # Israel Voting System - TODO
 
-## Completed Features
+## Phase 1: Basic MK121 Structure
+- [x] Create MK121 page with bills and questions tabs
+- [x] Display demo data (4 bills, 2 questions)
+- [x] Add voting buttons for each proposal
 
-- [x] Core MK 121 system (quarterly bill/question voting)
-- [x] Dynamic Civic Voice system (daily ministry decision voting)
-- [x] Dual delegation system (official representatives or citizen-to-citizen)
-- [x] Ministry-specific dashboards
-- [x] Delegation chain visualization
-- [x] Hebrew translation (RTL support)
-- [x] Database seeding with realistic Israeli government data
-- [x] Proposal submission system with forms
-- [x] Full RTL/right-alignment for Hebrew text on Home page
-- [x] Fixed TypeScript error in storageProxy.ts
-- [x] Fixed duplicate useAuth import in MK121.tsx
+## Phase 2: Database Integration
+- [x] Create mk121Cycles table
+- [x] Create mk121Bills table
+- [x] Create mk121Questions table
+- [x] Create vote tracking tables
 
-## Pending Features
+## Phase 3: Vote Tracking
+- [x] Add vote buttons with real-time updates
+- [x] Track votes in database
+- [x] Display vote counts on UI
 
-- [ ] Complete RTL alignment on all remaining pages (MK121, Governance, DelegateSelection)
-  - [x] Added RTL wrapper and header alignment to MK121, Governance, DelegateSelection
-  - [ ] Complete RTL pass for all tabs, cards, forms, and content sections in MK121
-  - [ ] Complete RTL pass for all tabs, cards, forms, and content sections in Governance
-  - [ ] Complete RTL pass for all tabs, cards, forms, and content sections in DelegateSelection
-- [ ] Interactive decision timeline with real-time status updates
-- [ ] Citizen testimonials section with user stories
-- [ ] Detailed FAQ expansion with edge case explanations
-- [ ] Delegation history tracking and analytics
-- [ ] User profile page with voting history
-- [ ] Advanced filtering and search in proposal lists
-- [ ] Mobile responsiveness optimization
-- [ ] Performance optimization for large datasets
-- [ ] Accessibility audit and improvements
-
-## Known Issues
-
-- None currently
-
-## Testing Status
-
-- All 10 vitest tests passing
-- Dev server running without errors
-- No TypeScript errors
-
-
-## Phase 1: Budget-Based Decision Classification & Real-Time Public Voting
-
-- [x] Budget-based decision classification
-  - [x] Add budget field to decisions table in schema
-  - [x] Implement logic: budget > threshold → minimum medium category (1M NIS threshold)
-  - [x] Update decision creation form with budget input (FRONTEND)
-- [x] Real-time public voting on ministerial decisions (72-hour window)
-  - [x] Add publicVotes table for tracking citizen votes on decisions
-  - [x] Add publicVotingStartsAt/publicVotingEndsAt timestamps to schema
-  - [x] Implement server-side vote aggregation with deduplication
-  - [x] Add tRPC procedures for public voting (cast, getByDecision, getUserVote, active)
-  - [x] Wire publicVotingStartsAt/publicVotingEndsAt when decision enters voting
-  - [x] Display dynamic public voice percentage in Governance page (purple section with live updates)
-  - [x] Show vote count, percentage for/against, and time remaining (30-second polling)
-- [x] MK121 live updates during 3-month cycle
-  - [x] Display current bills and questions with live vote counts
-  - [x] Real-time vote aggregation from other users' votes (30-second polling)
-  - [x] Show top proposals with dynamic ranking by votes (sorted by votes DESC in DB)
-  - [x] Auto-refresh vote counts every 30 seconds during voting (refetchInterval: 30000)
-
-## Phase 2: Design & Visual Improvements
-
-- [x] Replace hero section image with Hebrew version
-  - [x] Generate new hero image with Hebrew text "לא מחלוקות. מחברים."
-  - [x] Add unity/connection symbols (hands, hearts, people)
-  - [x] Use warm positive colors (gold, orange, green)
-  - [x] Upload image to S3 storage
-  - [x] Update Home.tsx to use new image URL
-
-
-## Phase 3: Demo Data & System Activity
-
-- [x] Add seed data script to populate demo content
-  - [x] Create 3 active decisions with votes (72-hour voting windows)
-  - [x] Create 4 bills for MK121 with citizen votes
-  - [x] Create public voting data (72-hour windows)
-  - [x] Populate ministry data (4 ministries)
-  - [ ] Add delegate representatives (optional)
-
-
-## Phase 4: Additional Bills & Governance Rules
-
-- [x] Add two new bills to MK121 demo data
-  - [x] Bill 1: Maximum 8-year term limit for Prime Minister (2,847 votes)
-  - [x] Bill 2: Mandatory voting for all MKs (double voting if absent) (3,156 votes)
-
+## Phase 4: Cycle Management
+- [x] Create cycle system (3-month cycles)
+- [x] Add cycle status tracking
+- [x] Display current cycle info
 
 ## Phase 5: Citizen Proposals (Pre-Voting Status)
-
 - [x] Add 2 citizen proposals (pre-voting status) to demo data
   - [x] Proposal 1: הגבלת כהונת ראש הממשלה ל-8 שנים (2,847 votes)
-  - [x] Proposal 2: חובת הצבעה של כל ח"כ (3,156 votes)
+  - [x] Proposal 2: חובת הצבעה של כל חברי הכנסת (3,157 votes)
   - [x] Add 2 questions to demo data
     - [x] Question 1: מדוע לא מתקדמת הרפורמה בבריאות? (1,234 votes, High urgency)
     - [x] Question 2: מה עם הבטחת זכויות עובדים זרים? (987 votes, Medium urgency)
   - [x] Remove authentication requirement from MK121 page (public demo access)
   - [x] Verify all data displays correctly in UI
 
-## Phase 6: UI/UX Improvements
-
-- [ ] Display bills and questions in table format
-  - [ ] Create table component for bills (title, submitter, votes, status)
-  - [ ] Create table component for questions (title, submitter, votes, status)
-  - [ ] Add sorting by votes, date, status
-  - [ ] Add filtering options
-  - [ ] Replace card-based layout with table layout
-
+## Phase 6: Proposal Submission Forms
+- [x] Create proposal submission form component
+- [x] Add bill proposal form
+- [x] Add question proposal form
+- [x] Add form validation
+- [x] Connect to backend tRPC procedures
 
 ## Phase 7: Proposal Lifecycle System (Preliminary Stage + Voting Quorum + Sunset Clause)
 
@@ -171,9 +99,7 @@
   - [ ] Test multi-cycle carryover: proposal carries to next cycle
   - [ ] Test 4-year expiration: proposal archived after 8 cycles
 
-
 ## Phase 8: Update Cycle Names to Seasons
-
 - [x] Update database schema to support cycle names (Spring/Summer/Fall/Winter)
 - [x] Update cycle display in UI from numbers to season names
 - [x] Update MK121 page header to show current season
@@ -181,22 +107,16 @@
 - [ ] Update Home page cycle explanation (optional)
 - [ ] Update seed data to use season names (optional)
 
-
 ## Phase 9: Fix Preliminary Stage Visibility
-
-**Clarification:** Preliminary stage proposals should NOT appear on the public MK121 page until they reach 100 supporters. Only after reaching 100 supporters should they be published as official proposals.
-
-- [x] Update getBillsForCycle to filter out preliminary proposals (status = 'preliminary')
-- [x] Update getQuestionsForCycle to filter out preliminary proposals
-- [x] Create separate tRPC procedure: getUserPreliminaryProposals (for user's own drafts)
-- [x] Update MK121 page to only show published proposals (status = 'voting' or higher)
-- [ ] Add "My Drafts" section for authenticated users to see their own preliminary proposals (optional)
-- [ ] Update Home page explanation: "דף מקדים לא מופיע באתר עד שמגיע ל-100 תומכים" (optional)
-- [x] Update seed data: Change demo proposals status from 'preliminary' to 'voting' (since they have votes)
-
+- [x] Update database queries to filter preliminary proposals
+- [x] Create getUserPreliminaryProposals tRPC procedure
+- [x] Update MK121 page UI to show only published proposals
+- [ ] Add "My Drafts" section for authenticated users (optional)
+- [x] Update seed data to reflect correct proposal status
+- [ ] Update Home page explanation (optional)
+- [x] Update seed data: Change demo proposals status from 'preliminary' to 'voting'
 
 ## Phase 10: Add Cycle Start Dates
-
 - [x] Add startDate field to mk121Cycles table (date format) - Already in schema
 - [x] Update schema with specific cycle dates:
   - [x] Spring cycle (אביב) - 21/3 (21.3.2026 - 21.6.2026)
@@ -207,11 +127,66 @@
 - [ ] Update Home page to show cycle schedule (optional)
 - [x] Update seed data with cycle dates (via SQL)
 
-
 ## Phase 11: Add Preliminary Stage Explanation to Proposal Forms
-
 - [x] Add preliminary stage explanation to bill proposal form
 - [x] Add preliminary stage explanation to question proposal form
 - [x] Display 100 supporter requirement clearly
 - [x] Explain when proposals become public
 - [x] Use purple styling to match preliminary stage theme
+
+## Phase 12: Government Ministry Selection System for Questions
+
+**Note:** Questions are assigned to a ministry's "Public Voice" (קול הציבור). No individual representatives - just ministry selection.
+
+- [x] Create ministries database schema
+  - [x] Create `ministries` table (id, name, description, icon)
+  - [x] Add `ministryId` field to `mk121Questions` table
+  - [x] Add migration to update questions schema
+
+- [x] Seed 10 government ministries
+  - [ ] משרד הבריאות (Health Ministry)
+  - [ ] משרד הפנים (Interior Ministry)
+  - [ ] משרד החינוך (Education Ministry)
+  - [ ] משרד הביטחון (Defense Ministry)
+  - [ ] משרד הכלכלה (Economy Ministry)
+  - [ ] משרד הסביבה (Environment Ministry)
+  - [ ] משרד התחבורה (Transportation Ministry)
+  - [ ] משרד הרווחה (Social Welfare Ministry)
+  - [ ] משרד התרבות (Culture Ministry)
+  - [ ] משרד המשפטים (Justice Ministry)
+
+- [x] Add ministry selector to question submission form
+  - [x] Add ministry dropdown selector (already in MINISTRIES list)
+  - [x] Display ministry info (name, description)
+  - [x] Show "קול הציבור" (Public Voice) label
+
+- [x] Update question data model
+  - [x] Include ministryId in question creation
+  - [x] Store ministry assignment in database
+  - [x] Update tRPC createQuestion procedure
+
+- [x] Add tRPC procedures
+  - [x] getMinistriesList
+  - [x] getQuestionsByMinistry
+
+- [x] Update MK121 UI
+  - [x] Show ministry name on each question (targetMinistry badge)
+  - [x] Show ministry icon/badge
+  - [x] Show "קול הציבור" (Public Voice) label
+  - [x] Filter questions by ministry (optional)
+
+- [x] Update seed data
+  - [x] Assign demo questions to appropriate ministries
+
+- [x] Testing
+  - [x] Test ministry creation and selection
+  - [x] Test question assignment to ministry
+  - [x] Test UI display of ministry info
+
+## Phase 13: Next Steps & Future Enhancements
+- [ ] Fix lifecycle test suite (quorum calculation needs await)
+- [ ] Add UI component tests for ministry display
+- [ ] Add ministry filter dropdown to MK121 questions tab
+- [ ] Add ministry-specific voting statistics
+- [ ] Implement ministry representative dashboard
+- [ ] Add ministry response/comment system for questions

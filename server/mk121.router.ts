@@ -23,6 +23,8 @@ import {
   getUserQuestionSupports,
   getUserPreliminaryBills,
   getUserPreliminaryQuestions,
+  getMinistriesList,
+  getQuestionsByMinistry,
 } from "./mk121";
 
 export const mk121Router = router({
@@ -330,5 +332,17 @@ export const mk121Router = router({
     )
     .query(async ({ input }) => {
       return await getUserPreliminaryQuestions(input.userId, input.cycleId);
+    }),
+
+  // Get all ministries
+  getMinistriesList: publicProcedure.query(async () => {
+    return await getMinistriesList();
+  }),
+
+  // Get questions by ministry
+  getQuestionsByMinistry: publicProcedure
+    .input(z.object({ ministryId: z.number() }))
+    .query(async ({ input }) => {
+      return await getQuestionsByMinistry(input.ministryId);
     }),
 });

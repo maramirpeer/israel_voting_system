@@ -359,7 +359,7 @@ export default function MK121() {
                             <div className="mt-2 flex gap-2 flex-row-reverse">
                               {question.targetMinistry && (
                                 <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                                  {question.targetMinistry}
+                                  📢 קול הציבור: {question.targetMinistry}
                                 </Badge>
                               )}
                               <Badge

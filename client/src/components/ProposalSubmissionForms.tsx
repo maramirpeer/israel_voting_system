@@ -28,18 +28,6 @@ const BILL_CATEGORIES = [
   "אחר",
 ];
 
-const MINISTRIES = [
-  "משרד האוצר",
-  "משרד הפנים",
-  "משרד הביטחון",
-  "משרד המשפטים",
-  "משרד החדשנות",
-  "משרד החוץ",
-  "משרד החינוך",
-  "משרד הבריאות",
-  "משרד התרבות",
-];
-
 export function ProposalSubmissionForms({
   cycleId,
   userId,
@@ -52,8 +40,12 @@ export function ProposalSubmissionForms({
 
   const [questionTitle, setQuestionTitle] = useState("");
   const [questionDescription, setQuestionDescription] = useState("");
-  const [targetMinistry, setTargetMinistry] = useState("");
+  const [ministryId, setMinistryId] = useState<number | null>(null);
   const [urgency, setUrgency] = useState("medium");
+
+  // Fetch ministries from database
+  const ministriesQuery = trpc.mk121.getMinistriesList.useQuery();
+  const ministries = ministriesQuery.data || [];
 
   const submitBillMutation = trpc.mk121.submitBillProposal.useMutation({
     onSuccess: () => {
@@ -73,7 +65,7 @@ export function ProposalSubmissionForms({
       toast.success("השאילתה הוגשה בהצלחה!");
       setQuestionTitle("");
       setQuestionDescription("");
-      setTargetMinistry("");
+      setMinistryId(null);
       setUrgency("medium");
       onSuccess?.();
     },
@@ -103,11 +95,17 @@ export function ProposalSubmissionForms({
       return;
     }
 
+    if (!ministryId) {
+      toast.error("אנא בחר משרד");
+      return;
+    }
+
+    const selectedMinistry = ministries.find(m => m.id === ministryId);
     submitQuestionMutation.mutate({
       cycleId,
       title: questionTitle,
       description: questionDescription,
-      targetMinistry: targetMinistry || undefined,
+      targetMinistry: selectedMinistry?.name || undefined,
       urgency: (urgency as "low" | "medium" | "high") || "medium",
       userId,
     });
@@ -242,19 +240,35 @@ export function ProposalSubmissionForms({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">משרד יעד</label>
-                  <Select value={targetMinistry} onValueChange={setTargetMinistry}>
+                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                    📢 משרד יעד (קול הציבור)
+                  </label>
+                  <Select 
+                    value={ministryId?.toString() || ""} 
+                    onValueChange={(val) => setMinistryId(val ? parseInt(val) : null)}
+                  >
                     <SelectTrigger className="border-slate-300">
-                      <SelectValue placeholder="בחר משרד (אופציונלי)" />
+                      <SelectValue placeholder="בחר משרד" />
                     </SelectTrigger>
                     <SelectContent>
-                      {MINISTRIES.map((ministry) => (
-                        <SelectItem key={ministry} value={ministry}>
-                          {ministry}
-                        </SelectItem>
-                      ))}
+                      {ministriesQuery.isLoading ? (
+                        <div className="p-2 text-sm text-slate-600">טוען משרדים...</div>
+                      ) : ministries.length === 0 ? (
+                        <div className="p-2 text-sm text-slate-600">אין משרדים זמינים</div>
+                      ) : (
+                        ministries.map((ministry) => (
+                          <SelectItem key={ministry.id} value={ministry.id.toString()}>
+                            {ministry.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
+                  {ministryId && (
+                    <p className="text-xs text-slate-600 mt-2">
+                      {ministries.find(m => m.id === ministryId)?.description}
+                    </p>
+                  )}
                 </div>
 
                 <div>

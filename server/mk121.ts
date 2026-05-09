@@ -7,6 +7,7 @@ import {
   mk121QuestionVotes,
   mk121BillSupporters,
   mk121QuestionSupporters,
+  ministries,
 } from "../drizzle/schema";
 import { getDb } from "./db";
 
@@ -738,6 +739,49 @@ export async function getUserPreliminaryQuestions(userId: number, cycleId: numbe
     return questions;
   } catch (error) {
     console.error("[MK121] Error getting user preliminary questions:", error);
+    return [];
+  }
+}
+
+
+// Ministry functions
+export async function getMinistriesList() {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const result = await db
+      .select({
+        id: ministries.id,
+        name: ministries.name,
+        description: ministries.description,
+        icon: ministries.icon,
+        color: ministries.color,
+      })
+      .from(ministries)
+      .orderBy(ministries.name);
+
+    return result;
+  } catch (error) {
+    console.error("[MK121] Error getting ministries:", error);
+    return [];
+  }
+}
+
+export async function getQuestionsByMinistry(ministryId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const result = await db
+      .select()
+      .from(mk121Questions)
+      .where(eq(mk121Questions.ministryId, ministryId))
+      .orderBy(desc(mk121Questions.votes));
+
+    return result;
+  } catch (error) {
+    console.error("[MK121] Error getting questions by ministry:", error);
     return [];
   }
 }

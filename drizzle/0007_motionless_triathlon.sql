@@ -1,0 +1,1 @@
+ALTER TABLE `mk121Questions` ADD `ministryId` int;

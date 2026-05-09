@@ -197,6 +197,7 @@ export const mk121Questions = mysqlTable("mk121Questions", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
   targetMinistry: varchar("targetMinistry", { length: 255 }),
+  ministryId: int("ministryId"),
   proposedBy: int("proposedBy").notNull(),
   urgency: mysqlEnum("urgency", ["low", "medium", "high"]).default("medium").notNull(),
   votes: int("votes").default(0),
