@@ -236,11 +236,18 @@ export default function MK121() {
                         <div className="flex items-start justify-between mb-3 flex-row-reverse">
                           <div className="flex-1">
                             <h3 className="text-xl font-bold text-slate-900">{bill.title}</h3>
-                            {bill.category && (
-                              <Badge variant="outline" className="mt-2 bg-blue-50 text-blue-700 border-blue-200">
-                                {bill.category}
-                              </Badge>
-                            )}
+                            <div className="mt-2 flex gap-2 flex-row-reverse">
+                              {bill.status && (
+                                <Badge className={bill.status === 'preliminary' ? 'bg-purple-100 text-purple-700' : bill.status === 'voting' ? 'bg-blue-100 text-blue-700' : bill.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                                  {bill.status === 'preliminary' ? '📋 דף מקדים' : bill.status === 'voting' ? '🗳️ הצבעה' : bill.status === 'approved' ? '✅ אושר' : '📁 ארכיון'}
+                                </Badge>
+                              )}
+                              {bill.category && (
+                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                  {bill.category}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           <div className="mr-4">
                             <div className="text-3xl font-bold text-blue-600">{bill.votes}</div>
@@ -252,6 +259,40 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{bill.description}</p>
+
+                        {/* Quorum Info */}
+                        {bill.status === 'voting' && (
+                          <div className="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-200 text-sm text-blue-700">
+                            <strong>🗳️ דרישה מינימאלית:</strong> צריך לפחות 37,500 קולות בשביל להצעה לדיון הרשמי (1/120 מהמצביעים)
+                          </div>
+                        )}
+
+                        {/* Support Section (Preliminary Stage) */}
+                        <div className="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-bold text-purple-700">דף מקדים - צבירת תמיכה</span>
+                            <span className="text-lg font-bold text-purple-600">{bill.supporters || 0}/100</span>
+                          </div>
+                          <div className="w-full bg-purple-200 rounded-full h-2 mb-3">
+                            <div
+                              className="bg-purple-600 h-2 rounded-full transition-all"
+                              style={{ width: `${Math.min(((bill.supporters || 0) / 100) * 100, 100)}%` }}
+                            />
+                          </div>
+                          <Button
+                            onClick={() => handleSupportBill(bill.id)}
+                            disabled={supportBillMutation.isPending || removeBillSupportMutation.isPending}
+                            variant={userBillSupports.includes(bill.id) ? "default" : "outline"}
+                            size="sm"
+                            className={`w-full ${
+                              userBillSupports.includes(bill.id)
+                                ? "bg-purple-600 hover:bg-purple-700"
+                                : "border-purple-300 text-purple-600 hover:bg-purple-50"
+                            }`}
+                          >
+                            {userBillSupports.includes(bill.id) ? "✓ תומך" : "+ תמוך בהצעה"}
+                          </Button>
+                        </div>
 
                         <Button
                           onClick={() => handleVoteBill(bill.id)}
@@ -336,6 +377,33 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{question.description}</p>
+
+                        {/* Support Section (Preliminary Stage) */}
+                        <div className="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-bold text-purple-700">דף מקדים - צבירת תמיכה</span>
+                            <span className="text-lg font-bold text-purple-600">{question.supporters || 0}/100</span>
+                          </div>
+                          <div className="w-full bg-purple-200 rounded-full h-2 mb-3">
+                            <div
+                              className="bg-purple-600 h-2 rounded-full transition-all"
+                              style={{ width: `${Math.min(((question.supporters || 0) / 100) * 100, 100)}%` }}
+                            />
+                          </div>
+                          <Button
+                            onClick={() => handleSupportQuestion(question.id)}
+                            disabled={supportQuestionMutation.isPending || removeQuestionSupportMutation.isPending}
+                            variant={userQuestionSupports.includes(question.id) ? "default" : "outline"}
+                            size="sm"
+                            className={`w-full ${
+                              userQuestionSupports.includes(question.id)
+                                ? "bg-purple-600 hover:bg-purple-700"
+                                : "border-purple-300 text-purple-600 hover:bg-purple-50"
+                            }`}
+                          >
+                            {userQuestionSupports.includes(question.id) ? "✓ תומך" : "+ תמוך בשאילתה"}
+                          </Button>
+                        </div>
 
                         <Button
                           onClick={() => handleVoteQuestion(question.id)}
