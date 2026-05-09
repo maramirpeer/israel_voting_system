@@ -312,14 +312,13 @@ export default function Governance() {
 
           {/* Active Decisions Tab */}
           <TabsContent value="decisions" className="space-y-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">החלטות פעילות בהצבעה</h2>
-              <Select value={selectedMinistry?.toString() || ""} onValueChange={(v) => setSelectedMinistry(v ? parseInt(v) : null)}>
+            <div className="flex justify-between items-center mb-4 flex-row-reverse">
+              <h2 className="text-2xl font-bold">החלטות פעילות</h2>
+              <Select value={selectedMinistry?.toString() || "all"} onValueChange={(value) => setSelectedMinistry(value === "all" ? null : parseInt(value))}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="סנן לפי משרד" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">כל המשרדים</SelectItem>
                   {ministries.map((m) => (
                     <SelectItem key={m.id} value={m.id.toString()}>
                       {m.name}
@@ -478,9 +477,9 @@ export default function Governance() {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">משרד</label>
                     <Select name="ministryId" required>
-                      <SelectTrigger>
-                        <SelectValue placeholder="בחרו משרד" />
-                      </SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="כל המשרדים" />
+                </SelectTrigger>
                       <SelectContent>
                         {ministries.map((m) => (
                           <SelectItem key={m.id} value={m.id.toString()}>
