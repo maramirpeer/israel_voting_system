@@ -42,6 +42,11 @@ async function startServer() {
     createExpressMiddleware({
       router: appRouter,
       createContext,
+      responseMeta: () => ({
+        headers: {
+          "content-type": "application/json",
+        },
+      }),
     })
   );
   // development mode uses Vite, production mode uses static files
