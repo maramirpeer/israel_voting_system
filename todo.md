@@ -241,6 +241,7 @@
   - [x] Replace generic delegate names with Hebrew names
   - [x] Add meaningful descriptions for each delegate
   - [x] Update database with new delegate data (27 delegates added)
+  - [x] Fix VotingInterface to display delegates correctly from API
 
 **Testing:**
 - [x] Test direct voting records correctly
@@ -311,3 +312,11 @@
   - Error: "Unexpected token '<', "<!doctype "..." is not valid JSON"
   - Symptom: MK121 page shows "אין מחזור פעיל כרגע" (No active cycle)
   - Root cause: Date object deserialization from superjson (FIXED)
+
+
+- [ ] Fix: Ministry selection page (Dynamic Voice) - clicking on ministries doesn't navigate
+  - [ ] Find DynamicVoice/ministry selection component
+  - [ ] Add click handlers to ministry cards
+  - [ ] Create ministry details page or modal
+  - [ ] Display voting decisions for selected ministry
+  - [ ] Add navigation routing
