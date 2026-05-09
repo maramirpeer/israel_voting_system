@@ -193,3 +193,16 @@
 - [ ] Add "My Drafts" section for authenticated users to see their own preliminary proposals (optional)
 - [ ] Update Home page explanation: "דף מקדים לא מופיע באתר עד שמגיע ל-100 תומכים" (optional)
 - [x] Update seed data: Change demo proposals status from 'preliminary' to 'voting' (since they have votes)
+
+
+## Phase 10: Add Cycle Start Dates
+
+- [x] Add startDate field to mk121Cycles table (date format) - Already in schema
+- [x] Update schema with specific cycle dates:
+  - [x] Spring cycle (אביב) - 21/3 (21.3.2026 - 21.6.2026)
+  - [ ] Summer cycle (קיץ) - 21/6 (optional)
+  - [ ] Fall cycle (סתיו) - 21/9 (optional)
+  - [ ] Winter cycle (חורף) - 21/12 (optional)
+- [x] Update MK121 page to display cycle dates
+- [ ] Update Home page to show cycle schedule (optional)
+- [x] Update seed data with cycle dates (via SQL)

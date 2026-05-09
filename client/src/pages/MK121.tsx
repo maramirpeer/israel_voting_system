@@ -166,6 +166,11 @@ export default function MK121() {
           <div className="flex items-center gap-4">
             <div>
               <p className="text-sm text-slate-600">מחזור {cycle?.seasonName}</p>
+              {cycle?.startDate && (
+                <p className="text-xs text-slate-500">
+                  {new Date(cycle.startDate).toLocaleDateString('he-IL')} - {new Date(cycle.endDate).toLocaleDateString('he-IL')}
+                </p>
+              )}
               {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}
             </div>
             {isAuthenticated && cycle && (
