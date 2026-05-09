@@ -180,3 +180,16 @@
 - [x] Update all tRPC procedures to return season names
 - [ ] Update Home page cycle explanation (optional)
 - [ ] Update seed data to use season names (optional)
+
+
+## Phase 9: Fix Preliminary Stage Visibility
+
+**Clarification:** Preliminary stage proposals should NOT appear on the public MK121 page until they reach 100 supporters. Only after reaching 100 supporters should they be published as official proposals.
+
+- [ ] Update getBillsForCycle to filter out preliminary proposals (status = 'preliminary')
+- [ ] Update getQuestionsForCycle to filter out preliminary proposals
+- [ ] Create separate tRPC procedure: getUserPreliminaryProposals (for user's own drafts)
+- [ ] Update MK121 page to only show published proposals (status = 'voting' or higher)
+- [ ] Add "My Drafts" section for authenticated users to see their own preliminary proposals
+- [ ] Update Home page explanation: "דף מקדים לא מופיע באתר עד שמגיע ל-100 תומכים"
+- [ ] Update seed data: Change demo proposals status from 'preliminary' to 'voting' (since they have votes)

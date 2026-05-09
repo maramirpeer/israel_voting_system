@@ -21,6 +21,8 @@ import {
   archiveExpiredProposals,
   getUserBillSupports,
   getUserQuestionSupports,
+  getUserPreliminaryBills,
+  getUserPreliminaryQuestions,
 } from "./mk121";
 
 export const mk121Router = router({
@@ -304,5 +306,29 @@ export const mk121Router = router({
     )
     .query(async ({ input }) => {
       return await getUserQuestionSupports(input.userId, input.cycleId);
+    }),
+
+  // Get user's preliminary (draft) bills
+  getUserPreliminaryBills: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        cycleId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getUserPreliminaryBills(input.userId, input.cycleId);
+    }),
+
+  // Get user's preliminary (draft) questions
+  getUserPreliminaryQuestions: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        cycleId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await getUserPreliminaryQuestions(input.userId, input.cycleId);
     }),
 });

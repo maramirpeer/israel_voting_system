@@ -1,4 +1,4 @@
-import { eq, and, desc, gt, lt } from "drizzle-orm";
+import { eq, and, desc, gt, lt, ne } from "drizzle-orm";
 import {
   mk121Cycles,
   mk121Bills,
@@ -155,7 +155,7 @@ export async function getBillsForCycle(cycleId: number) {
     const bills = await db
       .select()
       .from(mk121Bills)
-      .where(eq(mk121Bills.cycleId, cycleId))
+      .where(and(eq(mk121Bills.cycleId, cycleId), ne(mk121Bills.status, "preliminary")))
       .orderBy(desc(mk121Bills.votes));
 
     return bills;
@@ -173,7 +173,7 @@ export async function getQuestionsForCycle(cycleId: number) {
     const questions = await db
       .select()
       .from(mk121Questions)
-      .where(eq(mk121Questions.cycleId, cycleId))
+      .where(and(eq(mk121Questions.cycleId, cycleId), ne(mk121Questions.status, "preliminary")))
       .orderBy(desc(mk121Questions.votes));
 
     return questions;
@@ -687,6 +687,57 @@ export async function getUserQuestionSupports(userId: number, cycleId: number) {
     return supports.map((s) => s.questionId);
   } catch (error) {
     console.error("[MK121] Error getting user question supports:", error);
+    return [];
+  }
+}
+
+
+// Get user's preliminary (draft) proposals - bills they created but haven't reached 100 supporters yet
+export async function getUserPreliminaryBills(userId: number, cycleId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const bills = await db
+      .select()
+      .from(mk121Bills)
+      .where(
+        and(
+          eq(mk121Bills.proposedBy, userId),
+          eq(mk121Bills.cycleId, cycleId),
+          eq(mk121Bills.status, "preliminary")
+        )
+      )
+      .orderBy(desc(mk121Bills.supporters));
+
+    return bills;
+  } catch (error) {
+    console.error("[MK121] Error getting user preliminary bills:", error);
+    return [];
+  }
+}
+
+// Get user's preliminary (draft) proposals - questions they created but haven't reached 100 supporters yet
+export async function getUserPreliminaryQuestions(userId: number, cycleId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    const questions = await db
+      .select()
+      .from(mk121Questions)
+      .where(
+        and(
+          eq(mk121Questions.proposedBy, userId),
+          eq(mk121Questions.cycleId, cycleId),
+          eq(mk121Questions.status, "preliminary")
+        )
+      )
+      .orderBy(desc(mk121Questions.supporters));
+
+    return questions;
+  } catch (error) {
+    console.error("[MK121] Error getting user preliminary questions:", error);
     return [];
   }
 }
