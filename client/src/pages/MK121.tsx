@@ -33,6 +33,14 @@ export default function MK121() {
     { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
     { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
+  const userBillSupportsQuery = trpc.mk121.getUserBillSupports.useQuery(
+    { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+  );
+  const userQuestionSupportsQuery = trpc.mk121.getUserQuestionSupports.useQuery(
+    { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+  );
 
   // Note: refetchInterval automatically stops when component unmounts
 
@@ -59,11 +67,57 @@ export default function MK121() {
     },
   });
 
+  const supportBillMutation = trpc.mk121.supportBill.useMutation({
+    onSuccess: () => {
+      toast.success("תמיכתך נרשמה!");
+      userBillSupportsQuery.refetch();
+      billsQuery.refetch();
+    },
+    onError: () => {
+      toast.error("שגיאה בתמיכה בהצעה");
+    },
+  });
+
+  const removeBillSupportMutation = trpc.mk121.removeBillSupport.useMutation({
+    onSuccess: () => {
+      toast.success("התמיכה בוטלה");
+      userBillSupportsQuery.refetch();
+      billsQuery.refetch();
+    },
+    onError: () => {
+      toast.error("שגיאה בביטול התמיכה");
+    },
+  });
+
+  const supportQuestionMutation = trpc.mk121.supportQuestion.useMutation({
+    onSuccess: () => {
+      toast.success("תמיכתך נרשמה!");
+      userQuestionSupportsQuery.refetch();
+      questionsQuery.refetch();
+    },
+    onError: () => {
+      toast.error("שגיאה בתמיכה בשאילתה");
+    },
+  });
+
+  const removeQuestionSupportMutation = trpc.mk121.removeQuestionSupport.useMutation({
+    onSuccess: () => {
+      toast.success("התמיכה בוטלה");
+      userQuestionSupportsQuery.refetch();
+      questionsQuery.refetch();
+    },
+    onError: () => {
+      toast.error("שגיאה בביטול התמיכה");
+    },
+  });
+
   const cycle = currentCycleQuery.data;
   const bills = billsQuery.data || [];
   const questions = questionsQuery.data || [];
   const userBillVotes = userBillVotesQuery.data || [];
   const userQuestionVotes = userQuestionVotesQuery.data || [];
+  const userBillSupports = userBillSupportsQuery.data || [];
+  const userQuestionSupports = userQuestionSupportsQuery.data || [];
 
   const handleVoteBill = (billId: number) => {
     if (!user?.id) return;
@@ -73,6 +127,24 @@ export default function MK121() {
   const handleVoteQuestion = (questionId: number) => {
     if (!user?.id) return;
     voteQuestionMutation.mutate({ questionId, userId: user.id });
+  };
+
+  const handleSupportBill = (billId: number) => {
+    if (!user?.id) return;
+    if (userBillSupports.includes(billId)) {
+      removeBillSupportMutation.mutate({ billId, userId: user.id });
+    } else {
+      supportBillMutation.mutate({ billId, userId: user.id });
+    }
+  };
+
+  const handleSupportQuestion = (questionId: number) => {
+    if (!user?.id) return;
+    if (userQuestionSupports.includes(questionId)) {
+      removeQuestionSupportMutation.mutate({ questionId, userId: user.id });
+    } else {
+      supportQuestionMutation.mutate({ questionId, userId: user.id });
+    }
   };
 
   // Public access - no authentication required for demo
