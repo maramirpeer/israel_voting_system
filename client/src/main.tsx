@@ -49,11 +49,10 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       async fetch(input, init) {
-        const response = await globalThis.fetch(input, {
+        return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
         });
-        return response;
       },
     }),
   ],

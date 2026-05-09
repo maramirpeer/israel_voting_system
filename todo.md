@@ -237,6 +237,10 @@
 - [x] Set voting windows within 72 hours from now
 - [x] Create 2-3 approved delegates per ministry
 - [x] Add sample votes to show progress
+- [x] Update delegates with Hebrew names and descriptions
+  - [x] Replace generic delegate names with Hebrew names
+  - [x] Add meaningful descriptions for each delegate
+  - [x] Update database with new delegate data (27 delegates added)
 
 **Testing:**
 - [x] Test direct voting records correctly
