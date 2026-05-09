@@ -299,3 +299,11 @@
 - [ ] Implement vote audit trail
 - [ ] Add voting result announcements
 - [ ] Create decision outcome tracking
+
+
+## BUG FIXES
+
+- [ ] Fix: getCurrentCycle returns HTML instead of JSON
+  - Error: "Unexpected token '<', "<!doctype "..." is not valid JSON"
+  - Symptom: MK121 page shows "אין מחזור פעיל כרגע" (No active cycle)
+  - Root cause: Need to verify backend procedure and database

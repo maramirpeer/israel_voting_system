@@ -1,4 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { toDate } from "@/lib/dateUtils";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -115,6 +117,15 @@ export default function MK121() {
   const cycle = currentCycleQuery.data;
   const bills = billsQuery.data || [];
   const questions = questionsQuery.data || [];
+
+  // Debug: Log query state
+  useEffect(() => {
+    console.log('[MK121] Query state:', {
+      cycleData: currentCycleQuery.data,
+      cycleLoading: currentCycleQuery.isLoading,
+      cycleError: currentCycleQuery.error,
+    });
+  }, [currentCycleQuery.data, currentCycleQuery.isLoading, currentCycleQuery.error]);
   const userBillVotes = userBillVotesQuery.data || [];
   const userQuestionVotes = userQuestionVotesQuery.data || [];
   const userBillSupports = userBillSupportsQuery.data || [];
@@ -150,8 +161,27 @@ export default function MK121() {
 
   // Public access - no authentication required for demo
 
-  const timeRemaining = cycle
-    ? Math.ceil((new Date(cycle.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+  // Show loading state
+  if (currentCycleQuery.isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
+        <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+          <div className="container py-4">
+            <h1 className="text-3xl font-bold text-slate-900">🗳️ ח"כ 121</h1>
+          </div>
+        </header>
+        <main className="container py-8">
+          <Card className="p-8 text-center">
+            <p className="text-slate-600">טוען נתונים...</p>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
+  const endDate = cycle?.endDate ? toDate(cycle.endDate) || new Date() : new Date();
+  const timeRemaining = cycle && endDate
+    ? Math.ceil((endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
   return (
@@ -169,7 +199,7 @@ export default function MK121() {
               <p className="text-sm text-slate-600">מחזור {cycle?.seasonName}</p>
               {cycle?.startDate && (
                 <p className="text-xs text-slate-500">
-                  {new Date(cycle.startDate).toLocaleDateString('he-IL')} - {new Date(cycle.endDate).toLocaleDateString('he-IL')}
+                  {(toDate(cycle.startDate) || new Date()).toLocaleDateString('he-IL')} - {(toDate(cycle.endDate) || new Date()).toLocaleDateString('he-IL')}
                 </p>
               )}
               {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}

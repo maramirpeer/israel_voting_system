@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, cycleNumber, seasonName, status, startDate, endDate FROM mk121Cycles WHERE status = 'active' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute SELECT id, cycleNumber, seasonName, status, startDate, endDate FROM mk121Cycles WHERE status = 'active' LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "cycleNumber": "1",
+      "seasonName": "אביב",
+      "status": "active",
+      "startDate": "2026-03-21 00:00:00",
+      "endDate": "2026-06-21 00:00:00"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tcycleNumber\tseasonName\tstatus\tstartDate\tendDate\n1\t1\tאביב\tactive\t2026-03-21 00:00:00\t2026-06-21 00:00:00\n",
+  "stderr": "",
+  "execution_time_ms": 264
+}
