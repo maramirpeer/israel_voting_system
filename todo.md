@@ -254,7 +254,36 @@
 - [x] Test eligible voter validation
 
 
-## Phase 15: Delegation Dashboard & User Delegation Management
+## Phase 15: Ministry Details Page (Approved Decisions, Voting History, Pending Decisions)
+
+**Requirements:** Create ministry-specific pages showing:
+- Approved decisions history
+- Voting history/analytics
+- Pending decisions waiting for votes (72-hour window)
+
+**Backend Procedures:**
+- [x] getMinistryDetails - Complete ministry overview with stats
+- [x] getApprovedDecisionsByMinistry - Approved decisions history
+- [x] getPendingDecisionsByMinistry - Decisions in 72-hour voting window
+- [x] getDecisionVotingHistory - Vote history for each decision
+- [x] Added to governance.router.ts as ministryDetails namespace
+
+**Frontend Components:**
+- [x] MinistryDetails.tsx - Main ministry details page
+- [x] Displays 5 stat cards (total, approved, rejected, pending, public votes)
+- [x] Tabs for pending and approved decisions
+- [x] Vote progress bars with percentages
+- [x] Time remaining countdown for pending decisions
+- [x] Hebrew localization and RTL support
+
+**Integration:**
+- [x] Added route `/ministry/:id` to App.tsx
+- [x] Added click handlers to ministry cards in Governance page
+- [x] Navigation from Governance page to ministry details
+
+---
+
+## Phase 16: Delegation Dashboard & User Delegation Management
 
 **Requirements:** Create a dashboard where users can:
 - View their current delegations per ministry
@@ -280,7 +309,7 @@
 
 ---
 
-## Phase 16: Analytics & Reporting
+## Phase 17: Analytics & Reporting
 
 **Requirements:** Create analytics dashboard showing:
 - Voting participation rates
@@ -296,7 +325,7 @@
 
 ---
 
-## Phase 17: Advanced Features
+## Phase 18: Advanced Features
 
 **Requirements:**
 - [ ] Implement vote expiration (votes expire after decision ends)

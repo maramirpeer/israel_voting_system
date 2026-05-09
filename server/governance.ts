@@ -233,3 +233,93 @@ export async function getActivePublicVotingDecisions() {
     )
     .orderBy(desc(decisions.publicVotingEndsAt));
 }
+
+// Get approved decisions for a ministry (history)
+export async function getApprovedDecisionsByMinistry(ministryId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(decisions)
+    .where(and(
+      eq(decisions.ministryId, ministryId),
+      eq(decisions.status, "approved")
+    ))
+    .orderBy(desc(decisions.updatedAt));
+}
+
+// Get pending decisions for a ministry (in active voting window)
+export async function getPendingDecisionsByMinistry(ministryId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const now = new Date();
+  return await db.select().from(decisions)
+    .where(and(
+      eq(decisions.ministryId, ministryId),
+      eq(decisions.status, "voting"),
+      lte(decisions.publicVotingStartsAt, now),
+      gte(decisions.publicVotingEndsAt, now)
+    ))
+    .orderBy(desc(decisions.publicVotingEndsAt));
+}
+
+// Get voting history for a specific decision (all votes cast)
+export async function getDecisionVotingHistory(decisionId: number) {
+  const db = await getDb();
+  if (!db) return { publicVotes: [], delegateVotes: [] };
+  
+  const publicVotesData = await db.select().from(publicVotes)
+    .where(eq(publicVotes.decisionId, decisionId))
+    .orderBy(desc(publicVotes.createdAt));
+  
+  // Import delegateVotes table
+  const { delegateVotes } = await import("../drizzle/schema");
+  const delegateVotesData = await db.select().from(delegateVotes)
+    .where(eq(delegateVotes.decisionId, decisionId))
+    .orderBy(desc(delegateVotes.createdAt));
+  
+  return {
+    publicVotes: publicVotesData,
+    delegateVotes: delegateVotesData
+  };
+}
+
+// Get ministry details with stats
+export async function getMinistryDetails(ministryId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const ministry = await getMinistryById(ministryId);
+  if (!ministry) return null;
+  
+  const allDecisions = await getDecisionsByMinistry(ministryId);
+  const approvedDecisions = await getApprovedDecisionsByMinistry(ministryId);
+  const pendingDecisions = await getPendingDecisionsByMinistry(ministryId);
+  const rejectedDecisions = allDecisions.filter(d => d.status === "rejected");
+  
+  // Calculate stats
+  let totalPublicVotes = 0;
+  let totalPublicVotesFor = 0;
+  let totalPublicVotesAgainst = 0;
+  
+  for (const decision of allDecisions) {
+    totalPublicVotesFor += decision.publicVotesFor || 0;
+    totalPublicVotesAgainst += decision.publicVotesAgainst || 0;
+    totalPublicVotes += (decision.publicVotesFor || 0) + (decision.publicVotesAgainst || 0);
+  }
+  
+  return {
+    ministry,
+    stats: {
+      totalDecisions: allDecisions.length,
+      approvedDecisions: approvedDecisions.length,
+      rejectedDecisions: rejectedDecisions.length,
+      pendingDecisions: pendingDecisions.length,
+      totalPublicVotes,
+      totalPublicVotesFor,
+      totalPublicVotesAgainst,
+      approvalRate: allDecisions.length > 0 ? (approvedDecisions.length / allDecisions.length) * 100 : 0
+    },
+    approvedDecisions,
+    pendingDecisions,
+    rejectedDecisions
+  };
+}

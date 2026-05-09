@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Governance from "./pages/Governance";
 import MinistryDashboard from "./pages/MinistryDashboard";
+import MinistryDetails from "./pages/MinistryDetails";
 import DelegateSelection from "./pages/DelegateSelection";
 import DelegationAnalytics from "./pages/DelegationAnalytics";
 import MK121 from "./pages/MK121";
@@ -17,6 +18,7 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/governance"} component={Governance} />
+      <Route path={"/ministry/:id"} component={MinistryDetails} />
       <Route path={"/ministry-dashboard"} component={MinistryDashboard} />
       <Route path={"/delegate-selection"} component={DelegateSelection} />
       <Route path={"/delegation-analytics"} component={DelegationAnalytics} />

@@ -19,6 +19,10 @@ import {
   getPublicVotes,
   getUserPublicVote,
   getActivePublicVotingDecisions,
+  getApprovedDecisionsByMinistry,
+  getPendingDecisionsByMinistry,
+  getDecisionVotingHistory,
+  getMinistryDetails,
 } from "./governance";
 import { TRPCError } from "@trpc/server";
 
@@ -273,6 +277,33 @@ export const governanceRouter = router({
       .input(z.object({ decisionId: z.number() }))
       .query(async ({ input }) => {
         return await getDecisionHistory(input.decisionId);
+      }),
+  }),
+
+  // Ministry details procedures
+  ministryDetails: router({
+    getDetails: publicProcedure
+      .input(z.object({ ministryId: z.number() }))
+      .query(async ({ input }) => {
+        return await getMinistryDetails(input.ministryId);
+      }),
+
+    getApprovedDecisions: publicProcedure
+      .input(z.object({ ministryId: z.number() }))
+      .query(async ({ input }) => {
+        return await getApprovedDecisionsByMinistry(input.ministryId);
+      }),
+
+    getPendingDecisions: publicProcedure
+      .input(z.object({ ministryId: z.number() }))
+      .query(async ({ input }) => {
+        return await getPendingDecisionsByMinistry(input.ministryId);
+      }),
+
+    getVotingHistory: publicProcedure
+      .input(z.object({ decisionId: z.number() }))
+      .query(async ({ input }) => {
+        return await getDecisionVotingHistory(input.decisionId);
       }),
   }),
 });

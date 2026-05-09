@@ -271,7 +271,11 @@ export default function Governance() {
               <h2 className="text-2xl font-bold mb-4 text-right">המשרדים</h2>
               <div className="grid md:grid-cols-3 gap-4">
                 {ministries.map((ministry) => (
-                  <Card key={ministry.id} className="p-4 hover:shadow-lg transition cursor-pointer border-2 hover:border-blue-300 text-right">
+                  <Card 
+                    key={ministry.id} 
+                    className="p-4 hover:shadow-lg transition cursor-pointer border-2 hover:border-blue-300 text-right"
+                    onClick={() => setLocation(`/ministry/${ministry.id}`)}
+                  >
                     <div className="text-4xl mb-2 text-right">{ministry.icon}</div>
                     <h3 className="font-bold text-slate-900 text-sm">{ministry.name}</h3>
                     <p className="text-xs text-slate-600 mt-2 line-clamp-2">{ministry.description}</p>
