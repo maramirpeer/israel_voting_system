@@ -18,6 +18,12 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
   if (!isUnauthorized) return;
 
+  // Don't redirect on demo pages that should work without authentication
+  const currentPath = window.location.pathname;
+  if (currentPath === '/mk121' || currentPath === '/governance' || currentPath === '/delegate-selection') {
+    return; // Allow demo pages to work without auth
+  }
+
   window.location.href = getLoginUrl();
 };
 

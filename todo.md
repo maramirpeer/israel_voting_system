@@ -87,3 +87,19 @@
 - [x] Add two new bills to MK121 demo data
   - [x] Bill 1: Maximum 8-year term limit for Prime Minister (2,847 votes)
   - [x] Bill 2: Mandatory voting for all MKs (double voting if absent) (3,156 votes)
+
+
+## Phase 5: Citizen Proposals (Pre-Voting Status)
+
+- [x] Add 2 citizen proposals (pre-voting status) to demo data
+  - [x] Proposal 1: הגבלת כהונת ראש הממשלה ל-8 שנים (0 votes, pending)
+  - [x] Proposal 2: חובת הצבעה של כל ח"כ - ביטול הצבעות ללא נוכחות מלאה (0 votes, pending)
+
+## Phase 6: UI/UX Improvements
+
+- [ ] Display bills and questions in table format
+  - [ ] Create table component for bills (title, submitter, votes, status)
+  - [ ] Create table component for questions (title, submitter, votes, status)
+  - [ ] Add sorting by votes, date, status
+  - [ ] Add filtering options
+  - [ ] Replace card-based layout with table layout

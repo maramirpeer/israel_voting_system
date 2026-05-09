@@ -140,31 +140,32 @@ export default function Governance() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
-        <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-          <div className="container py-4 flex items-center justify-between flex-row-reverse">
-            <div className="flex items-center gap-3 flex-row-reverse">
-              <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2 justify-end">
-                חזרה לעמוד הבית
-                <Home className="w-4 h-4" />
-              </Button>
-            </div>
-            <h1 className="text-2xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
-          </div>
-        </header>
-
-        <main className="container py-8">
-          <Card className="p-8 text-center">
-            <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">נדרש התחברות</h2>
-            <p className="text-slate-600 mb-4">אנא התחברו כדי להשתתף בהצבעות לממשל וליצור החלטות</p>
-          </Card>
-        </main>
-      </div>
-    );
-  }
+  // Allow unauthenticated access for demo purposes
+  // if (!isAuthenticated) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
+  //       <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+  //         <div className="container py-4 flex items-center justify-between flex-row-reverse">
+  //           <div className="flex items-center gap-3 flex-row-reverse">
+  //             <Button variant="ghost" onClick={() => setLocation("/")} className="flex items-center gap-2 justify-end">
+  //               חזרה לעמוד הבית
+  //               <Home className="w-4 h-4" />
+  //             </Button>
+  //           </div>
+  //           <h1 className="text-2xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
+  //         </div>
+  //       </header>
+  //
+  //       <main className="container py-8">
+  //         <Card className="p-8 text-center">
+  //           <AlertCircle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+  //           <h2 className="text-xl font-bold mb-2">נדרש התחברות</h2>
+  //           <p className="text-slate-600 mb-4">אנא התחברו כדי להשתתפו בהצבעות לממשל וליצור החלטות</p>
+  //         </Card>
+  //       </main>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
@@ -314,18 +315,20 @@ export default function Governance() {
           <TabsContent value="decisions" className="space-y-4">
             <div className="flex justify-between items-center mb-4 flex-row-reverse">
               <h2 className="text-2xl font-bold">החלטות פעילות</h2>
-              <Select value={selectedMinistry?.toString() || "all"} onValueChange={(value) => setSelectedMinistry(value === "all" ? null : parseInt(value))}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="סנן לפי משרד" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ministries.map((m) => (
-                    <SelectItem key={m.id} value={m.id.toString()}>
-                      {m.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <Select value={selectedMinistry?.toString() || "all"} onValueChange={(value) => setSelectedMinistry(value === "all" ? null : parseInt(value))}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="סנן לפי משרד" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ministries.map((m) => (
+                      <SelectItem key={m.id} value={m.id.toString()}>
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {activeDecisions.length === 0 ? (
