@@ -123,6 +123,12 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
             }
           );
 
+          const delegateNames = ["דוד כהן", "מרים לוי", "יוסף אברהם", "שרה גולדמן", "אברהם ישראלי", "רחל מילר", "משה רובין", "חנה שפירא"];
+          const delegateIds = ["123456789", "987654321", "456789123", "789123456", "321654987", "654987321", "111222333", "444555666"];
+          const delegateIndex = (ministry.id * 7) % delegateNames.length;
+          const delegateName = delegateNames[delegateIndex];
+          const delegateId = delegateIds[delegateIndex];
+
           return (
             <Card key={ministry.id} className="p-6 border-2 border-slate-200 text-right">
               <div className="flex items-center gap-3 mb-4 flex-row-reverse">
@@ -131,6 +137,9 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
                   <h3 className="font-bold text-slate-900">{ministry.name}</h3>
                   <p className="text-xs text-slate-600">
                     {decisionCount} הצעות פעילות
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    <span className="font-medium">ההצלה:</span> {delegateName} ({delegateId})
                   </p>
                 </div>
               </div>
