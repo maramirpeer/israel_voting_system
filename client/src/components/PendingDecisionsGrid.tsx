@@ -138,9 +138,7 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
                   <p className="text-xs text-slate-600">
                     {decisionCount} הצעות פעילות
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    <span className="font-medium">ההצלה:</span> {delegateName} ({delegateId})
-                  </p>
+
                 </div>
               </div>
 
@@ -193,9 +191,7 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
                         נגד
                       </Button>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2 text-center">
-                      מס ת.ז: {delegateId}
-                    </p>
+
                   </div>
                 ))}
               </div>

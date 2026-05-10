@@ -1,0 +1,46 @@
+{
+  "query": "SELECT DISTINCT ministryId, COUNT(*) as count FROM delegates GROUP BY ministryId;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute SELECT DISTINCT ministryId, COUNT(*) as count FROM delegates GROUP BY ministryId;",
+  "rows": [
+    {
+      "ministryId": "4",
+      "count": "3"
+    },
+    {
+      "ministryId": "1",
+      "count": "3"
+    },
+    {
+      "ministryId": "5",
+      "count": "3"
+    },
+    {
+      "ministryId": "2",
+      "count": "3"
+    },
+    {
+      "ministryId": "9",
+      "count": "3"
+    },
+    {
+      "ministryId": "3",
+      "count": "3"
+    },
+    {
+      "ministryId": "7",
+      "count": "3"
+    },
+    {
+      "ministryId": "8",
+      "count": "3"
+    },
+    {
+      "ministryId": "6",
+      "count": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "ministryId\tcount\n4\t3\n1\t3\n5\t3\n2\t3\n9\t3\n3\t3\n7\t3\n8\t3\n6\t3\n",
+  "stderr": "",
+  "execution_time_ms": 262
+}
