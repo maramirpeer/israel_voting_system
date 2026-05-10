@@ -243,6 +243,7 @@ export default function Governance() {
         {activePublicVotingQuery.data && activePublicVotingQuery.data.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה פעילה</h2>
+
             <div className="space-y-3">
               {activePublicVotingQuery.data
                 .sort((a, b) => {
@@ -257,21 +258,8 @@ export default function Governance() {
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
 
-                  // Calculate time remaining for THIS decision
-                  let timeRemaining = "חישוב זמן...";
-                  if (decision.publicVotingEndsAt) {
-                    const now = new Date();
-                    const end = new Date(decision.publicVotingEndsAt);
-                    const diff = end.getTime() - now.getTime();
-                    if (diff > 0) {
-                      const hours = Math.floor(diff / (1000 * 60 * 60));
-                      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                      timeRemaining = `${hours}h ${minutes}m ${seconds}s`;
-                    } else {
-                      timeRemaining = "הצבעה הסתיימה";
-                    }
-                  }
+                  // Get time remaining from state (updated every second)
+                  const timeRemaining = publicTimeRemaining[decision.id] || "חישוב זמן...";
                   // Use refreshCounter to trigger re-renders every second
                   refreshCounter; // This forces re-render when counter changes
 
