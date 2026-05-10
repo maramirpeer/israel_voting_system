@@ -312,7 +312,7 @@ export default function Home() {
               <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <ArrowRight className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגטית</h3>
+              <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגתית</h3>
               <p className="text-gray-600">
                 מערכת זו מחברת את הממשל לקול הציבור בהדרגה, ללא שינוי דרמטי
               </p>
