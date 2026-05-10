@@ -293,6 +293,13 @@ try {
 
   // Insert decisions
   for (const decision of decisions) {
+    // Calculate varied public voting end times (24-72 hours from now)
+    const decisionIndex = decisions.indexOf(decision);
+    const minHours = 24;
+    const maxHours = 72;
+    const randomHours = minHours + (decisionIndex % 49) * (maxHours - minHours) / 49; // Distribute across range
+    const publicVotingEndsAt = new Date(now.getTime() + randomHours * 60 * 60 * 1000);
+
     await connection.execute(
       `INSERT INTO decisions (ministryId, title, description, category, votesFor, votesAgainst, status, proposedBy, createdAt, votingEndsAt, publicVotesFor, publicVotesAgainst, publicVotingEndsAt)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)`,
@@ -308,7 +315,7 @@ try {
         decision.votingEndsAt,
         Math.floor(decision.votesFor * 0.6), // Public votes for
         Math.floor(decision.votesAgainst * 0.4), // Public votes against
-        decision.votingEndsAt // Public voting ends at same time
+        publicVotingEndsAt // Public voting ends at varied time
       ]
     );
   }
