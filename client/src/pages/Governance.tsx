@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
-import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home, BarChart3 } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -227,14 +227,6 @@ export default function Governance() {
           </div>
           <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
           <div className="flex items-center gap-2 flex-row-reverse">
-            <Button 
-              variant="outline" 
-              onClick={() => setLocation("/delegation-analytics")}
-              className="flex items-center gap-2 justify-end"
-            >
-              ניתוח האצלות
-              <BarChart3 className="w-4 h-4" />
-            </Button>
             <div>
               <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
               <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
@@ -377,7 +369,7 @@ export default function Governance() {
                     <p className="text-sm text-purple-600 font-medium">סה"כ החלטות</p>
                     <p className="text-3xl font-bold text-purple-900">{decisions.length}</p>
                   </div>
-                  <BarChart3 className="w-8 h-8 text-purple-400" />
+                  <CheckCircle2 className="w-8 h-8 text-purple-400" />
                 </div>
               </Card>
             </div>
