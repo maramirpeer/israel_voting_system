@@ -103,7 +103,8 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
             (_, idx) => {
               const decisionId = ministry.id * 100 + idx;
               const baseVotes = 2000 + ((decisionId * 137) % 8000);
-              const forPercentage = ((decisionId * 23) % 100);
+              // Generate percentage between 30% and 70% to ensure balanced mix
+              const forPercentage = 30 + ((decisionId * 23) % 41); // 30-70%
               const votesFor = Math.floor(baseVotes * (forPercentage / 100));
               const votesAgainst = baseVotes - votesFor;
               const percentageFor = (votesFor / baseVotes) * 100;
