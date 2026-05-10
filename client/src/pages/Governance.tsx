@@ -238,7 +238,7 @@ export default function Governance() {
         {/* Active Voting Decisions Section - Sorted by Time Remaining */}
         {activePublicVotingQuery.data && activePublicVotingQuery.data.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה</h2>
+            <h2 className="text-2xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה פעילה</h2>
             <div className="space-y-3">
               {activePublicVotingQuery.data
                 .sort((a, b) => {
@@ -273,7 +273,7 @@ export default function Governance() {
                           <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
                         </div>
                         <div className="text-left text-xs text-slate-400">
-                          סהיד: {totalVotes} הצבעות
+                          סה"כ: {totalVotes} הצבעות
                         </div>
                       </div>
                       <div className="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
