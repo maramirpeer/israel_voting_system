@@ -255,8 +255,11 @@ export default function Governance() {
                   return endA - endB; // Sort by earliest end time first
                 })
                 .map((decision) => {
-                  const votesFor = decision.publicVotesFor || 0;
-                  const votesAgainst = decision.publicVotesAgainst || 0;
+                  // Generate fictitious vote counts (different for each decision)
+                  // Use decision ID to generate consistent but different vote counts
+                  const baseVotes = 1000 + ((decision.id * 137) % 9000);
+                  const votesFor = Math.floor(baseVotes * (0.4 + ((decision.id * 11) % 100) / 500)); // 40-60% for
+                  const votesAgainst = Math.floor(baseVotes * (0.4 + ((decision.id * 13) % 100) / 500)); // 40-60% against
                   const totalVotes = votesFor + votesAgainst;
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
@@ -285,7 +288,7 @@ export default function Governance() {
                           <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
                         </div>
                         <div className="text-left text-xs text-slate-400">
-                          סה"כ: {totalVotes} הצבעות
+                          סה"כ: {totalVotes.toLocaleString('he-IL')} הצבעות
                         </div>
                       </div>
                       <div className="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">

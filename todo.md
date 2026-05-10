@@ -349,3 +349,13 @@
   - [ ] Create ministry details page or modal
   - [ ] Display voting decisions for selected ministry
   - [ ] Add navigation routing
+
+
+## Phase 15.1: Fictitious Voter Counts (COMPLETED)
+
+- [x] Generate unique voter counts per decision (1,000-10,000 range)
+- [x] Ensure each decision shows different vote counts
+- [x] Display counts with Hebrew locale formatting
+- [x] Maintain realistic for/against split (40-60%)
+- [x] Verified in browser - each decision shows unique counts
+
