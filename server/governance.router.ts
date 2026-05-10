@@ -128,9 +128,14 @@ export const governanceRouter = router({
         }
 
         const votingStartsAt = new Date();
-        const votingEndsAt = new Date(votingStartsAt.getTime() + 72 * 60 * 60 * 1000); // 72 hours
         
-        // Public voting also opens for 72 hours (citizen voice)
+        // Generate random voting duration between 24-72 hours for variety
+        const minHours = 24;
+        const maxHours = 72;
+        const randomHours = minHours + Math.random() * (maxHours - minHours);
+        const votingEndsAt = new Date(votingStartsAt.getTime() + randomHours * 60 * 60 * 1000);
+        
+        // Public voting also opens for same duration (citizen voice)
         const publicVotingStartsAt = votingStartsAt;
         const publicVotingEndsAt = votingEndsAt;
 
