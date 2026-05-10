@@ -27,43 +27,100 @@ interface PendingDecisionsGridProps {
 export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDecisionsGridProps) {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 text-right">המשרדים - החלטות בהמתנה</h2>
+      <h2 className="text-2xl font-bold mb-4 text-right">המשרדים - הצעות פעילות</h2>
       <div className="grid md:grid-cols-2 gap-6">
         {ministries.map((ministry) => {
-          // Generate 1-5 pending decisions per ministry
-          const decisionCount = 1 + ((ministry.id * 7) % 5); // 1-5 decisions
-          const pendingDecisions: PendingDecision[] = Array.from({ length: decisionCount }, (_, idx) => {
-            const decisionId = ministry.id * 100 + idx;
-            const baseVotes = 1500 + ((decisionId * 137) % 8500);
-            const forPercentage = ((decisionId * 17) % 100);
-            const votesFor = Math.floor(baseVotes * (forPercentage / 100));
-            const votesAgainst = baseVotes - votesFor;
-            const percentageFor = (votesFor / baseVotes) * 100;
-            const percentageAgainst = (votesAgainst / baseVotes) * 100;
+          // Generate 2-4 random ministerial proposals per ministry
+          const decisionCount = 2 + ((ministry.id * 13) % 3); // 2-4 decisions
 
-            // Always include budget as first decision
-            let title = '';
-            if (idx === 0) {
-              title = `תקציב חדש - ${ministry.name}`;
-            } else {
-              const otherTitles = [
-                `מדיניות חדשה - ${ministry.name}`,
-                `שדרוג שירותים - ${ministry.name}`,
-                `חקיקה חדשה - ${ministry.name}`,
-                `הצעה להשקעה - ${ministry.name}`,
-              ];
-              title = otherTitles[(idx - 1) % otherTitles.length];
+          // Define ministry-specific proposals
+          const ministryProposals: { [key: string]: string[] } = {
+            "משרד האוצר": [
+              "הגדלת תקציב להשקעות",
+              "שיפור מערכת המס",
+              "תמיכה בעסקים קטנים",
+              "הנחות כלכליות",
+            ],
+            "משרד הביטחון": [
+              "שדרוג מערכת ההגנה",
+              "הרחבת בסיסים צבאיים",
+              "השקעה בטכנולוגיה צבאית",
+              "תוכנית הכשרה חדשה",
+            ],
+            "משרד הבריאות": [
+              "הקמת מרכזי בריאות",
+              "שיפור שירותי בריאות נפשית",
+              "חיסון ילדים חדש",
+              "תוכנית מניעת מחלות",
+            ],
+            "משרד החדשנות ואיכות הסביבה": [
+              "קידום אנרגיה ירוקה",
+              "הקמת תחנות טעינה",
+              "שימור טבע",
+              "מחקר סביבתי",
+            ],
+            "משרד החוץ וההסברה העולמית": [
+              "שיפור יחסים דיפלומטיים",
+              "קידום הסברה בחו\"ל",
+              "שיתופי פעולה בינלאומיים",
+              "תוכנית תרבות",
+            ],
+            "משרד החינוך": [
+              "שיפור תוכניות לימוד",
+              "הקמת בתי ספר חדשים",
+              "השקעה בטכנולוגיה חינוכית",
+              "תוכנית מלגות",
+            ],
+            "משרד המשפטים": [
+              "שיפור מערכת המשפט",
+              "הגנה על זכויות אדם",
+              "חוקים חדשים",
+              "תוכנית הגנה על הצרכן",
+            ],
+            "משרד הפנים, החברה והרווחה": [
+              "תוכנית שיכון חברתי",
+              "שיפור שירותים סוציאליים",
+              "תמיכה בקשישים",
+              "פיתוח כפרי",
+            ],
+            "משרד התרבות": [
+              "קידום אמנות וספורט",
+              "הקמת מוזיאונים",
+              "תוכנית תרבות קהילתית",
+              "תמיכה באמנים",
+            ],
+          };
+
+          const proposals = ministryProposals[ministry.name] || [
+            "הצעה 1",
+            "הצעה 2",
+            "הצעה 3",
+            "הצעה 4",
+          ];
+
+          const pendingDecisions: PendingDecision[] = Array.from(
+            { length: decisionCount },
+            (_, idx) => {
+              const decisionId = ministry.id * 100 + idx;
+              const baseVotes = 2000 + ((decisionId * 137) % 8000);
+              const forPercentage = ((decisionId * 23) % 100);
+              const votesFor = Math.floor(baseVotes * (forPercentage / 100));
+              const votesAgainst = baseVotes - votesFor;
+              const percentageFor = (votesFor / baseVotes) * 100;
+              const percentageAgainst = (votesAgainst / baseVotes) * 100;
+
+              const title = proposals[idx % proposals.length];
+
+              return {
+                id: decisionId,
+                title: title,
+                votesFor,
+                votesAgainst,
+                percentageFor,
+                percentageAgainst,
+              };
             }
-
-            return {
-              id: decisionId,
-              title: title,
-              votesFor,
-              votesAgainst,
-              percentageFor,
-              percentageAgainst,
-            };
-          });
+          );
 
           return (
             <Card key={ministry.id} className="p-6 border-2 border-slate-200 text-right">
@@ -71,18 +128,31 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
                 <div className="text-4xl">{ministry.icon}</div>
                 <div>
                   <h3 className="font-bold text-slate-900">{ministry.name}</h3>
-                  <p className="text-xs text-slate-600">{decisionCount} החלטות בהמתנה</p>
+                  <p className="text-xs text-slate-600">
+                    {decisionCount} הצעות פעילות
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-3 mt-4">
                 {pendingDecisions.map((decision) => (
-                  <div key={decision.id} className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                    <p className="text-sm font-medium text-slate-900 mb-1">{decision.title}</p>
+                  <div
+                    key={decision.id}
+                    className="bg-slate-50 p-3 rounded-lg border border-slate-200"
+                  >
+                    <p className="text-sm font-medium text-slate-900 mb-1">
+                      {decision.title}
+                    </p>
                     <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
                       <div>
-                        <span className="font-medium text-green-600">{decision.votesFor.toLocaleString('he-IL')}</span> בעד ({decision.percentageFor.toFixed(0)}%) |
-                        <span className="font-medium text-red-600 mr-1">{decision.votesAgainst.toLocaleString('he-IL')}</span> נגד ({decision.percentageAgainst.toFixed(0)}%)
+                        <span className="font-medium text-green-600">
+                          {decision.votesFor.toLocaleString("he-IL")}
+                        </span>{" "}
+                        בעד ({decision.percentageFor.toFixed(0)}%) |
+                        <span className="font-medium text-red-600 mr-1">
+                          {decision.votesAgainst.toLocaleString("he-IL")}
+                        </span>{" "}
+                        נגד ({decision.percentageAgainst.toFixed(0)}%)
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden flex mb-2">

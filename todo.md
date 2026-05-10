@@ -371,10 +371,12 @@
 - [x] Integrated into Governance page
 - [x] Verified in browser - all 9 ministries showing pending decisions
 
-## Phase 15.3: Budget Proposals Priority (COMPLETED)
+## Phase 15.3: Ministerial Proposals by Activity (COMPLETED)
 
-- [x] Each ministry's first decision is always a budget proposal
-- [x] Other proposals follow (1-4 additional)
-- [x] Budget proposals visible as priority items
-- [x] Verified in browser - all ministries showing budget first
+- [x] Each ministry displays 2-4 random proposals for specific activities
+- [x] Proposals are ministry-specific (not generic)
+- [x] Examples: Defense - "שדרוג הגנה", Education - "שיפור תוכניות לימוד"
+- [x] Color-coded progress bars (green/red) for each proposal
+- [x] Interactive voting buttons for each proposal
+- [x] Verified in browser - all 9 ministries showing activity proposals
 
