@@ -489,27 +489,7 @@ export default function Governance() {
                           )}
                         </div>
 
-                        {/* Voting Buttons - Only for ministers */}
-                        {user?.role === "minister" && (
-                          <div className="flex gap-2">
-                            <Button
-                              onClick={() => handleVote(decision.id, "for")}
-                              className="flex-1 bg-green-600 hover:bg-green-700"
-                              disabled={castVoteMutation.isPending}
-                            >
-                              <ThumbsUp className="w-4 h-4 mr-2" />
-                              הצביעו בעד
-                            </Button>
-                            <Button
-                              onClick={() => handleVote(decision.id, "against")}
-                              className="flex-1 bg-red-600 hover:bg-red-700"
-                              disabled={castVoteMutation.isPending}
-                            >
-                              <ThumbsDown className="w-4 h-4 mr-2" />
-                              הצביעו נגד
-                            </Button>
-                          </div>
-                        )}
+
 
                         {/* Public Voting Display */}
                         {decision.publicVotingStartsAt && (
