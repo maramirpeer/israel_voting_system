@@ -144,16 +144,16 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
                     <p className="text-sm font-medium text-slate-900 mb-1">
                       {decision.title}
                     </p>
-                    <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
+                    <div className="flex items-center justify-between text-xs mb-2">
                       <div>
                         <span className="font-medium text-green-600">
                           {decision.votesFor.toLocaleString("he-IL")}
                         </span>{" "}
-                        בעד ({decision.percentageFor.toFixed(0)}%) |
+                        <span className="font-medium text-green-600">בעד</span> ({decision.percentageFor.toFixed(0)}%) |
                         <span className="font-medium text-red-600 mr-1">
                           {decision.votesAgainst.toLocaleString("he-IL")}
                         </span>{" "}
-                        נגד ({decision.percentageAgainst.toFixed(0)}%)
+                        <span className="font-medium text-red-600">נגד</span> ({decision.percentageAgainst.toFixed(0)}%)
                       </div>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden flex mb-2">
