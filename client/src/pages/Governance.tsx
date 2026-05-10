@@ -197,6 +197,54 @@ export default function Governance() {
       </header>
 
       <main className="container py-8">
+        {/* Active Voting Decisions Section - Sorted by Time Remaining */}
+        {activePublicVotingQuery.data && activePublicVotingQuery.data.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה</h2>
+            <div className="space-y-3">
+              {activePublicVotingQuery.data
+                .sort((a, b) => {
+                  const endA = a.publicVotingEndsAt ? new Date(a.publicVotingEndsAt).getTime() : 0;
+                  const endB = b.publicVotingEndsAt ? new Date(b.publicVotingEndsAt).getTime() : 0;
+                  return endA - endB; // Sort by earliest end time first
+                })
+                .map((decision) => {
+                  const votesFor = decision.publicVotesFor || 0;
+                  const votesAgainst = decision.publicVotesAgainst || 0;
+                  const totalVotes = votesFor + votesAgainst;
+                  const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
+                  const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
+
+                  // Calculate time remaining
+                  const now = new Date();
+                  const end = decision.publicVotingEndsAt ? new Date(decision.publicVotingEndsAt) : new Date();
+                  const diff = end.getTime() - now.getTime();
+                  const hours = Math.floor(diff / (1000 * 60 * 60));
+                  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                  const timeRemaining = diff > 0 ? `${hours}h ${minutes}m` : "הצבעה הסתיימה";
+
+                  return (
+                    <Card key={decision.id} className="p-4 border-l-4 border-yellow-500 text-right">
+                      <div className="flex items-start justify-between flex-row-reverse mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-slate-900">{decision.title}</h3>
+                          <p className="text-sm text-slate-600 mt-1">{decision.description}</p>
+                        </div>
+                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-slate-500">
+                        <div>
+                          <span className="font-medium text-green-600">{votesFor}</span> בעד ({percentageFor.toFixed(1)}%) | 
+                          <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+            </div>
+          </div>
+        )}
+
         <div className="mb-6 flex justify-between items-center flex-row-reverse">
           <div></div>
           <div className="flex gap-2 flex-row-reverse">
