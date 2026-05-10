@@ -41,17 +41,23 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
             const percentageFor = (votesFor / baseVotes) * 100;
             const percentageAgainst = (votesAgainst / baseVotes) * 100;
 
-            const titles = [
-              `הצעה ${idx + 1} של ${ministry.name}`,
-              `תקציב חדש - ${ministry.name}`,
-              `מדיניות חדשה - ${ministry.name}`,
-              `שדרוג שירותים - ${ministry.name}`,
-              `חקיקה חדשה - ${ministry.name}`,
-            ];
+            // Always include budget as first decision
+            let title = '';
+            if (idx === 0) {
+              title = `תקציב חדש - ${ministry.name}`;
+            } else {
+              const otherTitles = [
+                `מדיניות חדשה - ${ministry.name}`,
+                `שדרוג שירותים - ${ministry.name}`,
+                `חקיקה חדשה - ${ministry.name}`,
+                `הצעה להשקעה - ${ministry.name}`,
+              ];
+              title = otherTitles[(idx - 1) % otherTitles.length];
+            }
 
             return {
               id: decisionId,
-              title: titles[idx % titles.length],
+              title: title,
               votesFor,
               votesAgainst,
               percentageFor,

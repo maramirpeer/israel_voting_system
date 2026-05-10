@@ -371,3 +371,10 @@
 - [x] Integrated into Governance page
 - [x] Verified in browser - all 9 ministries showing pending decisions
 
+## Phase 15.3: Budget Proposals Priority (COMPLETED)
+
+- [x] Each ministry's first decision is always a budget proposal
+- [x] Other proposals follow (1-4 additional)
+- [x] Budget proposals visible as priority items
+- [x] Verified in browser - all ministries showing budget first
+
