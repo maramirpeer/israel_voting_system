@@ -18,12 +18,14 @@ export default function Governance() {
   const [, setLocation] = useLocation();
   const [selectedMinistry, setSelectedMinistry] = useState<number | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<{ [key: number]: string }>({});
+  const [publicTimeRemaining, setPublicTimeRemaining] = useState<{ [key: number]: string }>({});
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
   const decisionsQuery = trpc.governance.decisions.list.useQuery();
   const activeDecisionsQuery = trpc.governance.decisions.active.useQuery();
-  const activePublicVotingQuery = trpc.governance.publicVotes.active.useQuery(undefined, { refetchInterval: 30000 }); // Refresh every 30 seconds
+  const activePublicVotingQuery = trpc.governance.publicVotes.active.useQuery(undefined, { refetchInterval: 10000 }); // Refresh every 10 seconds for real-time updates
 
   // Mutations
   const createDecisionMutation = trpc.governance.decisions.create.useMutation();
@@ -38,7 +40,7 @@ export default function Governance() {
   const decisions = decisionsQuery.data || [];
   const activeDecisions = activeDecisionsQuery.data || [];
 
-  // Calculate time remaining for voting
+  // Calculate time remaining for voting - update every second for real-time display
   useEffect(() => {
     const interval = setInterval(() => {
       const newTimeRemaining: { [key: number]: string } = {};
@@ -51,17 +53,53 @@ export default function Governance() {
           if (diff > 0) {
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            newTimeRemaining[decision.id] = `${hours}h ${minutes}m`;
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            newTimeRemaining[decision.id] = `${hours}h ${minutes}m ${seconds}s`;
           } else {
             newTimeRemaining[decision.id] = "Voting ended";
           }
         }
       });
       setTimeRemaining(newTimeRemaining);
-    }, 60000); // Update every minute
+    }, 1000); // Update every second
 
     return () => clearInterval(interval);
   }, [activeDecisions]);
+
+  // Calculate time remaining for public voting - update every second for real-time display
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newPublicTimeRemaining: { [key: number]: string } = {};
+      const activePublicVoting = activePublicVotingQuery.data || [];
+      activePublicVoting.forEach((decision) => {
+        if (decision.publicVotingEndsAt) {
+          const now = new Date();
+          const end = new Date(decision.publicVotingEndsAt);
+          const diff = end.getTime() - now.getTime();
+          
+          if (diff > 0) {
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            newPublicTimeRemaining[decision.id] = `${hours}h ${minutes}m ${seconds}s`;
+          } else {
+            newPublicTimeRemaining[decision.id] = "הצבעה הסתיימה";
+          }
+        }
+      });
+      setPublicTimeRemaining(newPublicTimeRemaining);
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, [activePublicVotingQuery.data]);
+
+  // Trigger re-render every second to update all dynamic data
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshCounter(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCreateDecision = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -215,13 +253,10 @@ export default function Governance() {
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
 
-                  // Calculate time remaining
-                  const now = new Date();
-                  const end = decision.publicVotingEndsAt ? new Date(decision.publicVotingEndsAt) : new Date();
-                  const diff = end.getTime() - now.getTime();
-                  const hours = Math.floor(diff / (1000 * 60 * 60));
-                  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                  const timeRemaining = diff > 0 ? `${hours}h ${minutes}m` : "הצבעה הסתיימה";
+                  // Get time remaining from state (updated every second)
+                  const timeRemaining = publicTimeRemaining[decision.id] || "חישוב זמן...";
+                  // Use refreshCounter to trigger re-renders
+                  const _ = refreshCounter;
 
                   return (
                     <Card key={decision.id} className="p-4 border-l-4 border-yellow-500 text-right">
@@ -233,10 +268,19 @@ export default function Governance() {
                         <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining}</Badge>
                       </div>
                       <div className="flex items-center justify-between text-xs text-slate-500">
-                        <div>
+                        <div className="text-right">
                           <span className="font-medium text-green-600">{votesFor}</span> בעד ({percentageFor.toFixed(1)}%) | 
                           <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
                         </div>
+                        <div className="text-left text-xs text-slate-400">
+                          סהיד: {totalVotes} הצבעות
+                        </div>
+                      </div>
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div 
+                          className="bg-green-500 h-full transition-all duration-300" 
+                          style={{ width: `${percentageFor}%` }}
+                        ></div>
                       </div>
                     </Card>
                   );
