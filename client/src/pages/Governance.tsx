@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocation } from "wouter";
+import { PendingDecisionsGrid } from "@/components/PendingDecisionsGrid";
 
 export default function Governance() {
   const { user, isAuthenticated } = useAuth();
@@ -381,26 +382,12 @@ export default function Governance() {
               </Card>
             </div>
 
-            {/* Ministries Grid */}
-            <div>
-              <h2 className="text-2xl font-bold mb-4 text-right">המשרדים</h2>
-              <div className="grid md:grid-cols-3 gap-4">
-                {ministries.map((ministry) => (
-                  <Card 
-                    key={ministry.id} 
-                    className="p-4 hover:shadow-lg transition cursor-pointer border-2 hover:border-blue-300 text-right"
-                    onClick={() => setLocation(`/ministry/${ministry.id}`)}
-                  >
-                    <div className="text-4xl mb-2 text-right">{ministry.icon}</div>
-                    <h3 className="font-bold text-slate-900 text-sm">{ministry.name}</h3>
-                    <p className="text-xs text-slate-600 mt-2 line-clamp-2">{ministry.description}</p>
-                    <div className="mt-3 text-xs font-medium text-slate-500">
-                      {decisions.filter((d) => d.ministryId === ministry.id).length} החלטות
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
+            {/* Pending Decisions Grid */}
+            <PendingDecisionsGrid 
+              ministries={ministries}
+              onVote={(decisionId, vote) => castPublicVoteMutation.mutate({ decisionId, vote })}
+              isVoting={castPublicVoteMutation.isPending}
+            />
 
             {/* How It Works */}
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">

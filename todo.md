@@ -360,3 +360,14 @@
 - [x] Progress bar shows green (for) and red (against) sections
 - [x] Verified in browser - each decision shows unique counts with different percentages
 
+## Phase 15.2: Pending Decisions by Ministry (COMPLETED)
+
+- [x] Generate 1-5 random pending decisions per ministry
+- [x] Each decision with unique vote counts
+- [x] Display meaningful vote differences (not 50/50)
+- [x] Color-coded progress bars (green/red)
+- [x] Voting buttons for each decision
+- [x] PendingDecisionsGrid component created
+- [x] Integrated into Governance page
+- [x] Verified in browser - all 9 ministries showing pending decisions
+
