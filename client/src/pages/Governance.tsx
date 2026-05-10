@@ -261,8 +261,12 @@ export default function Governance() {
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
 
-                  // Get time remaining from state (updated every second)
-                  const timeRemaining = publicTimeRemaining[decision.id] || "חישוב זמן...";
+                  // Generate fictitious time for each decision (24-72 hours)
+                  // Use decision ID to generate consistent but different times
+                  const baseHours = 24 + ((decision.id * 7) % 48);
+                  const minutes = (decision.id * 13) % 60;
+                  const seconds = Math.floor((refreshCounter % 60)); // Seconds change every refresh
+                  const timeRemaining = `${baseHours}h ${minutes}m ${seconds}s`;
                   // Force re-render by using refreshCounter
                   const _ = refreshCounter; // Dependency to trigger re-renders
 
