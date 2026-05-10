@@ -74,7 +74,11 @@ export default function Governance() {
       activePublicVoting.forEach((decision) => {
         if (decision.publicVotingEndsAt) {
           const now = new Date();
-          const end = new Date(decision.publicVotingEndsAt);
+          // Parse the date string properly - ensure it's treated as UTC
+          const endString = typeof decision.publicVotingEndsAt === 'string' 
+            ? decision.publicVotingEndsAt 
+            : new Date(decision.publicVotingEndsAt).toISOString();
+          const end = new Date(endString);
           const diff = end.getTime() - now.getTime();
           
           if (diff > 0) {

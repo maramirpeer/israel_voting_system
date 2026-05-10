@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, title, publicVotingEndsAt FROM decisions WHERE status = 'voting' ORDER BY publicVotingEndsAt LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute SELECT id, title, publicVotingEndsAt FROM decisions WHERE status = 'voting' ORDER BY publicVotingEndsAt LIMIT 10;",
+  "rows": [
+    {
+      "id": "390022",
+      "title": "בנייה של בתי חולים חדשים",
+      "publicVotingEndsAt": "2026-05-10 11:27:52"
+    },
+    {
+      "id": "390005",
+      "title": "תכנית פיתוח כפרי חדשה",
+      "publicVotingEndsAt": "2026-05-10 13:27:52"
+    },
+    {
+      "id": "390014",
+      "title": "תמיכה בסטארטאפים ירוקים",
+      "publicVotingEndsAt": "2026-05-10 15:27:52"
+    },
+    {
+      "id": "390008",
+      "title": "תכנית פיתוח טכנולוגיה צבאית",
+      "publicVotingEndsAt": "2026-05-10 19:27:52"
+    },
+    {
+      "id": "390019",
+      "title": "הקמת מעונות ילדים ממלכתיים",
+      "publicVotingEndsAt": "2026-05-10 21:27:52"
+    },
+    {
+      "id": "390002",
+      "title": "הקמת קרן להשקעה בתשתיות",
+      "publicVotingEndsAt": "2026-05-11 01:27:52"
+    },
+    {
+      "id": "390025",
+      "title": "הקמת מוזיאונים חדשים",
+      "publicVotingEndsAt": "2026-05-11 03:27:52"
+    },
+    {
+      "id": "390011",
+      "title": "רפורמה במערכת המשפט",
+      "publicVotingEndsAt": "2026-05-11 07:27:52"
+    },
+    {
+      "id": "390017",
+      "title": "תכנית שיתוף פעולה דיפלומטית",
+      "publicVotingEndsAt": "2026-05-11 13:27:52"
+    },
+    {
+      "id": "420002",
+      "title": "הקמת קרן להשקעה בתשתיות",
+      "publicVotingEndsAt": "2026-05-11 17:32:56"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tpublicVotingEndsAt\n390022\tבנייה של בתי חולים חדשים\t2026-05-10 11:27:52\n390005\tתכנית פיתוח כפרי חדשה\t2026-05-10 13:27:52\n390014\tתמיכה בסטארטאפים ירוקים\t2026-05-10 15:27:52\n390008\tתכנית פיתוח טכנולוגיה צבאית\t2026-05-10 19:27:52\n390019\tהקמת מעונות ילדים ממלכתיים\t2026-05-10 21:27:52\n390002\tהקמת קרן להשקעה בתשתיות\t2026-05-11 01:27:52\n390025\tהקמת מוזיאונים חדשים\t2026-05-11 03:27:52\n390011\tרפורמה במערכת המשפט\t2026-05-11 07:27:52\n390017\tתכנית שיתוף פעולה דיפלומטית\t2026-05-11 13:27:52\n420002\tהקמת קרן להשקעה בתשתיות\t2026-05-11 17:32:56\n",
+  "stderr": "",
+  "execution_time_ms": 266
+}
