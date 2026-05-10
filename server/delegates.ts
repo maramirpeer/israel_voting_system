@@ -36,6 +36,8 @@ export async function getDelegatesForMinistry(ministryId: number): Promise<Deleg
     const ministry = await db.select().from(ministries).where(eq(ministries.id, ministryId)).limit(1);
     const ministryName = ministry[0]?.name || "Unknown Ministry";
 
+    console.log(`[getDelegatesForMinistry] Ministry ${ministryId}: Found ${delegatesList.length} active delegates`);
+
     return delegatesList.map((d) => ({
       id: d.id,
       name: d.name,
@@ -48,7 +50,7 @@ export async function getDelegatesForMinistry(ministryId: number): Promise<Deleg
       ministryName,
     }));
   } catch (error) {
-    console.error("[Delegates] Error getting delegates for ministry:", error);
+    console.error(`[Delegates] Error getting delegates for ministry ${ministryId}:`, error);
     return [];
   }
 }

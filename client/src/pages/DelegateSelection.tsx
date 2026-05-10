@@ -22,9 +22,10 @@ export default function DelegateSelection() {
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
+  const ministryId = selectedMinistryId && Number.isFinite(selectedMinistryId) ? selectedMinistryId : 1;
   const delegatesQuery = trpc.delegates.listByMinistry.useQuery(
-    { ministryId: selectedMinistryId || 1 },
-    { enabled: !!selectedMinistryId }
+    { ministryId },
+    { enabled: true }
   );
   const assignmentsQuery = trpc.delegates.getCitizenAssignments.useQuery(
     { userId: user?.id || 0 },
@@ -147,7 +148,12 @@ export default function DelegateSelection() {
           </Button>
           <h1 className="text-3xl font-bold text-slate-900">🗳️ בחירת נציגים</h1>
           <div className="w-48">
-            <Select value={selectedMinistryId?.toString() || ""} onValueChange={(v) => setSelectedMinistryId(parseInt(v))}>
+            <Select value={selectedMinistryId?.toString() || ""} onValueChange={(v) => {
+            const id = Number(v);
+            if (Number.isFinite(id)) {
+              setSelectedMinistryId(id);
+            }
+          }}>
               <SelectTrigger>
                 <SelectValue placeholder="בחרו משרד" />
               </SelectTrigger>
@@ -349,7 +355,7 @@ export default function DelegateSelection() {
                       disabled={assignDelegateMutation.isPending}
                       className="w-full mt-4 bg-orange-600 hover:bg-orange-700"
                     >
-                      {assignDelegateMutation.isPending ? "שומר..." : "אשר האצלה לאזרח זה"}
+                      {assignDelegateMutation.isPending ? "שומר..." : "אשר האצלה"}
                     </Button>
                   </Card>
                 )}
@@ -357,25 +363,6 @@ export default function DelegateSelection() {
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Info Section */}
-        <Card className="p-6 bg-slate-50 border-slate-200">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">ℹ️ כיצד זה עובד?</h3>
-          <div className="space-y-3 text-slate-700">
-            <p>
-              <strong>הצבעה ישירה:</strong> אתה מצביע ישירות על כל החלטה. זה דורה מעורבות אך נותן לך שליטה מלאה.
-            </p>
-            <p>
-              <strong>בחירת נציג:</strong> אתה בוחר נציג מוסמך שיצביע בשמך. הנציג יצביע בהתאם לערכיו ומומחיותו.
-            </p>
-            <p>
-              <strong>האצלה לאזרח:</strong> אתה מאציל את קולך לאזרח אחר שבו אתה סומך. הוא יצביע בשמך על כל החלטה.
-            </p>
-            <p>
-              <strong>גמישות:</strong> אתה יכול להחליף בין כל שלוש האפשרויות בכל רגע, לכל משרד בנפרד.
-            </p>
-          </div>
-        </Card>
       </main>
     </div>
   );
