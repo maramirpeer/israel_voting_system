@@ -232,7 +232,7 @@ export default function Governance() {
               onClick={() => setLocation("/delegation-analytics")}
               className="flex items-center gap-2 justify-end"
             >
-              ניתוח שרשראות
+              ניתוח האצלות
               <BarChart3 className="w-4 h-4" />
             </Button>
             <div>
