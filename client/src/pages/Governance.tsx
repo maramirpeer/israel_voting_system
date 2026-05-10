@@ -272,8 +272,8 @@ export default function Governance() {
                       timeRemaining = "הצבעה הסתיימה";
                     }
                   }
-                  // Use refreshCounter to trigger re-renders
-                  const _ = refreshCounter;
+                  // Use refreshCounter to trigger re-renders every second
+                  refreshCounter; // This forces re-render when counter changes
 
                   return (
                     <Card key={decision.id} className="p-4 border-l-4 border-yellow-500 text-right">
