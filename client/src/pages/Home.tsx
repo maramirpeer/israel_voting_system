@@ -375,7 +375,7 @@ export default function Home() {
                 </Card>
 
                 <Card className="p-6">
-                  <h3 className="font-bold text-blue-900 mb-2">אני יכול לשנות את ההצלה שלי?</h3>
+                  <h3 className="font-bold text-blue-900 mb-2">אני יכול לשנות את האצלתי?</h3>
                   <p className="text-gray-600">
                     כן, בכל רגע. אתה יכול להחליף את הנציג שלך או להצביע ישירות במקום להאציל.
                   </p>
