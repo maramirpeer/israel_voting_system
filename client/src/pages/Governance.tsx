@@ -20,6 +20,7 @@ export default function Governance() {
   const [timeRemaining, setTimeRemaining] = useState<{ [key: number]: string }>({});
   const [publicTimeRemaining, setPublicTimeRemaining] = useState<{ [key: number]: string }>({});
   const [refreshCounter, setRefreshCounter] = useState(0);
+  const [userVotes, setUserVotes] = useState<{ [key: number]: "for" | "against" | null }>({});
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
@@ -255,11 +256,12 @@ export default function Governance() {
                   return endA - endB; // Sort by earliest end time first
                 })
                 .map((decision) => {
-                  // Generate fictitious vote counts (different for each decision)
-                  // Use decision ID to generate consistent but different vote counts
-                  const baseVotes = 1000 + ((decision.id * 137) % 9000);
-                  const votesFor = Math.floor(baseVotes * (0.4 + ((decision.id * 11) % 100) / 500)); // 40-60% for
-                  const votesAgainst = Math.floor(baseVotes * (0.4 + ((decision.id * 13) % 100) / 500)); // 40-60% against
+                  // Generate fictitious vote counts with meaningful differences
+                  const baseVotes = 1500 + ((decision.id * 137) % 8500);
+                  // Create meaningful differences: some decisions heavily for, some heavily against
+                  const forPercentage = ((decision.id * 17) % 100); // 0-99%
+                  const votesFor = Math.floor(baseVotes * (forPercentage / 100));
+                  const votesAgainst = baseVotes - votesFor;
                   const totalVotes = votesFor + votesAgainst;
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
@@ -291,10 +293,16 @@ export default function Governance() {
                           סה"כ: {totalVotes.toLocaleString('he-IL')} הצבעות
                         </div>
                       </div>
-                      <div className="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-3 overflow-hidden flex">
                         <div 
                           className="bg-green-500 h-full transition-all duration-300" 
                           style={{ width: `${percentageFor}%` }}
+                          title={`בעד: ${percentageFor.toFixed(1)}%`}
+                        ></div>
+                        <div 
+                          className="bg-red-500 h-full transition-all duration-300" 
+                          style={{ width: `${percentageAgainst}%` }}
+                          title={`נגד: ${percentageAgainst.toFixed(1)}%`}
                         ></div>
                       </div>
                     </Card>
@@ -536,19 +544,33 @@ export default function Governance() {
                                   </div>
                                   <div className="flex gap-2 mt-3">
                                     <Button
-                                      onClick={() => castPublicVoteMutation.mutate({ decisionId: decision.id, vote: "for" })}
-                                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                                      onClick={() => {
+                                        castPublicVoteMutation.mutate({ decisionId: decision.id, vote: "for" });
+                                        setUserVotes(prev => ({ ...prev, [decision.id]: "for" }));
+                                      }}
+                                      className={`flex-1 text-white text-sm font-medium transition-all ${
+                                        userVotes[decision.id] === "for"
+                                          ? "bg-green-600 hover:bg-green-700 ring-2 ring-green-400"
+                                          : "bg-green-500 hover:bg-green-600"
+                                      }`}
                                       disabled={castPublicVoteMutation.isPending}
                                     >
-                                      <ThumbsUp className="w-3 h-3 mr-1" />
+                                      <ThumbsUp className="w-4 h-4 mr-1" />
                                       קול אזרחי בעד
                                     </Button>
                                     <Button
-                                      onClick={() => castPublicVoteMutation.mutate({ decisionId: decision.id, vote: "against" })}
-                                      className="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-sm"
+                                      onClick={() => {
+                                        castPublicVoteMutation.mutate({ decisionId: decision.id, vote: "against" });
+                                        setUserVotes(prev => ({ ...prev, [decision.id]: "against" }));
+                                      }}
+                                      className={`flex-1 text-white text-sm font-medium transition-all ${
+                                        userVotes[decision.id] === "against"
+                                          ? "bg-red-600 hover:bg-red-700 ring-2 ring-red-400"
+                                          : "bg-red-500 hover:bg-red-600"
+                                      }`}
                                       disabled={castPublicVoteMutation.isPending}
                                     >
-                                      <ThumbsDown className="w-3 h-3 mr-1" />
+                                      <ThumbsDown className="w-4 h-4 mr-1" />
                                       קול אזרחי נגד
                                     </Button>
                                   </div>
