@@ -351,7 +351,7 @@ export default function Home() {
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה קורה כשהציבור מתנגד להחלטה?</h3>
                   <p className="text-gray-600">
-                    החלטה נדחטת אוטומטית. זה כוח מחייב אזרחי - אם הציבור מתנגד, החלטה לא תעבור.
+                    השר מחוייב לנמק את צעדיו ולשכנע את הציבור שיצביע שנית לאחר 72 שעות נוספות. אם הציבור עדיין מתנגד, החלטה לא תעבור.
                   </p>
                 </Card>
               </TabsContent>
