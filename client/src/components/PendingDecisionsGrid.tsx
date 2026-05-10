@@ -193,6 +193,9 @@ export function PendingDecisionsGrid({ ministries, onVote, isVoting }: PendingDe
                         נגד
                       </Button>
                     </div>
+                    <p className="text-xs text-slate-500 mt-2 text-center">
+                      מס ת.ז: {delegateId}
+                    </p>
                   </div>
                 ))}
               </div>
