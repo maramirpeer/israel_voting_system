@@ -71,6 +71,9 @@ export default function Governance() {
     const interval = setInterval(() => {
       const newPublicTimeRemaining: { [key: number]: string } = {};
       const activePublicVoting = activePublicVotingQuery.data || [];
+      console.log('=== CALCULATING TIMES ===');
+      console.log('Active voting count:', activePublicVoting.length);
+      console.log('Data:', activePublicVoting.map(d => ({ id: d.id, title: d.title, ends: d.publicVotingEndsAt })));
       activePublicVoting.forEach((decision) => {
         if (decision.publicVotingEndsAt) {
           const now = new Date();
@@ -260,11 +263,11 @@ export default function Governance() {
 
                   // Get time remaining from state (updated every second)
                   const timeRemaining = publicTimeRemaining[decision.id] || "חישוב זמן...";
-                  // Use refreshCounter to trigger re-renders every second
-                  refreshCounter; // This forces re-render when counter changes
+                  // Force re-render by using refreshCounter
+                  const _ = refreshCounter; // Dependency to trigger re-renders
 
                   return (
-                    <Card key={decision.id} className="p-4 border-l-4 border-yellow-500 text-right">
+                    <Card key={`${decision.id}-${decision.publicVotingEndsAt}`} className="p-4 border-l-4 border-yellow-500 text-right">
                       <div className="flex items-start justify-between flex-row-reverse mb-3">
                         <div className="flex-1">
                           <h3 className="font-bold text-slate-900">{decision.title}</h3>
