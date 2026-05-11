@@ -416,3 +416,11 @@
 - [x] Verify direct voting status displays correctly
 - [x] Test tab switching
 - [x] Test delegation mode changes
+
+
+## Bug Fix: Remove Duplicate Public Voting Section (COMPLETED)
+
+- [x] Remove "קול ציבורי דינמי" (Dynamic Public Vote) section from Active Decisions tab
+- [x] Keep only single voting interface that combines direct votes + delegate votes
+- [x] Update Governance.tsx to remove public voting display
+- [x] Verify voting logic still works correctly with delegates

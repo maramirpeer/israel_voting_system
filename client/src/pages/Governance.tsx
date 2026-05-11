@@ -505,8 +505,8 @@ export default function Governance() {
 
 
 
-                        {/* Public Voting Display */}
-                        {decision.publicVotingStartsAt && (
+                        {/* Public Voting Display - REMOVED: Only single voting interface */}
+                        {false && (
                           <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 p-4 rounded-lg">
                             <h4 className="font-bold text-purple-900 mb-3">🗣️ קול ציבורי דינמי</h4>
                             {(() => {
