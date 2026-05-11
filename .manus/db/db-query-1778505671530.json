@@ -1,9 +1,0 @@
-{
-  "query": "SELECT userId, ministryId, COUNT(*) as count FROM citizenDelegates GROUP BY userId, ministryId HAVING count > 1 LIMIT 10;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute SELECT userId, ministryId, COUNT(*) as count FROM citizenDelegates GROUP BY userId, ministryId HAVING count > 1 LIMIT 10;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 267
-}

@@ -1,1 +1,0 @@
-ALTER TABLE `citizenDelegates` MODIFY COLUMN `votingMethod` enum('direct','delegate','citizen') NOT NULL DEFAULT 'direct';

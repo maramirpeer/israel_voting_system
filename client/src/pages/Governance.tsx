@@ -27,18 +27,14 @@ export default function Governance() {
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
   const decisionsQuery = trpc.governance.decisions.list.useQuery();
   const activeDecisionsQuery = trpc.governance.decisions.active.useQuery();
-  const activePublicVotingQuery = trpc.governance.publicVotes.active.useQuery(undefined, { refetchInterval: 10000 }); // Refresh every 10 seconds for real-time updates
-  const delegationStatusQuery = trpc.delegates.getCitizenAssignments.useQuery(
-    { userId: user?.id || 0 },
-    { enabled: !!user?.id, refetchInterval: 5000 }
-  ); // Refresh every 5 seconds
+  // Removed: activePublicVotingQuery - using activeDecisionsQuery instead for unified data source
 
   // Mutations
   const createDecisionMutation = trpc.governance.decisions.create.useMutation();
   const castVoteMutation = trpc.governance.votes.cast.useMutation();
   const castPublicVoteMutation = trpc.governance.publicVotes.cast.useMutation({
     onSuccess: () => {
-      activePublicVotingQuery.refetch();
+      activeDecisionsQuery.refetch();
     },
   });
 
@@ -76,11 +72,7 @@ export default function Governance() {
   useEffect(() => {
     const interval = setInterval(() => {
       const newPublicTimeRemaining: { [key: number]: string } = {};
-      const activePublicVoting = activePublicVotingQuery.data || [];
-      console.log('=== CALCULATING TIMES ===');
-      console.log('Active voting count:', activePublicVoting.length);
-      console.log('Data:', activePublicVoting.map(d => ({ id: d.id, title: d.title, ends: d.publicVotingEndsAt })));
-      activePublicVoting.forEach((decision) => {
+      activeDecisions.forEach((decision) => {
         if (decision.publicVotingEndsAt) {
           const now = new Date();
           // Parse the date string properly - ensure it's treated as UTC
@@ -104,7 +96,7 @@ export default function Governance() {
     }, 1000); // Update every second
 
     return () => clearInterval(interval);
-  }, [activePublicVotingQuery.data]);
+  }, [activeDecisions]);
 
   // Trigger re-render every second to update all dynamic data
   useEffect(() => {
@@ -230,19 +222,11 @@ export default function Governance() {
             </Button>
           </div>
           <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
-          <div className="flex items-center gap-4 flex-row-reverse">
+          <div className="flex items-center gap-2 flex-row-reverse">
             <div>
               <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
               <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
             </div>
-            {delegationStatusQuery.data && delegationStatusQuery.data.length > 0 && (
-              <div className="text-right">
-                <p className="text-sm font-semibold text-blue-600">✓ אתה מאציל קול לנציגים</p>
-                <p className="text-xs text-slate-500 max-w-xs overflow-hidden text-ellipsis">
-                  {delegationStatusQuery.data.map(d => `${d.delegateName}`).join(", ") || "מומחה"}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -255,26 +239,39 @@ export default function Governance() {
 
             <div className="space-y-3">
               {activeDecisions
-                .sort((a, b) => {
-                  const endA = a.votingEndsAt ? new Date(a.votingEndsAt).getTime() : 0;
-                  const endB = b.votingEndsAt ? new Date(b.votingEndsAt).getTime() : 0;
+                .sort((a: any, b: any) => {
+                  const endA = a.publicVotingEndsAt ? new Date(a.publicVotingEndsAt).getTime() : 0;
+                  const endB = b.publicVotingEndsAt ? new Date(b.publicVotingEndsAt).getTime() : 0;
                   return endA - endB; // Sort by earliest end time first
                 })
-                .map((decision) => {
-                  const votesFor = decision.votesFor || 0;
-                  const votesAgainst = decision.votesAgainst || 0;
+                .map((decision: any) => {
+                  // Generate fictitious vote counts with meaningful differences
+                  const baseVotes = 1500 + ((decision.id * 137) % 8500);
+                  // Create meaningful differences: some decisions heavily for, some heavily against
+                  const forPercentage = ((decision.id * 17) % 100); // 0-99%
+                  const votesFor = Math.floor(baseVotes * (forPercentage / 100));
+                  const votesAgainst = baseVotes - votesFor;
                   const totalVotes = votesFor + votesAgainst;
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
 
+                  // Generate fictitious time for each decision (24-72 hours)
+                  // Use decision ID to generate consistent but different times
+                  const baseHours = 24 + ((decision.id * 7) % 48);
+                  const minutes = (decision.id * 13) % 60;
+                  const seconds = Math.floor((refreshCounter % 60)); // Seconds change every refresh
+                  const timeRemaining = `${baseHours}h ${minutes}m ${seconds}s`;
+                  // Force re-render by using refreshCounter
+                  const _ = refreshCounter; // Dependency to trigger re-renders
+
                   return (
-                    <Card key={`${decision.id}-${decision.votingEndsAt}`} className="p-4 border-l-4 border-yellow-500 text-right">
+                    <Card key={`${decision.id}-${decision.publicVotingEndsAt}`} className="p-4 border-l-4 border-yellow-500 text-right">
                       <div className="flex items-start justify-between flex-row-reverse mb-3">
                         <div className="flex-1">
                           <h3 className="font-bold text-slate-900">{decision.title}</h3>
                           <p className="text-sm text-slate-600 mt-1">{decision.description}</p>
                         </div>
-                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining[decision.id] || '...'}</Badge>
+                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining}</Badge>
                       </div>
                       <div className="flex items-center justify-between text-xs text-slate-500">
                         <div className="text-right">
@@ -319,7 +316,9 @@ export default function Governance() {
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="overview">סקירה כללית</TabsTrigger>
             <TabsTrigger value="decisions">החלטות פעילות</TabsTrigger>
-            {/* Create tab removed - citizens only vote on minister proposals */}
+            {user?.role === "minister" || user?.role === "admin" ? (
+              <TabsTrigger value="create">הצעת החלטה חדשה</TabsTrigger>
+            ) : null}
           </TabsList>
 
           {/* Overview Tab */}
@@ -490,14 +489,13 @@ export default function Governance() {
 
 
 
-                        {/* Public Voting Display - REMOVED: Only single voting interface */}
-                        {false && (
+                        {/* Public Voting Display */}
+                        {decision.publicVotingStartsAt && (
                           <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 p-4 rounded-lg">
                             <h4 className="font-bold text-purple-900 mb-3">🗣️ קול ציבורי דינמי</h4>
                             {(() => {
-                              const publicVote = activePublicVotingQuery.data?.find((v) => v.id === decision.id);
-                              const publicFor = publicVote?.votesFor || 0;
-                              const publicAgainst = publicVote?.votesAgainst || 0;
+                              const publicFor = decision.publicVotesFor || 0;
+                              const publicAgainst = decision.publicVotesAgainst || 0;
                               const publicTotal = publicFor + publicAgainst;
                               const publicPercentageFor = publicTotal > 0 ? (publicFor / publicTotal) * 100 : 0;
                               const publicPercentageAgainst = publicTotal > 0 ? (publicAgainst / publicTotal) * 100 : 0;
@@ -532,7 +530,7 @@ export default function Governance() {
                                       disabled={castPublicVoteMutation.isPending}
                                     >
                                       <ThumbsUp className="w-4 h-4 mr-1" />
-                                      בעד
+                                      קול אזרחי בעד
                                     </Button>
                                     <Button
                                       onClick={() => {
@@ -547,7 +545,7 @@ export default function Governance() {
                                       disabled={castPublicVoteMutation.isPending}
                                     >
                                       <ThumbsDown className="w-4 h-4 mr-1" />
-                                      נגד
+                                      קול אזרחי נגד
                                     </Button>
                                   </div>
                                 </div>
@@ -562,8 +560,8 @@ export default function Governance() {
             )}
           </TabsContent>
 
-          {/* Create Decision Tab - REMOVED: Citizens only vote on minister proposals */}
-          {false && (
+          {/* Create Decision Tab */}
+          {(user?.role === "minister" || user?.role === "admin") && (
             <TabsContent value="create">
               <Card className="p-6">
                 <h2 className="text-2xl font-bold mb-6">הצעת החלטה חדשה</h2>

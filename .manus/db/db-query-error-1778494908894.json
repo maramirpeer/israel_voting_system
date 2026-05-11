@@ -1,8 +1,0 @@
-{
-  "query": "INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nSELECT \n  FLOOR(RAND() * 100) + 1 as userId,\n  m.id as ministryId,\n  NULL as delegateId,\n  FLOOR(RAND() * 100) + 1 as delegateUserId,\n  'citizen' as votingMethod,\n  NOW() as createdAt,\n  NOW() as updatedAt\nFROM (SELECT 150001 as id UNION SELECT 150002) m\nCROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 \n            UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) x\nLIMIT 50",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nSELECT \n  FLOOR(RAND() * 100) + 1 as userId,\n  m.id as ministryId,\n  NULL as delegateId,\n  FLOOR(RAND() * 100) + 1 as delegateUserId,\n  'citizen' as votingMethod,\n  NOW() as createdAt,\n  NOW() as updatedAt\nFROM (SELECT 150001 as id UNION SELECT 150002) m\nCROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 \n            UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) x\nLIMIT 50",
-  "returncode": 1,
-  "logs": [
-    "ERROR 1265 (01000) at line 1: Data truncated for column '%s' at row %d"
-  ]
-}

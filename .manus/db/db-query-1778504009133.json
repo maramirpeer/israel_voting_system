@@ -1,9 +1,0 @@
-{
-  "query": "INSERT INTO users (id, name, email, openId, createdAt, updatedAt) VALUES \n(2, 'דוד ישראלי', 'david@example.com', 'openid_2', NOW(), NOW()),\n(3, 'רחל כהן', 'rachel@example.com', 'openid_3', NOW(), NOW()),\n(4, 'יוסף לוי', 'yosef@example.com', 'openid_4', NOW(), NOW()),\n(5, 'מרים גבריאל', 'miriam@example.com', 'openid_5', NOW(), NOW());",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute INSERT INTO users (id, name, email, openId, createdAt, updatedAt) VALUES \n(2, 'דוד ישראלי', 'david@example.com', 'openid_2', NOW(), NOW()),\n(3, 'רחל כהן', 'rachel@example.com', 'openid_3', NOW(), NOW()),\n(4, 'יוסף לוי', 'yosef@example.com', 'openid_4', NOW(), NOW()),\n(5, 'מרים גבריאל', 'miriam@example.com', 'openid_5', NOW(), NOW());",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 327
-}

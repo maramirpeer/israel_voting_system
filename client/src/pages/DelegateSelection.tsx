@@ -17,15 +17,15 @@ export default function DelegateSelection() {
   const [selectedMinistryId, setSelectedMinistryId] = useState<number | null>(null);
   const [selectedDelegateId, setSelectedDelegateId] = useState<number | null>(null);
   const [votingMethod, setVotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
-  const [showDirectVotingStatus, setShowDirectVotingStatus] = useState(true);
-  const [citizenSearchId, setCitizenSearchId] = useState("");
+  const [citizenSearchId, setCitizenSearchId] = useState<string>("");
   const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
+  const ministryId = selectedMinistryId && Number.isFinite(selectedMinistryId) ? selectedMinistryId : 1;
   const delegatesQuery = trpc.delegates.listByMinistry.useQuery(
-    { ministryId: selectedMinistryId || 0 },
-    { enabled: !!selectedMinistryId }
+    { ministryId },
+    { enabled: true }
   );
   const assignmentsQuery = trpc.delegates.getCitizenAssignments.useQuery(
     { userId: user?.id || 0 },
@@ -37,15 +37,18 @@ export default function DelegateSelection() {
     onSuccess: () => {
       toast.success("נציג השתנה בהצלחה!");
       assignmentsQuery.refetch();
-      delegatesQuery.refetch();
       setSelectedCitizen(null);
       setCitizenSearchId("");
-      setVotingMethod("citizen");
     },
     onError: () => {
       toast.error("שגיאה בשינוי הנציג");
     },
   });
+
+  const validateCitizenQuery = trpc.delegates.validateCitizenDelegation.useQuery(
+    { delegatorId: user?.id || 0, delegateUserId: 0 },
+    { enabled: false }
+  );
 
   const ministries = ministriesQuery.data || [];
   const delegates = delegatesQuery.data || [];
@@ -61,9 +64,6 @@ export default function DelegateSelection() {
   const currentAssignment = selectedMinistryId
     ? assignments.find((a) => a.ministryId === selectedMinistryId)
     : null;
-
-  // Determine voting method based on current assignment
-  const currentVotingMethod = currentAssignment?.votingMethod || "direct";
 
   const handleAssignDelegate = (delegateId: number) => {
     if (!user?.id || !selectedMinistryId) return;
@@ -94,20 +94,14 @@ export default function DelegateSelection() {
       return;
     }
     try {
-      // Call the tRPC procedure to validate citizen delegation
-      const result = await (trpc as any).delegates.validateCitizenDelegation.query({
-        delegatorId: user.id,
-        delegateUserId: citizenId,
-      });
-      
-      if (result?.valid && result?.citizen) {
-        setSelectedCitizen(result.citizen);
-        toast.success(`בחרת את ${result.citizen?.name} כנציג`);
+      const result = await validateCitizenQuery.refetch();
+      if (result.data?.valid && result.data.citizen) {
+        setSelectedCitizen(result.data.citizen as { id: number; name: string; email: string });
+        toast.success(`בחרת את ${result.data.citizen?.name} כנציג`);
       } else {
-        toast.error(result?.error || "אזרח לא נמצא");
+        toast.error(result.data?.error || "שגיאה בחיפוש");
       }
     } catch (error) {
-      console.error("[DelegateSelection] Search error:", error);
       toast.error("שגיאה בחיפוש אזרח");
     }
   };
@@ -125,125 +119,138 @@ export default function DelegateSelection() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 flex items-center justify-center">
-        <Card className="p-8 max-w-md">
-          <h1 className="text-2xl font-bold mb-4">נדרש התחברות</h1>
-          <p className="text-slate-600 mb-6">עליך להתחבר כדי לבחור נציג</p>
-          <Button onClick={() => setLocation("/governance")} className="w-full">
-            חזור לממשל
-          </Button>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
+        <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
+          <div className="container py-4">
+            <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2 justify-end">
+              חזרה
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </div>
+        </header>
+        <main className="container py-8">
+          <Card className="p-8 text-center">
+            <p className="text-slate-600">נדרש התחברות</p>
+          </Card>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">🗳️ בחירת נציגים</h1>
-            <p className="text-slate-600">בחר כיצד תרצה להצביע בכל משרד</p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setLocation("/governance")}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+        <div className="container py-4 flex items-center justify-between flex-row-reverse">
+          <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2 justify-end">
             חזרה לממשל
+            <ArrowLeft className="w-4 h-4" />
           </Button>
+          <h1 className="text-3xl font-bold text-slate-900">🗳️ בחירת נציגים</h1>
+          <div className="w-48">
+            <Select value={selectedMinistryId?.toString() || ""} onValueChange={(v) => {
+            const id = Number(v);
+            if (Number.isFinite(id)) {
+              setSelectedMinistryId(id);
+            }
+          }}>
+              <SelectTrigger>
+                <SelectValue placeholder="בחרו משרד" />
+              </SelectTrigger>
+              <SelectContent>
+                {ministries.map((m) => (
+                  <SelectItem key={m.id} value={m.id.toString()}>
+                    {m.icon} {m.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+      </header>
 
-        {/* Status Card */}
+      <main className="container py-8">
+        {/* Current Selection */}
         {currentAssignment && (
-          <Card
-            className={`p-6 mb-8 border-2 ${
-              currentVotingMethod === "direct"
-                ? "bg-green-50 border-green-300"
-                : "bg-blue-50 border-blue-300"
-            }`}
-          >
+          <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
             <div className="flex items-center gap-3">
-              <CheckCircle
-                className={`w-6 h-6 ${
-                  currentVotingMethod === "direct" ? "text-green-600" : "text-blue-600"
-                }`}
-              />
+              <CheckCircle className="w-6 h-6 text-blue-600" />
               <div>
-                <p className="font-semibold text-slate-900">
-                  {currentVotingMethod === "direct"
-                    ? "✓ אתה מצביע ישירות"
-                    : currentVotingMethod === "delegate"
-                    ? `✓ אתה מאציל קול לנציג: ${currentAssignment.delegateName || "בחירה..."}`
-                    : `✓ אתה מאציל קול לאזרח`}
+                <p className="font-bold text-slate-900">
+                  {currentAssignment.votingMethod === "direct"
+                    ? "אתה מצביע ישירות"
+                    : `אתה מאציל קול ל: ${currentAssignment.delegateName}`}
                 </p>
-                <p className="text-sm text-slate-600">{ministries.find(m => m.id === selectedMinistryId)?.name}</p>
+                <p className="text-sm text-slate-600">
+                  {ministries.find((m) => m.id === selectedMinistryId)?.name}
+                </p>
               </div>
             </div>
           </Card>
         )}
 
-        {/* Ministry Tabs */}
-        <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
-              {ministries.map((ministry) => (
-            <Button
-              key={ministry.id}
-              onClick={() => setSelectedMinistryId(ministry.id)}
-              variant={selectedMinistryId === ministry.id ? "default" : "outline"}
-              className="whitespace-nowrap"
-            >
-              {ministry.icon || '📋'} {ministry.name}
-            </Button>
-          ))}
-        </div>
-
         {/* Voting Method Selection */}
-        <Tabs defaultValue="delegate" className="w-full mb-8">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="delegate">האצלת קולי לנציג מוצע</TabsTrigger>
-            <TabsTrigger value="citizen">האצלת קולי לפי ת.ז</TabsTrigger>
+        <Tabs value={votingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full mb-8">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="direct">הצבעה ישירה</TabsTrigger>
+            <TabsTrigger value="delegate">בחירת נציג</TabsTrigger>
+            <TabsTrigger value="citizen">האצלה לאזרח</TabsTrigger>
           </TabsList>
+
+          {/* Direct Voting Tab */}
+          <TabsContent value="direct" className="space-y-6">
+            <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+              <div className="flex items-start gap-4">
+                <Target className="w-8 h-8 text-green-600 mt-1" />
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">הצבעה ישירה</h3>
+                  <p className="text-slate-700 mb-4">
+                    בחר להצביע ישירות על כל החלטה. זה דורה מעורבות אך נותן לך שליטה מלאה.
+                  </p>
+                  <Button
+                    onClick={handleVoteDirect}
+                    disabled={assignDelegateMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    {assignDelegateMutation.isPending ? "שומר..." : "בחר הצבעה ישירה"}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
 
           {/* Delegate Voting Tab */}
           <TabsContent value="delegate" className="space-y-6">
             <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200">
               <div className="flex items-start gap-4 mb-6">
-                <Target className="w-8 h-8 text-purple-600 mt-1" />
+                <Users className="w-8 h-8 text-purple-600 mt-1" />
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">בחירת נציג מוצע</h3>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">בחירת נציג מרשימה</h3>
                   <p className="text-slate-700">
-                    בחר מנציגים מומלצים שנבחרו על סמך ניסיון ומומחיות בתחום. כל נציג מציג את ערכיו ותחומי המומחיות שלו.
+                    בחר נציג מוסמך שתאציל לו את קולך. הנציג יצביע בשמך על החלטות. אתה יכול לשנות את בחירתך בכל עת.
                   </p>
                 </div>
               </div>
 
-              {/* Direct Voting Option */}
-              <div className="mb-6">
-                <Button
-                  onClick={handleVoteDirect}
-                  variant={currentVotingMethod === "direct" ? "default" : "outline"}
-                  disabled={currentVotingMethod === "delegate"}
-                  className="w-full justify-start gap-3 h-auto py-4 px-4"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  <div className="text-left">
-                    <p className="font-semibold">צבעה ישירה</p>
-                    <p className="text-sm opacity-75">אתה מצביע ישירות בכל הצעה</p>
-                  </div>
-                </Button>
-              </div>
-
               {/* Delegates List */}
               <div className="space-y-4">
-                {delegates.length > 0 ? (
+                {delegates.length === 0 ? (
+                  <p className="text-slate-600 text-center py-8">אין נציגים זמינים למשרד זה עדיין</p>
+                ) : (
                   delegates.map((delegate) => (
-                    <Card key={delegate.id} className="p-4 border-slate-200 hover:border-purple-300 transition-colors">
-                      <div className="flex gap-4">
+                    <Card
+                      key={delegate.id}
+                      className={`p-4 cursor-pointer transition border-2 ${
+                        currentAssignment?.delegateId === delegate.id
+                          ? "border-purple-500 bg-purple-50"
+                          : "border-slate-200 hover:border-purple-300"
+                      }`}
+                      onClick={() => handleAssignDelegate(delegate.id)}
+                    >
+                      <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-bold text-slate-900">{delegate.name}</h4>
-                          <p className="text-sm text-slate-600 mb-3">{delegate.bio}</p>
+                          <h4 className="font-bold text-slate-900 text-lg">{delegate.name}</h4>
+                          <p className="text-sm text-slate-600 mt-1">{delegate.bio}</p>
 
                           {/* Values */}
                           {delegate.values && delegate.values.length > 0 && (
@@ -270,7 +277,7 @@ export default function DelegateSelection() {
 
                         <div className="text-right ml-4">
                           <div className="text-2xl font-bold text-purple-600">{delegate.endorsements}</div>
-                          <p className="text-xs text-slate-600">מאצילים</p>
+                          <p className="text-xs text-slate-600">תומכים</p>
                           {currentAssignment?.delegateId === delegate.id && (
                             <Badge className="mt-2 bg-purple-600">✓ בחור</Badge>
                           )}
@@ -294,8 +301,6 @@ export default function DelegateSelection() {
                       </Button>
                     </Card>
                   ))
-                ) : (
-                  <p className="text-center text-slate-600 py-8">אין נציגים זמינים למשרד זה</p>
                 )}
               </div>
             </Card>
@@ -326,7 +331,7 @@ export default function DelegateSelection() {
                   />
                   <Button
                     onClick={handleSearchCitizen}
-                    disabled={assignDelegateMutation.isPending || !citizenSearchId}
+                    disabled={validateCitizenQuery.isLoading || !citizenSearchId}
                     className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
                   >
                     <Search className="w-4 h-4" />
@@ -358,7 +363,7 @@ export default function DelegateSelection() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
     </div>
   );
 }

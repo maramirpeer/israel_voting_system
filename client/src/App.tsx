@@ -9,7 +9,6 @@ import Governance from "./pages/Governance";
 import MinistryDashboard from "./pages/MinistryDashboard";
 import MinistryDetails from "./pages/MinistryDetails";
 import DelegateSelection from "./pages/DelegateSelection";
-import Analytics from "./pages/Analytics";
 import MK121 from "./pages/MK121";
 
 function Router() {
@@ -21,7 +20,6 @@ function Router() {
       <Route path={"/ministry/:id"} component={MinistryDetails} />
       <Route path={"/ministry-dashboard"} component={MinistryDashboard} />
       <Route path={"/delegate-selection"} component={DelegateSelection} />
-      <Route path={"/analytics"} component={Analytics} />
       <Route path={"/mk121"} component={MK121} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
