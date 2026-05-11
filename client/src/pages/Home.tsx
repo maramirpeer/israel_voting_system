@@ -29,16 +29,14 @@ export default function Home() {
               <p className="text-xs text-cyan-600 font-medium">מערכת דמוקרטיה מבוזרת</p>
             </div>
           </div>
-          {isAuthenticated && (
-            <div className="flex gap-2">
-              <Button onClick={() => setLocation("/mk121")} className="bg-purple-600 hover:bg-purple-700">
-                ח"כ 121
-              </Button>
-              <Button onClick={() => setLocation("/governance")} variant="outline" className="border-blue-300">
-                קול דינמי
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-2">
+            <Button onClick={() => setLocation("/mk121")} className="bg-purple-600 hover:bg-purple-700">
+              ח"כ 121
+            </Button>
+            <Button onClick={() => setLocation("/governance")} variant="outline" className="border-blue-300">
+              קול דינמי
+            </Button>
+          </div>
         </div>
       </header>
 
