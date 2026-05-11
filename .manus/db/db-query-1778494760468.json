@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nSELECT \n  FLOOR(RAND() * 100) + 1 as userId,\n  m.id as ministryId,\n  CASE \n    WHEN RAND() < 0.65 THEN d.id\n    ELSE NULL\n  END as delegateId,\n  CASE \n    WHEN RAND() < 0.25 THEN FLOOR(RAND() * 100) + 1\n    ELSE NULL\n  END as delegateUserId,\n  CASE \n    WHEN RAND() < 0.65 THEN 'delegate'\n    ELSE 'direct'\n  END as votingMethod,\n  NOW() as createdAt,\n  NOW() as updatedAt\nFROM ministries m\nCROSS JOIN delegates d\nWHERE d.ministryId = m.id AND d.isActive = true\nLIMIT 500",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nSELECT \n  FLOOR(RAND() * 100) + 1 as userId,\n  m.id as ministryId,\n  CASE \n    WHEN RAND() < 0.65 THEN d.id\n    ELSE NULL\n  END as delegateId,\n  CASE \n    WHEN RAND() < 0.25 THEN FLOOR(RAND() * 100) + 1\n    ELSE NULL\n  END as delegateUserId,\n  CASE \n    WHEN RAND() < 0.65 THEN 'delegate'\n    ELSE 'direct'\n  END as votingMethod,\n  NOW() as createdAt,\n  NOW() as updatedAt\nFROM ministries m\nCROSS JOIN delegates d\nWHERE d.ministryId = m.id AND d.isActive = true\nLIMIT 500",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 294
+}

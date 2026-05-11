@@ -1,0 +1,15 @@
+{
+  "query": "SELECT COUNT(*) as total, \n  SUM(CASE WHEN votingMethod = 'direct' THEN 1 ELSE 0 END) as direct_votes,\n  SUM(CASE WHEN votingMethod = 'delegate' THEN 1 ELSE 0 END) as delegated_votes\nFROM citizenDelegates",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute SELECT COUNT(*) as total, \n  SUM(CASE WHEN votingMethod = 'direct' THEN 1 ELSE 0 END) as direct_votes,\n  SUM(CASE WHEN votingMethod = 'delegate' THEN 1 ELSE 0 END) as delegated_votes\nFROM citizenDelegates",
+  "rows": [
+    {
+      "total": "29",
+      "direct_votes": "12",
+      "delegated_votes": "17"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\tdirect_votes\tdelegated_votes\n29\t12\t17\n",
+  "stderr": "",
+  "execution_time_ms": 270
+}
