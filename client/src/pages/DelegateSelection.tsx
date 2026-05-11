@@ -21,6 +21,9 @@ export default function DelegateSelection() {
   const [citizenSearchId, setCitizenSearchId] = useState<string>("");
   const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
 
+  // Demo mode - allow viewing without authentication
+  const demoUserId = user?.id || 999; // Use demo user ID if not authenticated
+
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
   const ministryId = selectedMinistryId && Number.isFinite(selectedMinistryId) ? selectedMinistryId : 1;
@@ -29,8 +32,8 @@ export default function DelegateSelection() {
     { enabled: true }
   );
   const assignmentsQuery = trpc.delegates.getCitizenAssignments.useQuery(
-    { userId: user?.id || 0 },
-    { enabled: !!user?.id }
+    { userId: demoUserId },
+    { enabled: true }
   );
 
   // Mutations
@@ -135,7 +138,7 @@ export default function DelegateSelection() {
     });
   };
 
-  if (!isAuthenticated) {
+  if (false) { // Disabled auth check for demo
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
         <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
