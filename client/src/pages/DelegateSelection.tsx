@@ -40,6 +40,7 @@ export default function DelegateSelection() {
       delegatesQuery.refetch();
       setSelectedCitizen(null);
       setCitizenSearchId("");
+      setVotingMethod("citizen");
     },
     onError: () => {
       toast.error("שגיאה בשינוי הנציג");
@@ -73,7 +74,6 @@ export default function DelegateSelection() {
       delegateId,
       delegateUserId: null,
     });
-    setVotingMethod("delegate");
   };
 
   const handleVoteDirect = () => {
@@ -85,7 +85,6 @@ export default function DelegateSelection() {
       delegateId: null,
       delegateUserId: null,
     });
-    setVotingMethod("direct");
   };
 
   const handleSearchCitizen = async () => {
@@ -95,8 +94,8 @@ export default function DelegateSelection() {
       return;
     }
     try {
-      // Use tRPC client method correctly - cast to any to bypass TS check
-      const result = await (trpc.delegates.validateCitizenDelegation as any).query({
+      // Call the tRPC procedure to validate citizen delegation
+      const result = await (trpc as any).delegates.validateCitizenDelegation.query({
         delegatorId: user.id,
         delegateUserId: citizenId,
       });
@@ -105,9 +104,10 @@ export default function DelegateSelection() {
         setSelectedCitizen(result.citizen);
         toast.success(`בחרת את ${result.citizen?.name} כנציג`);
       } else {
-        toast.error(result.error || "אזרח לא נמצא");
+        toast.error(result?.error || "אזרח לא נמצא");
       }
     } catch (error) {
+      console.error("[DelegateSelection] Search error:", error);
       toast.error("שגיאה בחיפוש אזרח");
     }
   };
@@ -121,7 +121,6 @@ export default function DelegateSelection() {
       delegateId: null,
       delegateUserId: selectedCitizen.id,
     });
-    setVotingMethod("citizen");
   };
 
   if (!isAuthenticated) {

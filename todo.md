@@ -390,7 +390,7 @@
 - [x] Verified in browser - all proposals showing balanced percentages
 
 
-## Phase 16: Delegate Selection Page UI Updates
+## Phase 16: Delegate Selection Page UI Updates (COMPLETED)
 
 **Requirements:** Update delegate selection page to show:
 - [x] Default status: User is in "Direct Voting" mode
@@ -402,17 +402,17 @@
 - [x] Allow switching between direct voting and delegation modes
 
 **Backend Procedures:**
-- [ ] getUserCurrentDelegationStatus - Get user's delegation status per ministry
-- [ ] updateDelegationMode - Switch between direct voting and delegation
+- [x] getUserCurrentDelegationStatus - Get user's delegation status per ministry
+- [x] updateDelegationMode - Switch between direct voting and delegation
 
 **Frontend Components:**
-- [ ] DelegateSelectionPage - Main page with status indicator
-- [ ] DirectVotingStatus - Show "You are voting directly" indicator
-- [ ] DelegationTabs - Two tabs for delegation options
-- [ ] SuggestedDelegateTab - Delegate to suggested representatives
-- [ ] IdDelegateTab - Delegate by citizen ID
+- [x] DelegateSelectionPage - Main page with status indicator
+- [x] DirectVotingStatus - Show "You are voting directly" indicator
+- [x] DelegationTabs - Two tabs for delegation options
+- [x] SuggestedDelegateTab - Delegate to suggested representatives
+- [x] IdDelegateTab - Delegate by citizen ID
 
 **Testing:**
-- [ ] Verify direct voting status displays correctly
-- [ ] Test tab switching
-- [ ] Test delegation mode changes
+- [x] Verify direct voting status displays correctly
+- [x] Test tab switching
+- [x] Test delegation mode changes

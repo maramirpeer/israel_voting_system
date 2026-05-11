@@ -1,5 +1,5 @@
-import { eq } from "drizzle-orm";
-import { decisions, ministries } from "../drizzle/schema";
+import { eq, count, sql } from "drizzle-orm";
+import { decisions, ministries, citizenDelegates, delegates, users } from "../drizzle/schema";
 import { getDb } from "./db";
 
 export interface MinistryStats {
@@ -214,5 +214,107 @@ export async function getApprovalTrends(ministryId: number): Promise<{ month: st
   } catch (error) {
     console.error("[Analytics] Error getting approval trends:", error);
     return [];
+  }
+}
+
+// ============ VOTING STATISTICS ============
+
+export async function getVotingStatistics() {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    // Get all citizen delegations
+    const allDelegations = await db.select().from(citizenDelegates);
+
+    // Count by voting method
+    const directCount = allDelegations.filter((d) => d.votingMethod === "direct").length;
+    const delegateCount = allDelegations.filter((d) => d.votingMethod === "delegate").length;
+    const citizenCount = allDelegations.filter((d) => d.votingMethod === "citizen").length;
+    const totalVoters = directCount + delegateCount + citizenCount;
+
+    return {
+      totalVoters,
+      directVoters: directCount,
+      delegateVoters: delegateCount,
+      citizenDelegateVoters: citizenCount,
+      directPercentage: totalVoters > 0 ? (directCount / totalVoters) * 100 : 0,
+      delegatePercentage: totalVoters > 0 ? (delegateCount / totalVoters) * 100 : 0,
+      citizenDelegatePercentage: totalVoters > 0 ? (citizenCount / totalVoters) * 100 : 0,
+    };
+  } catch (error) {
+    console.error("[Analytics] Error getting voting statistics:", error);
+    return null;
+  }
+}
+
+export async function getTopDelegatesByMinistry(ministryId: number, limit = 5) {
+  const db = await getDb();
+  if (!db) return [];
+
+  try {
+    // Get delegates for this ministry
+    const delegateList = await db.select().from(delegates).where(eq(delegates.ministryId, ministryId)).limit(limit);
+
+    return delegateList.map((d) => ({
+      id: d.id,
+      name: d.name,
+      bio: d.bio,
+      ministryId: d.ministryId,
+    }));
+  } catch (error) {
+    console.error("[Analytics] Error getting top delegates:", error);
+    return [];
+  }
+}
+
+export async function getDelegationDistribution() {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    // Get delegation distribution by ministry
+    const distribution = await db.select().from(citizenDelegates);
+
+    const byMinistry: {
+      [key: number]: { direct: number; delegate: number; citizen: number };
+    } = {};
+
+    for (const record of distribution) {
+      if (!byMinistry[record.ministryId]) {
+        byMinistry[record.ministryId] = { direct: 0, delegate: 0, citizen: 0 };
+      }
+      const method = record.votingMethod as "direct" | "delegate" | "citizen";
+      byMinistry[record.ministryId][method]++;
+    }
+
+    return byMinistry;
+  } catch (error) {
+    console.error("[Analytics] Error getting delegation distribution:", error);
+    return null;
+  }
+}
+
+export async function getEngagementMetrics() {
+  const db = await getDb();
+  if (!db) return null;
+
+  try {
+    const allUsers = await db.select().from(users);
+    const delegations = await db.select().from(citizenDelegates);
+
+    const totalUsers = allUsers.length;
+    const usersWithDelegations = new Set(delegations.map((d) => d.userId)).size;
+    const engagedUsers = usersWithDelegations;
+
+    return {
+      totalUsers,
+      engagedUsers,
+      engagementRate: totalUsers > 0 ? (engagedUsers / totalUsers) * 100 : 0,
+      averageDelegationsPerUser: engagedUsers > 0 ? delegations.length / engagedUsers : 0,
+    };
+  } catch (error) {
+    console.error("[Analytics] Error getting engagement metrics:", error);
+    return null;
   }
 }
