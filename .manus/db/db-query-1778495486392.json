@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nVALUES \n(1, 150001, NULL, 45, 'citizen', NOW(), NOW()),\n(2, 150001, NULL, 67, 'citizen', NOW(), NOW()),\n(3, 150001, NULL, 23, 'citizen', NOW(), NOW()),\n(4, 150001, NULL, 89, 'citizen', NOW(), NOW()),\n(5, 150001, NULL, 12, 'citizen', NOW(), NOW()),\n(6, 150002, NULL, 34, 'citizen', NOW(), NOW()),\n(7, 150002, NULL, 78, 'citizen', NOW(), NOW()),\n(8, 150002, NULL, 56, 'citizen', NOW(), NOW()),\n(9, 150002, NULL, 91, 'citizen', NOW(), NOW()),\n(10, 150002, NULL, 44, 'citizen', NOW(), NOW())",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nVALUES \n(1, 150001, NULL, 45, 'citizen', NOW(), NOW()),\n(2, 150001, NULL, 67, 'citizen', NOW(), NOW()),\n(3, 150001, NULL, 23, 'citizen', NOW(), NOW()),\n(4, 150001, NULL, 89, 'citizen', NOW(), NOW()),\n(5, 150001, NULL, 12, 'citizen', NOW(), NOW()),\n(6, 150002, NULL, 34, 'citizen', NOW(), NOW()),\n(7, 150002, NULL, 78, 'citizen', NOW(), NOW()),\n(8, 150002, NULL, 56, 'citizen', NOW(), NOW()),\n(9, 150002, NULL, 91, 'citizen', NOW(), NOW()),\n(10, 150002, NULL, 44, 'citizen', NOW(), NOW())",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 275
+}

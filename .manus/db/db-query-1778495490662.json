@@ -1,0 +1,73 @@
+{
+  "query": "SELECT m.name, \n  COUNT(*) as total,\n  SUM(CASE WHEN cd.votingMethod = 'direct' THEN 1 ELSE 0 END) as direct,\n  SUM(CASE WHEN cd.votingMethod = 'delegate' THEN 1 ELSE 0 END) as delegate,\n  SUM(CASE WHEN cd.votingMethod = 'citizen' THEN 1 ELSE 0 END) as citizen\nFROM ministries m\nLEFT JOIN citizenDelegates cd ON m.id = cd.ministryId\nGROUP BY m.id, m.name\nORDER BY m.name",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute SELECT m.name, \n  COUNT(*) as total,\n  SUM(CASE WHEN cd.votingMethod = 'direct' THEN 1 ELSE 0 END) as direct,\n  SUM(CASE WHEN cd.votingMethod = 'delegate' THEN 1 ELSE 0 END) as delegate,\n  SUM(CASE WHEN cd.votingMethod = 'citizen' THEN 1 ELSE 0 END) as citizen\nFROM ministries m\nLEFT JOIN citizenDelegates cd ON m.id = cd.ministryId\nGROUP BY m.id, m.name\nORDER BY m.name",
+  "rows": [
+    {
+      "name": "משרד האוצר",
+      "total": "8",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "5"
+    },
+    {
+      "name": "משרד הביטחון",
+      "total": "3",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "0"
+    },
+    {
+      "name": "משרד הבריאות",
+      "total": "3",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "0"
+    },
+    {
+      "name": "משרד החדשנות ואיכות הסביבה",
+      "total": "3",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "0"
+    },
+    {
+      "name": "משרד החוץ וההסברה העולמית",
+      "total": "3",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "0"
+    },
+    {
+      "name": "משרד החינוך",
+      "total": "1",
+      "direct": "0",
+      "delegate": "0",
+      "citizen": "0"
+    },
+    {
+      "name": "משרד המשפטים",
+      "total": "3",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "0"
+    },
+    {
+      "name": "משרד הפנים, החברה והרווחה",
+      "total": "8",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "5"
+    },
+    {
+      "name": "משרד התרבות",
+      "total": "3",
+      "direct": "0",
+      "delegate": "3",
+      "citizen": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\ttotal\tdirect\tdelegate\tcitizen\nמשרד האוצר\t8\t0\t3\t5\nמשרד הביטחון\t3\t0\t3\t0\nמשרד הבריאות\t3\t0\t3\t0\nמשרד החדשנות ואיכות הסביבה\t3\t0\t3\t0\nמשרד החוץ וההסברה העולמית\t3\t0\t3\t0\nמשרד החינוך\t1\t0\t0\t0\nמשרד המשפטים\t3\t0\t3\t0\nמשרד הפנים, החברה והרווחה\t8\t0\t3\t5\nמשרד התרבות\t3\t0\t3\t0\n",
+  "stderr": "",
+  "execution_time_ms": 266
+}
