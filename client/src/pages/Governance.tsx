@@ -245,8 +245,8 @@ export default function Governance() {
                   return endA - endB; // Sort by earliest end time first
                 })
                 .map((decision: any) => {
-                  // Generate fictitious vote counts with meaningful differences
-                  const baseVotes = 1500 + ((decision.id * 137) % 8500);
+                  // Generate fictitious vote counts between 400-10000 with meaningful differences
+                  const baseVotes = 400 + ((decision.id * 137) % 9600); // 400-10000
                   // Create meaningful differences: some decisions heavily for, some heavily against
                   const forPercentage = ((decision.id * 17) % 100); // 0-99%
                   const votesFor = Math.floor(baseVotes * (forPercentage / 100));
