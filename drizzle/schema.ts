@@ -131,7 +131,7 @@ export const citizenDelegates = mysqlTable("citizenDelegates", {
   ministryId: int("ministryId").notNull(),
   delegateId: int("delegateId"),
   delegateUserId: int("delegateUserId"), // Direct user ID if delegating to another citizen
-  votingMethod: mysqlEnum("votingMethod", ["direct", "delegate"]).default("direct").notNull(),
+  votingMethod: mysqlEnum("votingMethod", ["direct", "delegate", "citizen"]).default("direct").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

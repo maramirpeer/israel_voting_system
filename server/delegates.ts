@@ -19,7 +19,7 @@ export interface CitizenDelegateAssignment {
   ministryId: number;
   delegateId: number | null;
   delegateUserId: number | null;
-  votingMethod: "direct" | "delegate";
+  votingMethod: "direct" | "delegate" | "citizen";
   delegateName?: string;
 }
 
