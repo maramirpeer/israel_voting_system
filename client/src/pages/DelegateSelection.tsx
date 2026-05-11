@@ -67,6 +67,9 @@ export default function DelegateSelection() {
     ? assignments.find((a) => a.ministryId === selectedMinistryId)
     : null;
 
+  // Determine voting method based on current assignment
+  const currentVotingMethod = currentAssignment?.votingMethod || "direct";
+
   const handleAssignDelegate = (delegateId: number) => {
     if (!user?.id || !selectedMinistryId) return;
 
@@ -87,6 +90,7 @@ export default function DelegateSelection() {
       delegateId,
       delegateUserId: null,
     });
+    setVotingMethod("delegate");
   };
 
   const handleVoteDirect = () => {
@@ -98,6 +102,7 @@ export default function DelegateSelection() {
       delegateId: null,
       delegateUserId: null,
     });
+    setVotingMethod("direct");
   };
 
   const handleSearchCitizen = async () => {
@@ -160,24 +165,20 @@ export default function DelegateSelection() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <h1 className="text-3xl font-bold text-slate-900">🗳️ בחירת נציגים</h1>
-          <div className="w-48">
-            <Select value={selectedMinistryId?.toString() || ""} onValueChange={(v) => {
-            const id = Number(v);
-            if (Number.isFinite(id)) {
-              setSelectedMinistryId(id);
-            }
-          }}>
-              <SelectTrigger>
-                <SelectValue placeholder="בחרו משרד" />
-              </SelectTrigger>
-              <SelectContent>
-                {ministries.map((m) => (
-                  <SelectItem key={m.id} value={m.id.toString()}>
-                    {m.icon} {m.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        </div>
+        {/* Ministry Tabs */}
+        <div className="border-t border-slate-200 bg-slate-50 overflow-x-auto">
+          <div className="container flex gap-2 py-2">
+            {ministries.map((m) => (
+              <Button
+                key={m.id}
+                variant={selectedMinistryId === m.id ? "default" : "outline"}
+                onClick={() => setSelectedMinistryId(m.id)}
+                className="whitespace-nowrap"
+              >
+                {m.icon} {m.name}
+              </Button>
+            ))}
           </div>
         </div>
       </header>
@@ -185,19 +186,21 @@ export default function DelegateSelection() {
       <main className="container py-8">
         {/* Current Selection - Always Show */}
         <Card className={`p-6 mb-8 border-2 ${
-          votingMethod === "direct"
+          currentVotingMethod === "direct"
             ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-300"
             : "bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200"
         }`}>
           <div className="flex items-center gap-3">
             <CheckCircle className={`w-6 h-6 ${
-              votingMethod === "direct" ? "text-green-600" : "text-blue-600"
+              currentVotingMethod === "direct" ? "text-green-600" : "text-blue-600"
             }`} />
             <div>
               <p className="font-bold text-slate-900">
-                {votingMethod === "direct"
+                {currentVotingMethod === "direct"
                   ? "✓ אתה מצביע ישירות"
-                  : `✓ אתה מאציל קול ל: ${currentAssignment?.delegateName || "בחירה..."}`}
+                  : currentVotingMethod === "delegate"
+                  ? `✓ אתה מאציל קול לנציג: ${currentAssignment?.delegateName || "בחירה..."}`
+                  : `✓ אתה מאציל קול לאזרח: ${currentAssignment?.delegateName || "בחירה..."}`}
               </p>
               <p className="text-sm text-slate-600">
                 {ministries.find((m) => m.id === selectedMinistryId)?.name}
@@ -209,7 +212,7 @@ export default function DelegateSelection() {
 
 
         {/* Voting Method Selection */}
-        <Tabs value={votingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full mb-8">
+        <Tabs value={currentVotingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full mb-8">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="delegate">האצלת קולי לנציג מוצע</TabsTrigger>
             <TabsTrigger value="citizen">האצלת קולי לפי ת.ז</TabsTrigger>
