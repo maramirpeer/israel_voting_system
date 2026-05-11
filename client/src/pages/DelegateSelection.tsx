@@ -17,6 +17,7 @@ export default function DelegateSelection() {
   const [selectedMinistryId, setSelectedMinistryId] = useState<number | null>(null);
   const [selectedDelegateId, setSelectedDelegateId] = useState<number | null>(null);
   const [votingMethod, setVotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
+  const [showDirectVotingStatus, setShowDirectVotingStatus] = useState(true);
   const [citizenSearchId, setCitizenSearchId] = useState<string>("");
   const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
 
@@ -189,35 +190,27 @@ export default function DelegateSelection() {
           </Card>
         )}
 
+        {/* Direct Voting Status Indicator */}
+        {showDirectVotingStatus && votingMethod === "direct" && (
+          <Card className="p-6 mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300">
+            <div className="flex items-center gap-3">
+              <Target className="w-6 h-6 text-green-600" />
+              <div>
+                <p className="font-bold text-slate-900 text-lg">✓ אתה מצביע ישירות</p>
+                <p className="text-sm text-slate-600">זה המצב הנוכחי שלך - אתה מצביע ישירות על כל החלטה</p>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Voting Method Selection */}
         <Tabs value={votingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full mb-8">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="direct">הצבעה ישירה</TabsTrigger>
-            <TabsTrigger value="delegate">בחירת נציג</TabsTrigger>
-            <TabsTrigger value="citizen">האצלה לאזרח</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="delegate">האצלת קולי לנציג מוצע</TabsTrigger>
+            <TabsTrigger value="citizen">האצלת קולי לפי ת.ז</TabsTrigger>
           </TabsList>
 
-          {/* Direct Voting Tab */}
-          <TabsContent value="direct" className="space-y-6">
-            <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-              <div className="flex items-start gap-4">
-                <Target className="w-8 h-8 text-green-600 mt-1" />
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">הצבעה ישירה</h3>
-                  <p className="text-slate-700 mb-4">
-                    בחר להצביע ישירות על כל החלטה. זה דורה מעורבות אך נותן לך שליטה מלאה.
-                  </p>
-                  <Button
-                    onClick={handleVoteDirect}
-                    disabled={assignDelegateMutation.isPending}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    {assignDelegateMutation.isPending ? "שומר..." : "בחר הצבעה ישירה"}
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
+
 
           {/* Delegate Voting Tab */}
           <TabsContent value="delegate" className="space-y-6">
