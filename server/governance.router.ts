@@ -25,6 +25,7 @@ import {
   getMinistryDetails,
 } from "./governance";
 import { TRPCError } from "@trpc/server";
+import { getOverallVotingStats, getEngagementMetricsData, getAllMinistriesStats, getApprovalTrends } from "./analytics";
 
 export const governanceRouter = router({
   // Ministry procedures
@@ -282,6 +283,27 @@ export const governanceRouter = router({
       .input(z.object({ decisionId: z.number() }))
       .query(async ({ input }) => {
         return await getDecisionHistory(input.decisionId);
+      }),
+  }),
+
+  // Analytics procedures
+  analytics: router({
+    votingStats: publicProcedure.query(async () => {
+      return await getOverallVotingStats();
+    }),
+
+    engagementMetrics: publicProcedure.query(async () => {
+      return await getEngagementMetricsData();
+    }),
+
+    ministryStats: publicProcedure.query(async () => {
+      return await getAllMinistriesStats();
+    }),
+
+    approvalTrends: publicProcedure
+      .input(z.object({ ministryId: z.number() }))
+      .query(async ({ input }) => {
+        return await getApprovalTrends(input.ministryId);
       }),
   }),
 

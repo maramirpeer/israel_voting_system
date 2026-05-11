@@ -216,3 +216,162 @@ export async function getApprovalTrends(ministryId: number): Promise<{ month: st
     return [];
   }
 }
+
+
+// Additional analytics functions for dashboard
+import { count, sql } from "drizzle-orm";
+import { publicVotes, delegateVotes, citizenDelegates, users } from "../drizzle/schema";
+
+export interface VotingStats {
+  totalVoters: number;
+  totalVotes: number;
+  participationRate: number;
+  directVotes: number;
+  delegatedVotes: number;
+  delegationRate: number;
+}
+
+export interface EngagementMetrics {
+  activeUsers: number;
+  newUsersThisWeek: number;
+  averageVotesPerUser: number;
+  mostActiveMinistry: string;
+  leastActiveMinistry: string;
+}
+
+export async function getOverallVotingStats(): Promise<VotingStats> {
+  const db = await getDb();
+  if (!db) {
+    return {
+      totalVoters: 0,
+      totalVotes: 0,
+      participationRate: 0,
+      directVotes: 0,
+      delegatedVotes: 0,
+      delegationRate: 0,
+    };
+  }
+
+  try {
+    // Count total users
+    const userCountResult = await db.select({ count: count() }).from(users);
+    const totalVoters = userCountResult[0]?.count || 0;
+
+    // Count unique users who have voted directly
+    const uniqueDirectVotersResult = await db
+      .select({ count: count(sql`DISTINCT ${publicVotes.userId}`) })
+      .from(publicVotes);
+    const directVoters = uniqueDirectVotersResult[0]?.count || 0;
+
+    // Count unique users who have delegated
+    const uniqueDelegatedVotersResult = await db
+      .select({ count: count(sql`DISTINCT ${delegateVotes.userId}`) })
+      .from(delegateVotes);
+    const delegatedVoters = uniqueDelegatedVotersResult[0]?.count || 0;
+
+    // Count total votes cast (can be multiple votes per user across different decisions)
+    const directVotesResult = await db.select({ count: count() }).from(publicVotes);
+    const directVotes = directVotesResult[0]?.count || 0;
+
+    const delegatedVotesResult = await db.select({ count: count() }).from(delegateVotes);
+    const delegatedVotes = delegatedVotesResult[0]?.count || 0;
+
+    // Participation rate is based on unique voters, not total votes
+    const totalVotes = directVotes + delegatedVotes;
+    const participationRate = totalVoters > 0 ? ((directVoters + delegatedVoters) / totalVoters) * 100 : 0;
+    const delegationRate = (directVoters + delegatedVoters) > 0 ? (delegatedVoters / (directVoters + delegatedVoters)) * 100 : 0;
+
+    return {
+      totalVoters,
+      totalVotes,
+      participationRate: Math.round(participationRate * 100) / 100,
+      directVotes,
+      delegatedVotes,
+      delegationRate: Math.round(delegationRate * 100) / 100,
+    };
+  } catch (error) {
+    console.error("[Analytics] Error getting overall voting stats:", error);
+    return {
+      totalVoters: 0,
+      totalVotes: 0,
+      participationRate: 0,
+      directVotes: 0,
+      delegatedVotes: 0,
+      delegationRate: 0,
+    };
+  }
+}
+
+export async function getEngagementMetricsData(): Promise<EngagementMetrics> {
+  const db = await getDb();
+  if (!db) {
+    return {
+      activeUsers: 0,
+      newUsersThisWeek: 0,
+      averageVotesPerUser: 0,
+      mostActiveMinistry: "Unknown",
+      leastActiveMinistry: "Unknown",
+    };
+  }
+
+  try {
+    // Count active users (those who have voted)
+    const activeUsersResult = await db
+      .select({ count: count(sql`DISTINCT ${publicVotes.userId}`) })
+      .from(publicVotes);
+    const activeUsers = activeUsersResult[0]?.count || 0;
+
+    // Count new users this week
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const newUsersResult = await db
+      .select({ count: count() })
+      .from(users)
+      .where(sql`${users.createdAt} >= ${oneWeekAgo}`);
+    const newUsersThisWeek = newUsersResult[0]?.count || 0;
+
+    // Calculate average votes per user
+    const totalVotesResult = await db.select({ count: count() }).from(publicVotes);
+    const totalVotes = totalVotesResult[0]?.count || 0;
+    const totalUsersResult = await db.select({ count: count() }).from(users);
+    const totalUsers = totalUsersResult[0]?.count || 1;
+
+    const averageVotesPerUser = Math.round((totalVotes / totalUsers) * 100) / 100;
+
+    // Get most and least active ministries
+    const ministryActivity = await db
+      .select({
+        ministryId: decisions.ministryId,
+        ministryName: ministries.name,
+        voteCount: count(),
+      })
+      .from(decisions)
+      .leftJoin(publicVotes, sql`${decisions.id} = ${publicVotes.decisionId}`)
+      .leftJoin(ministries, sql`${decisions.ministryId} = ${ministries.id}`)
+      .groupBy(decisions.ministryId, ministries.name)
+      .orderBy(sql`COUNT(*) DESC`);
+
+    const mostActiveMinistry =
+      ministryActivity.length > 0 ? ministryActivity[0].ministryName || "Unknown" : "Unknown";
+    const leastActiveMinistry =
+      ministryActivity.length > 0
+        ? ministryActivity[ministryActivity.length - 1].ministryName || "Unknown"
+        : "Unknown";
+
+    return {
+      activeUsers,
+      newUsersThisWeek,
+      averageVotesPerUser,
+      mostActiveMinistry,
+      leastActiveMinistry,
+    };
+  } catch (error) {
+    console.error("[Analytics] Error getting engagement metrics:", error);
+    return {
+      activeUsers: 0,
+      newUsersThisWeek: 0,
+      averageVotesPerUser: 0,
+      mostActiveMinistry: "Unknown",
+      leastActiveMinistry: "Unknown",
+    };
+  }
+}

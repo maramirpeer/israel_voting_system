@@ -37,6 +37,9 @@ export default function Home() {
               <Button onClick={() => setLocation("/governance")} variant="outline" className="border-blue-300">
                 קול דינמי
               </Button>
+              <Button onClick={() => setLocation("/analytics")} variant="outline" className="border-green-300">
+                📊 ניתוח
+              </Button>
             </div>
           )}
         </div>
