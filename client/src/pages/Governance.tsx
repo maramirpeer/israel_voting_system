@@ -313,12 +313,10 @@ export default function Governance() {
           </div>
         </div>
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="overview">סקירה כללית</TabsTrigger>
             <TabsTrigger value="decisions">החלטות פעילות</TabsTrigger>
-            {user?.role === "minister" || user?.role === "admin" ? (
-              <TabsTrigger value="create">הצעת החלטה חדשה</TabsTrigger>
-            ) : null}
+
           </TabsList>
 
           {/* Overview Tab */}
@@ -494,65 +492,7 @@ export default function Governance() {
             )}
           </TabsContent>
 
-          {/* Create Decision Tab */}
-          {(user?.role === "minister" || user?.role === "admin") && (
-            <TabsContent value="create">
-              <Card className="p-6">
-                <h2 className="text-2xl font-bold mb-6">הצעת החלטה חדשה</h2>
-                <form onSubmit={handleCreateDecision} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">משרד</label>
-                    <Select name="ministryId" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="כל המשרדים" />
-                </SelectTrigger>
-                      <SelectContent>
-                        {ministries.map((m) => (
-                          <SelectItem key={m.id} value={m.id.toString()}>
-                            {m.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">כותרת</label>
-                    <Input name="title" placeholder="כותרת ההחלטה" required />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">תיאור</label>
-                    <Textarea name="description" placeholder="תיאור מפורט של ההחלטה" required />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">קטגוריה</label>
-                    <Select name="category" required>
-                      <SelectTrigger>
-                        <SelectValue placeholder="בחרו קטגוריה" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="major">🔴 החלטה גדולה (דורשת הצבעה)</SelectItem>
-                        <SelectItem value="medium">🟡 החלטה בינונית (דורשת הצבעה)</SelectItem>
-                        <SelectItem value="routine">🔵 החלטה שגרתית (ללא הצבעה)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">תקציב (בשקלים חדשים - אופציונלי)</label>
-                    <Input name="budget" type="number" placeholder="לדוגמה: 1000000" min="0" step="1" />
-                    <p className="text-xs text-slate-500 mt-1">הערה: החלטות עם תקציב מעל 1,000,000 ש"ח יוקצו אוטומטית לקטגוריה בינונית לפחות</p>
-                  </div>
-
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={createDecisionMutation.isPending}>
-                    {createDecisionMutation.isPending ? "יוצר..." : "הצעת החלטה"}
-                  </Button>
-                </form>
-              </Card>
-            </TabsContent>
-          )}
         </Tabs>
       </main>
     </div>
