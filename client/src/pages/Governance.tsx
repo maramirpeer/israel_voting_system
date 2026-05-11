@@ -249,45 +249,32 @@ export default function Governance() {
 
       <main className="container py-8">
         {/* Active Voting Decisions Section - Sorted by Time Remaining */}
-        {activePublicVotingQuery.data && activePublicVotingQuery.data.length > 0 && (
+        {activeDecisions && activeDecisions.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה פעילה</h2>
 
             <div className="space-y-3">
-              {activePublicVotingQuery.data
+              {activeDecisions
                 .sort((a, b) => {
-                  const endA = a.publicVotingEndsAt ? new Date(a.publicVotingEndsAt).getTime() : 0;
-                  const endB = b.publicVotingEndsAt ? new Date(b.publicVotingEndsAt).getTime() : 0;
+                  const endA = a.votingEndsAt ? new Date(a.votingEndsAt).getTime() : 0;
+                  const endB = b.votingEndsAt ? new Date(b.votingEndsAt).getTime() : 0;
                   return endA - endB; // Sort by earliest end time first
                 })
                 .map((decision) => {
-                  // Generate fictitious vote counts with meaningful differences
-                  const baseVotes = 1500 + ((decision.id * 137) % 8500);
-                  // Create meaningful differences: some decisions heavily for, some heavily against
-                  const forPercentage = ((decision.id * 17) % 100); // 0-99%
-                  const votesFor = Math.floor(baseVotes * (forPercentage / 100));
-                  const votesAgainst = baseVotes - votesFor;
+                  const votesFor = decision.votesFor || 0;
+                  const votesAgainst = decision.votesAgainst || 0;
                   const totalVotes = votesFor + votesAgainst;
                   const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
                   const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
 
-                  // Generate fictitious time for each decision (24-72 hours)
-                  // Use decision ID to generate consistent but different times
-                  const baseHours = 24 + ((decision.id * 7) % 48);
-                  const minutes = (decision.id * 13) % 60;
-                  const seconds = Math.floor((refreshCounter % 60)); // Seconds change every refresh
-                  const timeRemaining = `${baseHours}h ${minutes}m ${seconds}s`;
-                  // Force re-render by using refreshCounter
-                  const _ = refreshCounter; // Dependency to trigger re-renders
-
                   return (
-                    <Card key={`${decision.id}-${decision.publicVotingEndsAt}`} className="p-4 border-l-4 border-yellow-500 text-right">
+                    <Card key={`${decision.id}-${decision.votingEndsAt}`} className="p-4 border-l-4 border-yellow-500 text-right">
                       <div className="flex items-start justify-between flex-row-reverse mb-3">
                         <div className="flex-1">
                           <h3 className="font-bold text-slate-900">{decision.title}</h3>
                           <p className="text-sm text-slate-600 mt-1">{decision.description}</p>
                         </div>
-                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining}</Badge>
+                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining[decision.id] || '...'}</Badge>
                       </div>
                       <div className="flex items-center justify-between text-xs text-slate-500">
                         <div className="text-right">

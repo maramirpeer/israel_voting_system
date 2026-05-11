@@ -424,3 +424,11 @@
 - [x] Keep only single voting interface that combines direct votes + delegate votes
 - [x] Update Governance.tsx to remove public voting display
 - [x] Verify voting logic still works correctly with delegates
+
+
+## Bug Fix: Align Active Decisions Between Overview and Decisions Tab (COMPLETED)
+
+- [x] Fix overview tab to use activeDecisions instead of activePublicVotingQuery
+- [x] Ensure same 4 decisions appear in both tabs
+- [x] Verify vote counts match between tabs
+- [x] Test that decisions are sorted by time remaining
