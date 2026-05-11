@@ -412,3 +412,12 @@
 - [x] Vote numbers now consistent between Overview and Active Decisions tabs
 - [x] All votes in realistic 400-10,000 range (not millions)
 - [x] Verified in browser - matching vote counts across tabs
+
+
+## BUG FIX: Remove Ministry Control Panel from Governance Page
+
+- [x] Remove ministry control panel/dashboard from Governance page
+  - [x] Find and identify the ministry control panel component
+  - [x] Remove from Governance.tsx layout
+  - [x] Verify page still displays all other elements correctly
+  - [x] Test in browser to confirm removal

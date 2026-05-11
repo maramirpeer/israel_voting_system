@@ -308,9 +308,6 @@ export default function Governance() {
             <Button onClick={() => setLocation("/delegate-selection")} variant="outline" className="border-purple-300 text-purple-600">
               🗳️ בחירת נציגים
             </Button>
-            <Button onClick={() => setLocation("/ministry-dashboard")} variant="outline" className="border-blue-300 text-blue-600">
-              📋 לוח בקרה משרדי
-            </Button>
           </div>
         </div>
         <Tabs defaultValue="overview" className="w-full">

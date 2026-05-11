@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
-import { decisions, ministries } from "../drizzle/schema";
+import { decisions, ministries, publicVotes, delegateVotes, users } from "../drizzle/schema";
 import { getDb } from "./db";
+import { count, countDistinct, eq, sql } from "drizzle-orm";
 
 export interface MinistryStats {
   ministryId: number;
@@ -259,13 +259,13 @@ export async function getOverallVotingStats(): Promise<VotingStats> {
 
     // Count unique users who have voted directly
     const uniqueDirectVotersResult = await db
-      .select({ count: count(sql`DISTINCT ${publicVotes.userId}`) })
+      .select({ count: countDistinct(publicVotes.userId) })
       .from(publicVotes);
     const directVoters = uniqueDirectVotersResult[0]?.count || 0;
 
     // Count unique users who have delegated
     const uniqueDelegatedVotersResult = await db
-      .select({ count: count(sql`DISTINCT ${delegateVotes.userId}`) })
+      .select({ count: countDistinct(delegateVotes.userId) })
       .from(delegateVotes);
     const delegatedVoters = uniqueDelegatedVotersResult[0]?.count || 0;
 
