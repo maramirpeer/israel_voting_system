@@ -270,7 +270,7 @@ export default function DelegateSelection() {
 
                         <div className="text-right ml-4">
                           <div className="text-2xl font-bold text-purple-600">{delegate.endorsements}</div>
-                          <p className="text-xs text-slate-600">תומכים</p>
+                          <p className="text-xs text-slate-600">מאצילים</p>
                           {currentAssignment?.delegateId === delegate.id && (
                             <Badge className="mt-2 bg-purple-600">✓ בחור</Badge>
                           )}
