@@ -368,12 +368,45 @@ export default function Governance() {
               </Card>
             </div>
 
-            {/* Pending Decisions Grid */}
-            <PendingDecisionsGrid 
-              ministries={ministries}
-              onVote={(decisionId, vote) => castPublicVoteMutation.mutate({ decisionId, vote })}
-              isVoting={castPublicVoteMutation.isPending}
-            />
+            {/* Summary of Ministries with Active Votes */}
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">🏛️ המשרדים - הצעות פעילות</h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                {ministries.map((ministry) => {
+                  const ministryDecisions = activeDecisions.filter(
+                    (d) => d.ministryId === ministry.id
+                  );
+                  if (ministryDecisions.length === 0) return null;
+                  
+                  const totalVotes = ministryDecisions.reduce(
+                    (sum, d) => sum + (d.votesFor || 0) + (d.votesAgainst || 0),
+                    0
+                  );
+                  
+                  return (
+                    <Card key={ministry.id} className="p-4 text-right">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{ministry.emoji || "📋"}</span>
+                        <h4 className="font-bold text-slate-900">{ministry.name}</h4>
+                      </div>
+                      <p className="text-sm text-slate-600 mb-2">
+                        {ministryDecisions.length} הצעות פעילות
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        סה"כ: {totalVotes.toLocaleString('he-IL')} הצבעות
+                      </p>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <Button 
+              onClick={() => setLocation("/governance#decisions")}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              📊 צפה בפרטים המלאים
+            </Button>
 
             {/* How It Works */}
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
