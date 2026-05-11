@@ -20,15 +20,7 @@ export default function Home() {
             <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">תכונות</a>
             <a href="#faq" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">שאלות נפוצות</a>
           </nav>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-              <Lock className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-blue-900">קול אזרחי</h1>
-              <p className="text-xs text-cyan-600 font-medium">מערכת דמוקרטיה מבוזרת</p>
-            </div>
-          </div>
+
           <div className="flex gap-2">
             <Button onClick={() => setLocation("/mk121")} className="bg-purple-600 hover:bg-purple-700">
               ח"כ 121
