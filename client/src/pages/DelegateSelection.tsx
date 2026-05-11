@@ -183,37 +183,30 @@ export default function DelegateSelection() {
       </header>
 
       <main className="container py-8">
-        {/* Current Selection */}
-        {currentAssignment && (
-          <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-6 h-6 text-blue-600" />
-              <div>
-                <p className="font-bold text-slate-900">
-                  {currentAssignment.votingMethod === "direct"
-                    ? "אתה מצביע ישירות"
-                    : `אתה מאציל קול ל: ${currentAssignment.delegateName}`}
-                </p>
-                <p className="text-sm text-slate-600">
-                  {ministries.find((m) => m.id === selectedMinistryId)?.name}
-                </p>
-              </div>
+        {/* Current Selection - Always Show */}
+        <Card className={`p-6 mb-8 border-2 ${
+          votingMethod === "direct"
+            ? "bg-gradient-to-r from-green-50 to-emerald-50 border-green-300"
+            : "bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200"
+        }`}>
+          <div className="flex items-center gap-3">
+            <CheckCircle className={`w-6 h-6 ${
+              votingMethod === "direct" ? "text-green-600" : "text-blue-600"
+            }`} />
+            <div>
+              <p className="font-bold text-slate-900">
+                {votingMethod === "direct"
+                  ? "✓ אתה מצביע ישירות"
+                  : `✓ אתה מאציל קול ל: ${currentAssignment?.delegateName || "בחירה..."}`}
+              </p>
+              <p className="text-sm text-slate-600">
+                {ministries.find((m) => m.id === selectedMinistryId)?.name}
+              </p>
             </div>
-          </Card>
-        )}
+          </div>
+        </Card>
 
-        {/* Direct Voting Status Indicator */}
-        {showDirectVotingStatus && votingMethod === "direct" && (
-          <Card className="p-6 mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300">
-            <div className="flex items-center gap-3">
-              <Target className="w-6 h-6 text-green-600" />
-              <div>
-                <p className="font-bold text-slate-900 text-lg">✓ אתה מצביע ישירות</p>
-                <p className="text-sm text-slate-600">זה המצב הנוכחי שלך - אתה מצביע ישירות על כל החלטה</p>
-              </div>
-            </div>
-          </Card>
-        )}
+
 
         {/* Voting Method Selection */}
         <Tabs value={votingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full mb-8">
