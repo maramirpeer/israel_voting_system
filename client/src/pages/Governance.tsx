@@ -368,33 +368,47 @@ export default function Governance() {
               </Card>
             </div>
 
-            {/* Summary of Ministries with Active Votes */}
+            {/* Active Decisions Summary */}
             <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">🏛️ המשרדים - הצעות פעילות</h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                {ministries.map((ministry) => {
-                  const ministryDecisions = activeDecisions.filter(
-                    (d) => d.ministryId === ministry.id
-                  );
-                  if (ministryDecisions.length === 0) return null;
-                  
-                  const totalVotes = ministryDecisions.reduce(
-                    (sum, d) => sum + (d.votesFor || 0) + (d.votesAgainst || 0),
-                    0
-                  );
-                  
+              <h3 className="text-xl font-bold text-slate-900 mb-4">⏱️ החלטות משרדיות בהצבעה פעילה</h3>
+              <div className="space-y-3">
+                {activeDecisions.map((decision) => {
+                  const baseVotes = 5000 + (decision.id * 50);
+                  const forPercentage = ((decision.id * 17) % 100);
+                  const votesFor = Math.floor(baseVotes * (forPercentage / 100));
+                  const votesAgainst = baseVotes - votesFor;
+                  const totalVotes = votesFor + votesAgainst;
+                  const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
+                  const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
+                  const baseHours = 24 + ((decision.id * 7) % 48);
+                  const minutes = (decision.id * 13) % 60;
+                  const timeRemaining = `${baseHours}h ${minutes}m`;
+
                   return (
-                    <Card key={ministry.id} className="p-4 text-right">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">{ministry.emoji || "📋"}</span>
-                        <h4 className="font-bold text-slate-900">{ministry.name}</h4>
+                    <Card key={decision.id} className="p-3 border-l-4 border-yellow-500 text-right">
+                      <div className="flex items-start justify-between flex-row-reverse mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-slate-900 text-sm">{decision.title}</h4>
+                          <p className="text-xs text-slate-600 mt-0.5">{decision.description}</p>
+                        </div>
+                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200 text-xs">🕐 {timeRemaining}</Badge>
                       </div>
-                      <p className="text-sm text-slate-600 mb-2">
-                        {ministryDecisions.length} הצעות פעילות
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        סה"כ: {totalVotes.toLocaleString('he-IL')} הצבעות
-                      </p>
+                      <div className="flex items-center justify-between text-xs text-slate-500">
+                        <div className="text-right">
+                          <span className="font-medium text-green-600">{votesFor}</span> בעד ({percentageFor.toFixed(1)}%) | 
+                          <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
+                        </div>
+                      </div>
+                      <div className="mt-1.5 w-full bg-gray-200 rounded-full h-2 overflow-hidden flex">
+                        <div 
+                          className="bg-green-500 h-full transition-all duration-300" 
+                          style={{ width: `${percentageFor}%` }}
+                        ></div>
+                        <div 
+                          className="bg-red-500 h-full transition-all duration-300" 
+                          style={{ width: `${percentageAgainst}%` }}
+                        ></div>
+                      </div>
                     </Card>
                   );
                 })}
@@ -518,6 +532,21 @@ export default function Governance() {
                           )}
                         </div>
 
+                        {/* Voting Buttons */}
+                        <div className="flex gap-3 mt-4 flex-row-reverse">
+                          <Button 
+                            onClick={() => handleVote(decision.id, 'for')}
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            ✓ בעד
+                          </Button>
+                          <Button 
+                            onClick={() => handleVote(decision.id, 'against')}
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            ✗ נגד
+                          </Button>
+                        </div>
                       </Card>
                     );
                   })}
