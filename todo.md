@@ -388,3 +388,12 @@
 - [x] No extreme votes (0% or 100%)
 - [x] Each proposal shows realistic for/against split
 - [x] Verified in browser - all proposals showing balanced percentages
+
+## Phase 15.5: Fix Vote Display Consistency (COMPLETED)
+
+- [x] Fixed percentageFor and percentageAgainst calculation in overview tab
+- [x] Fixed percentageFor and percentageAgainst calculation in Active Decisions tab
+- [x] Ensured both tabs use identical vote calculation formula
+- [x] Vote numbers now consistent between Overview and Active Decisions tabs
+- [x] All votes in realistic 400-10,000 range (not millions)
+- [x] Verified in browser - matching vote counts across tabs

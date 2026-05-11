@@ -252,8 +252,9 @@ export default function Governance() {
                   const votesFor = Math.floor(baseVotes * (forPercentage / 100));
                   const votesAgainst = baseVotes - votesFor;
                   const totalVotes = votesFor + votesAgainst;
-                  const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
-                  const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
+                  const percentageFor = (votesFor / totalVotes) * 100;
+                  const percentageAgainst = (votesAgainst / totalVotes) * 100;
+
 
                   // Generate fictitious time for each decision (24-72 hours)
                   // Use decision ID to generate consistent but different times
@@ -480,11 +481,14 @@ export default function Governance() {
                 {activeDecisions
                   .filter((d) => !selectedMinistry || d.ministryId === selectedMinistry)
                   .map((decision) => {
-                    const votesFor = decision.votesFor || 0;
-                    const votesAgainst = decision.votesAgainst || 0;
+                    // Use same formula as overview tab for consistent vote numbers
+                    const baseVotes = 400 + ((decision.id * 137) % 9600); // 400-10000
+                    const forPercentage = ((decision.id * 17) % 100); // 0-99%
+                    const votesFor = Math.floor(baseVotes * (forPercentage / 100));
+                    const votesAgainst = baseVotes - votesFor;
                     const totalVotes = votesFor + votesAgainst;
-                    const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
-                    const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
+                    const percentageFor = (votesFor / totalVotes) * 100;
+                    const percentageAgainst = (votesAgainst / totalVotes) * 100;
                     const willBeVetoed = percentageAgainst > 51;
 
                     return (
