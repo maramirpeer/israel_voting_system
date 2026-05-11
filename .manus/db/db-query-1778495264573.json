@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nSELECT \n  FLOOR(RAND() * 100) + 1,\n  m.id,\n  NULL,\n  CASE WHEN RAND() < 0.5 THEN FLOOR(RAND() * 100) + 1 ELSE NULL END,\n  CASE WHEN RAND() < 0.3 THEN 'direct' ELSE 'citizen' END,\n  NOW(),\n  NOW()\nFROM ministries m\nCROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3) x\nLIMIT 100",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute INSERT INTO citizenDelegates (userId, ministryId, delegateId, delegateUserId, votingMethod, createdAt, updatedAt)\nSELECT \n  FLOOR(RAND() * 100) + 1,\n  m.id,\n  NULL,\n  CASE WHEN RAND() < 0.5 THEN FLOOR(RAND() * 100) + 1 ELSE NULL END,\n  CASE WHEN RAND() < 0.3 THEN 'direct' ELSE 'citizen' END,\n  NOW(),\n  NOW()\nFROM ministries m\nCROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3) x\nLIMIT 100",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 268
+}
