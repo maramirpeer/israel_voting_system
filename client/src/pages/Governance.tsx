@@ -547,7 +547,7 @@ export default function Governance() {
                                       disabled={castPublicVoteMutation.isPending}
                                     >
                                       <ThumbsUp className="w-4 h-4 mr-1" />
-                                      קול אזרחי בעד
+                                      בעד
                                     </Button>
                                     <Button
                                       onClick={() => {
@@ -562,7 +562,7 @@ export default function Governance() {
                                       disabled={castPublicVoteMutation.isPending}
                                     >
                                       <ThumbsDown className="w-4 h-4 mr-1" />
-                                      קול אזרחי נגד
+                                      נגד
                                     </Button>
                                   </div>
                                 </div>
