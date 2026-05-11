@@ -41,25 +41,7 @@ export default function MinistryDashboard() {
     }
   }, [ministries, selectedMinistryId]);
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-        <header className="sticky top-0 z-40 bg-white border-b border-slate-200">
-          <div className="container py-4">
-            <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              חזרה
-            </Button>
-          </div>
-        </header>
-        <main className="container py-8">
-          <Card className="p-8 text-center">
-            <p className="text-slate-600">נדרש התחברות</p>
-          </Card>
-        </main>
-      </div>
-    );
-  }
+  // Auth check removed - demo mode allows all users
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
