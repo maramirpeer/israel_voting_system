@@ -74,6 +74,8 @@ export async function assignDelegate(
       .where(and(eq(citizenDelegates.userId, userId), eq(citizenDelegates.ministryId, ministryId)))
       .limit(1);
 
+    const previousAssignment = existing.length > 0 ? existing[0] : null;
+
     if (existing.length > 0) {
       // Update existing assignment
       await db
@@ -96,6 +98,33 @@ export async function assignDelegate(
         delegateUserId,
         votingMethod,
       });
+    }
+
+    // Update endorsements count for the new delegate
+    if (delegateId && delegateId > 0) {
+      // Increment endorsements for new delegate
+      const currentDelegate = await db.select().from(delegates).where(eq(delegates.id, delegateId)).limit(1);
+      if (currentDelegate.length > 0) {
+        await db
+          .update(delegates)
+          .set({
+            endorsements: (currentDelegate[0].endorsements || 0) + 1,
+          })
+          .where(eq(delegates.id, delegateId));
+      }
+    }
+
+    // Decrement endorsements for previous delegate if switching
+    if (previousAssignment?.delegateId && previousAssignment.delegateId !== delegateId) {
+      const prevDelegate = await db.select().from(delegates).where(eq(delegates.id, previousAssignment.delegateId)).limit(1);
+      if (prevDelegate.length > 0) {
+        await db
+          .update(delegates)
+          .set({
+            endorsements: Math.max((prevDelegate[0].endorsements || 0) - 1, 0),
+          })
+          .where(eq(delegates.id, previousAssignment.delegateId));
+      }
     }
 
     return true;

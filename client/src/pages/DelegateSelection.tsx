@@ -38,6 +38,7 @@ export default function DelegateSelection() {
     onSuccess: () => {
       toast.success("נציג השתנה בהצלחה!");
       assignmentsQuery.refetch();
+      delegatesQuery.refetch();
       setSelectedCitizen(null);
       setCitizenSearchId("");
     },
@@ -68,6 +69,17 @@ export default function DelegateSelection() {
 
   const handleAssignDelegate = (delegateId: number) => {
     if (!user?.id || !selectedMinistryId) return;
+
+    // Optimistically update the endorsements count
+    const delegateIndex = delegates.findIndex(d => d.id === delegateId);
+    if (delegateIndex !== -1) {
+      const updatedDelegates = [...delegates];
+      updatedDelegates[delegateIndex] = {
+        ...updatedDelegates[delegateIndex],
+        endorsements: (updatedDelegates[delegateIndex].endorsements || 0) + 1
+      };
+      // Note: This is optimistic update, actual data comes from server
+    }
 
     assignDelegateMutation.mutate({
       userId: user.id,
