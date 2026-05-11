@@ -432,3 +432,11 @@
 - [x] Ensure same 4 decisions appear in both tabs
 - [x] Verify vote counts match between tabs
 - [x] Test that decisions are sorted by time remaining
+
+
+## Bug Fix: Remove Create Decision Tab (COMPLETED)
+
+- [x] Remove "הצעת החלטה חדשה" (Create New Decision) tab from Governance page
+- [x] Citizens only vote on minister proposals, not create new ones
+- [x] Remove tab trigger from TabsList
+- [x] Keep only "Overview" and "Active Decisions" tabs

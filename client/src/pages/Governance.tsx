@@ -319,9 +319,7 @@ export default function Governance() {
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="overview">סקירה כללית</TabsTrigger>
             <TabsTrigger value="decisions">החלטות פעילות</TabsTrigger>
-            {user?.role === "minister" || user?.role === "admin" ? (
-              <TabsTrigger value="create">הצעת החלטה חדשה</TabsTrigger>
-            ) : null}
+            {/* Create tab removed - citizens only vote on minister proposals */}
           </TabsList>
 
           {/* Overview Tab */}
@@ -564,8 +562,8 @@ export default function Governance() {
             )}
           </TabsContent>
 
-          {/* Create Decision Tab */}
-          {(user?.role === "minister" || user?.role === "admin") && (
+          {/* Create Decision Tab - REMOVED: Citizens only vote on minister proposals */}
+          {false && (
             <TabsContent value="create">
               <Card className="p-6">
                 <h2 className="text-2xl font-bold mb-6">הצעת החלטה חדשה</h2>
