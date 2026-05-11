@@ -224,6 +224,7 @@ export default function DelegateSelection() {
                 <Button
                   onClick={handleVoteDirect}
                   variant={currentVotingMethod === "direct" ? "default" : "outline"}
+                  disabled={currentVotingMethod === "delegate"}
                   className="w-full justify-start gap-3 h-auto py-4 px-4"
                 >
                   <CheckCircle className="w-5 h-5" />
