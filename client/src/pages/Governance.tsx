@@ -28,6 +28,10 @@ export default function Governance() {
   const decisionsQuery = trpc.governance.decisions.list.useQuery();
   const activeDecisionsQuery = trpc.governance.decisions.active.useQuery();
   const activePublicVotingQuery = trpc.governance.publicVotes.active.useQuery(undefined, { refetchInterval: 10000 }); // Refresh every 10 seconds for real-time updates
+  const delegationStatusQuery = trpc.delegates.getCitizenAssignments.useQuery(
+    { userId: user?.id || 0 },
+    { enabled: !!user?.id, refetchInterval: 5000 }
+  ); // Refresh every 5 seconds
 
   // Mutations
   const createDecisionMutation = trpc.governance.decisions.create.useMutation();
@@ -226,11 +230,19 @@ export default function Governance() {
             </Button>
           </div>
           <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
-          <div className="flex items-center gap-2 flex-row-reverse">
+          <div className="flex items-center gap-4 flex-row-reverse">
             <div>
               <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
               <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
             </div>
+            {delegationStatusQuery.data && delegationStatusQuery.data.length > 0 && (
+              <div className="text-right">
+                <p className="text-sm font-semibold text-blue-600">✓ אתה מאציל קול לנציגים</p>
+                <p className="text-xs text-slate-500 max-w-xs overflow-hidden text-ellipsis">
+                  {delegationStatusQuery.data.map(d => `${d.delegateName}`).join(", ") || "מומחה"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </header>
