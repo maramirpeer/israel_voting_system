@@ -421,3 +421,20 @@
   - [x] Remove from Governance.tsx layout
   - [x] Verify page still displays all other elements correctly
   - [x] Test in browser to confirm removal
+
+
+## FEATURE: Modify Overview Tab - Show Only Urgent Decisions (< 24 hours) (COMPLETED)
+
+**Requirements:**
+- [x] Filter decisions in Overview tab to show only those with < 24 hours remaining
+- [x] Keep all statistics cards (approved, rejected, total decisions)
+- [x] Add "View Full Details" button to navigate to Active Decisions tab
+- [x] Maintain the same card layout and styling
+- [x] Test with multiple decisions to verify filtering works correctly
+
+**Implementation:**
+- [x] Modified Overview tab title to include "(פחות מ-24 שעות)"
+- [x] Added filter logic to show only decisions with < 24 hours remaining
+- [x] Added empty state message when no urgent decisions exist
+- [x] Added "צפה בכל ההחלטות" button to view all decisions
+- [x] Maintained all statistics cards unchanged

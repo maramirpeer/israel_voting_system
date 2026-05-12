@@ -366,11 +366,41 @@ export default function Governance() {
               </Card>
             </div>
 
-            {/* Active Decisions Summary */}
+            {/* Active Decisions Summary - Only show decisions with < 24 hours remaining */}
             <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">⏱️ החלטות משרדיות בהצבעה פעילה</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">⏱️ החלטות משרדיות בהצבעה פעילה (פחות מ-24 שעות)</h3>
               <div className="space-y-3">
-                {activeDecisions.map((decision) => {
+                {activeDecisions
+                  .filter((decision) => {
+                    if (!decision.publicVotingEndsAt) return false;
+                    const now = new Date();
+                    const end = new Date(decision.publicVotingEndsAt);
+                    const diff = end.getTime() - now.getTime();
+                    const hoursRemaining = diff / (1000 * 60 * 60);
+                    return hoursRemaining < 24 && hoursRemaining > 0;
+                  })
+                  .length === 0 ? (
+                  <Card className="p-8 text-center">
+                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">אין החלטות דחופות (פחות מ-24 שעות)</p>
+                    <Button 
+                      onClick={() => setLocation("/governance#decisions")}
+                      className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      צפה בכל ההחלטות
+                    </Button>
+                  </Card>
+                ) : (
+                  activeDecisions
+                    .filter((decision) => {
+                      if (!decision.publicVotingEndsAt) return false;
+                      const now = new Date();
+                      const end = new Date(decision.publicVotingEndsAt);
+                      const diff = end.getTime() - now.getTime();
+                      const hoursRemaining = diff / (1000 * 60 * 60);
+                      return hoursRemaining < 24 && hoursRemaining > 0;
+                    })
+                    .map((decision) => {
                   const baseVotes = 5000 + (decision.id * 50);
                   const forPercentage = ((decision.id * 17) % 100);
                   const votesFor = Math.floor(baseVotes * (forPercentage / 100));
@@ -409,7 +439,8 @@ export default function Governance() {
                       </div>
                     </Card>
                   );
-                })}
+                })
+                )}
               </div>
             </div>
             

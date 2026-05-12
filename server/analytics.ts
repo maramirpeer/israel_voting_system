@@ -34,6 +34,23 @@ export interface DecisionAnalytics {
   votingEndsAt: Date | null;
 }
 
+export interface VotingStats {
+  totalVoters: number;
+  totalVotes: number;
+  participationRate: number;
+  directVotes: number;
+  delegatedVotes: number;
+  delegationRate: number;
+}
+
+export interface EngagementMetrics {
+  activeUsers: number;
+  newUsersThisWeek: number;
+  averageVotesPerUser: number;
+  mostActiveMinistry: string;
+  leastActiveMinistry: string;
+}
+
 export async function getMinistryStats(ministryId: number): Promise<MinistryStats | null> {
   const db = await getDb();
   if (!db) return null;
@@ -217,28 +234,6 @@ export async function getApprovalTrends(ministryId: number): Promise<{ month: st
   }
 }
 
-
-// Additional analytics functions for dashboard
-import { count, sql } from "drizzle-orm";
-import { publicVotes, delegateVotes, citizenDelegates, users } from "../drizzle/schema";
-
-export interface VotingStats {
-  totalVoters: number;
-  totalVotes: number;
-  participationRate: number;
-  directVotes: number;
-  delegatedVotes: number;
-  delegationRate: number;
-}
-
-export interface EngagementMetrics {
-  activeUsers: number;
-  newUsersThisWeek: number;
-  averageVotesPerUser: number;
-  mostActiveMinistry: string;
-  leastActiveMinistry: string;
-}
-
 export async function getOverallVotingStats(): Promise<VotingStats> {
   const db = await getDb();
   if (!db) {
@@ -265,7 +260,7 @@ export async function getOverallVotingStats(): Promise<VotingStats> {
 
     // Count unique users who have delegated
     const uniqueDelegatedVotersResult = await db
-      .select({ count: countDistinct(delegateVotes.userId) })
+      .select({ count: countDistinct(delegateVotes.delegateId) })
       .from(delegateVotes);
     const delegatedVoters = uniqueDelegatedVotersResult[0]?.count || 0;
 
@@ -274,10 +269,10 @@ export async function getOverallVotingStats(): Promise<VotingStats> {
     const directVotes = directVotesResult[0]?.count || 0;
 
     const delegatedVotesResult = await db.select({ count: count() }).from(delegateVotes);
-    const delegatedVotes = delegatedVotesResult[0]?.count || 0;
+    const delegatedVotesCount = delegatedVotesResult[0]?.count || 0;
 
     // Participation rate is based on unique voters, not total votes
-    const totalVotes = directVotes + delegatedVotes;
+    const totalVotes = directVotes + delegatedVotesCount;
     const participationRate = totalVoters > 0 ? ((directVoters + delegatedVoters) / totalVoters) * 100 : 0;
     const delegationRate = (directVoters + delegatedVoters) > 0 ? (delegatedVoters / (directVoters + delegatedVoters)) * 100 : 0;
 
@@ -286,7 +281,7 @@ export async function getOverallVotingStats(): Promise<VotingStats> {
       totalVotes,
       participationRate: Math.round(participationRate * 100) / 100,
       directVotes,
-      delegatedVotes,
+      delegatedVotes: delegatedVotesCount,
       delegationRate: Math.round(delegationRate * 100) / 100,
     };
   } catch (error) {
