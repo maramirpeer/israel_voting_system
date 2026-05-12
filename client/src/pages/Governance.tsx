@@ -6,22 +6,24 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
 import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocation } from "wouter";
 import { PendingDecisionsGrid } from "@/components/PendingDecisionsGrid";
+import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function Governance() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const [selectedMinistry, setSelectedMinistry] = useState<number | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState<{ [key: number]: string }>({});
   const [publicTimeRemaining, setPublicTimeRemaining] = useState<{ [key: number]: string }>({});
-  const [refreshCounter, setRefreshCounter] = useState(0);
   const [userVotes, setUserVotes] = useState<{ [key: number]: "for" | "against" | null }>({});
+  const [activeTab, setActiveTab] = useState("overview");
+  const [decisionView, setDecisionView] = useState<"active" | "approved" | "rejected" | "all">("active");
+  const decisionsSectionRef = useRef<HTMLDivElement | null>(null);
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
@@ -41,36 +43,86 @@ export default function Governance() {
   const ministries = ministriesQuery.data || [];
   const decisions = decisionsQuery.data || [];
   const activeDecisions = activeDecisionsQuery.data || [];
-
-  // Calculate time remaining for voting - update every second for real-time display
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newTimeRemaining: { [key: number]: string } = {};
-      activeDecisions.forEach((decision) => {
-        if (decision.votingEndsAt) {
-          const now = new Date();
-          const end = new Date(decision.votingEndsAt);
-          const diff = end.getTime() - now.getTime();
-          
-          if (diff > 0) {
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            newTimeRemaining[decision.id] = `${hours}h ${minutes}m ${seconds}s`;
-          } else {
-            newTimeRemaining[decision.id] = "Voting ended";
-          }
-        }
-      });
-      setTimeRemaining(newTimeRemaining);
-    }, 1000); // Update every second
-
-    return () => clearInterval(interval);
-  }, [activeDecisions]);
+  const sortedActiveDecisions = [...activeDecisions]
+    .sort((a: any, b: any) => {
+      const endA = a.publicVotingEndsAt ? new Date(a.publicVotingEndsAt).getTime() : 0;
+      const endB = b.publicVotingEndsAt ? new Date(b.publicVotingEndsAt).getTime() : 0;
+      return endA - endB;
+    });
+  const fallbackMinistryNames: Record<number, string> = {
+    1: "משרד הבריאות",
+    2: "משרד הפנים, החברה והרווחה",
+    3: "משרד החינוך",
+    4: "משרד החדשנות ואיכות הסביבה",
+    6: "משרד הביטחון",
+    7: "משרד החוץ וההסברה העולמית",
+    8: "משרד האוצר",
+    9: "משרד המשפטים",
+    11: "משרד הפנים, החברה והרווחה",
+    17: "משרד התרבות",
+  };
+  const getMinistryName = (ministryId: number) =>
+    ministries.find((ministry) => ministry.id === ministryId)?.name || fallbackMinistryNames[ministryId] || "משרד לא משויך";
+  const activeDecisionIds = new Set(sortedActiveDecisions.map((decision) => decision.id));
+  const allDecisionsSorted = [
+    ...sortedActiveDecisions,
+    ...decisions.filter((decision) => !activeDecisionIds.has(decision.id)),
+  ];
+  const urgentActiveDecisions = sortedActiveDecisions.slice(0, 3);
+  const displayedDecisions =
+    decisionView === "approved"
+      ? decisions.filter((decision) => decision.status === "approved")
+      : decisionView === "rejected"
+        ? decisions.filter((decision) => decision.status === "rejected")
+        : decisionView === "all"
+          ? allDecisionsSorted
+          : sortedActiveDecisions;
+  const decisionStatusData = [
+    { name: "הצבעות פעילות", value: activeDecisions.length, color: "#2563eb" },
+    { name: "מאושרות", value: decisions.filter((decision) => decision.status === "approved").length, color: "#16a34a" },
+    { name: "נדחו", value: decisions.filter((decision) => decision.status === "rejected").length, color: "#dc2626" },
+  ].filter((item) => item.value > 0);
+  const voteBalanceData = sortedActiveDecisions.slice(0, 5).map((decision: any) => {
+    const baseVotes = 400 + ((decision.id * 137) % 9600);
+    const forPercentage = ((decision.id * 17) % 100);
+    const forVotes = Math.floor(baseVotes * (forPercentage / 100));
+    return {
+      name: decision.title.length > 22 ? `${decision.title.slice(0, 22)}...` : decision.title,
+      forVotes,
+      againstVotes: baseVotes - forVotes,
+    };
+  });
+  const ministryParticipationData = sortedActiveDecisions
+    .map((decision: any) => {
+      const demoParticipationByDecisionId: Record<number, number> = {
+        101: 18400,
+        102: 7200,
+        105: 31200,
+        106: 12800,
+      };
+      const baseVotes = demoParticipationByDecisionId[decision.id] || 2500 + ((decision.id * 421) % 18000);
+      const ministryName = getMinistryName(decision.ministryId);
+      return {
+        name: ministryName.replace("משרד ", ""),
+        votes: baseVotes,
+      };
+    })
+    .sort((a, b) => b.votes - a.votes)
+    .slice(0, 5);
+  const decisionsTitle =
+    decisionView === "approved" ? "החלטות מאושרות" : decisionView === "rejected" ? "החלטות שנדחו" : decisionView === "all" ? "סה\"כ החלטות" : "הצבעות פעילות";
+  const emptyDecisionsText =
+    decisionView === "approved"
+      ? "אין החלטות מאושרות כרגע"
+      : decisionView === "rejected"
+        ? "אין החלטות שנדחו כרגע"
+        : decisionView === "all"
+          ? "אין החלטות להצגה כרגע"
+          : "אין הצבעות פעילות כרגע";
 
   // Calculate time remaining for public voting - update every second for real-time display
   useEffect(() => {
-    const interval = setInterval(() => {
+    const updatePublicTimeRemaining = () => {
       const newPublicTimeRemaining: { [key: number]: string } = {};
       activeDecisions.forEach((decision) => {
         if (decision.publicVotingEndsAt) {
@@ -93,18 +145,12 @@ export default function Governance() {
         }
       });
       setPublicTimeRemaining(newPublicTimeRemaining);
-    }, 1000); // Update every second
+    };
 
+    updatePublicTimeRemaining();
+    const interval = setInterval(updatePublicTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, [activeDecisions]);
-
-  // Trigger re-render every second to update all dynamic data
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRefreshCounter(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [activeDecisionsQuery.data]);
 
   const handleCreateDecision = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -140,6 +186,14 @@ export default function Governance() {
     } catch (error) {
       console.error("Error casting vote:", error);
     }
+  };
+
+  const openDecisionView = (view: "active" | "approved" | "rejected" | "all") => {
+    setDecisionView(view);
+    setActiveTab("decisions");
+    window.setTimeout(() => {
+      decisionsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
   };
 
   const getStatusColor = (status: string) => {
@@ -224,27 +278,30 @@ export default function Governance() {
           <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
           <div className="flex items-center gap-2 flex-row-reverse">
             <div>
-              <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name}</p>
-              <p className="text-xs text-slate-500">{user?.role === "minister" ? "שר" : "אזרח"}</p>
+              <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name || "ישראל ישראלי"}</p>
+              {user?.role === "minister" && <p className="text-xs text-slate-500">שר</p>}
             </div>
           </div>
         </div>
       </header>
 
       <main className="container py-8">
+        <div className="mb-8">
+          <Button
+            onClick={() => setLocation("/delegate-selection")}
+            className="w-full min-h-20 bg-purple-700 text-xl font-bold text-white hover:bg-purple-800"
+          >
+            🗳️ הכוון קולך
+          </Button>
+        </div>
+
         {/* Active Voting Decisions Section - Sorted by Time Remaining */}
         {activeDecisions && activeDecisions.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה פעילה</h2>
+            <h2 className="text-xl font-bold mb-4 text-right">⏱️ החלטות משרדיות בהצבעה פעילה</h2>
 
-            <div className="space-y-3">
-              {activeDecisions
-                .sort((a: any, b: any) => {
-                  const endA = a.publicVotingEndsAt ? new Date(a.publicVotingEndsAt).getTime() : 0;
-                  const endB = b.publicVotingEndsAt ? new Date(b.publicVotingEndsAt).getTime() : 0;
-                  return endA - endB; // Sort by earliest end time first
-                })
-                .map((decision: any) => {
+            <div className="grid gap-3 md:grid-cols-3">
+              {urgentActiveDecisions.map((decision: any) => {
                   // Generate fictitious vote counts between 400-10000 with meaningful differences
                   const baseVotes = 400 + ((decision.id * 137) % 9600); // 400-10000
                   // Create meaningful differences: some decisions heavily for, some heavily against
@@ -256,34 +313,18 @@ export default function Governance() {
                   const percentageAgainst = (votesAgainst / totalVotes) * 100;
 
 
-                  // Generate fictitious time for each decision (24-72 hours)
-                  // Use decision ID to generate consistent but different times
-                  const baseHours = 24 + ((decision.id * 7) % 48);
-                  const minutes = (decision.id * 13) % 60;
-                  const seconds = Math.floor((refreshCounter % 60)); // Seconds change every refresh
-                  const timeRemaining = `${baseHours}h ${minutes}m ${seconds}s`;
-                  // Force re-render by using refreshCounter
-                  const _ = refreshCounter; // Dependency to trigger re-renders
+                  const remainingTime = publicTimeRemaining[decision.id] || "חישוב...";
 
                   return (
-                    <Card key={`${decision.id}-${decision.publicVotingEndsAt}`} className="p-4 border-l-4 border-yellow-500 text-right">
-                      <div className="flex items-start justify-between flex-row-reverse mb-3">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-slate-900">{decision.title}</h3>
-                          <p className="text-sm text-slate-600 mt-1">{decision.description}</p>
-                        </div>
-                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {timeRemaining}</Badge>
+                    <Card key={`${decision.id}-${decision.publicVotingEndsAt}`} className="p-2.5 border-r-4 border-yellow-500 text-right">
+                      <Badge className="mb-1.5 px-2 py-0 text-[11px] bg-yellow-100 text-yellow-800 border-yellow-200">🕐 {remainingTime}</Badge>
+                      <h3 className="line-clamp-2 text-xs font-bold leading-5 text-slate-900">{decision.title}</h3>
+                      <p className="mt-1 line-clamp-1 text-[11px] leading-4 text-slate-600">{decision.description}</p>
+                      <div className="mt-2 text-[11px] text-slate-600">
+                        <span className="font-medium text-green-600">{votesFor}</span> בעד | 
+                        <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד
                       </div>
-                      <div className="flex items-center justify-between text-xs text-slate-500">
-                        <div className="text-right">
-                          <span className="font-medium text-green-600">{votesFor}</span> בעד ({percentageFor.toFixed(1)}%) | 
-                          <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
-                        </div>
-                        <div className="text-left text-xs text-slate-400">
-                          סה"כ: {totalVotes.toLocaleString('he-IL')} הצבעות
-                        </div>
-                      </div>
-                      <div className="mt-2 w-full bg-gray-200 rounded-full h-3 overflow-hidden flex">
+                      <div className="mt-1.5 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden flex">
                         <div 
                           className="bg-green-500 h-full transition-all duration-300" 
                           style={{ width: `${percentageFor}%` }}
@@ -301,19 +342,10 @@ export default function Governance() {
             </div>
           </div>
         )}
-
-        <div className="mb-6 flex justify-between items-center flex-row-reverse">
-          <div></div>
-          <div className="flex gap-2 flex-row-reverse">
-            <Button onClick={() => setLocation("/delegate-selection")} variant="outline" className="border-purple-300 text-purple-600">
-              🗳️ בחירת נציגים
-            </Button>
-          </div>
-        </div>
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="overview">סקירה כללית</TabsTrigger>
-            <TabsTrigger value="decisions">החלטות פעילות</TabsTrigger>
+            <TabsTrigger value="decisions" onClick={() => setDecisionView("active")}>הצבעות פעילות</TabsTrigger>
 
           </TabsList>
 
@@ -321,17 +353,27 @@ export default function Governance() {
           <TabsContent value="overview" className="space-y-6">
             {/* Stats Cards */}
             <div className="grid md:grid-cols-4 gap-4">
-              <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 text-right">
+              <Card
+                className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 text-right cursor-pointer transition hover:border-blue-400"
+                onClick={() => {
+                  openDecisionView("active");
+                }}
+              >
                 <div className="flex items-center justify-between flex-row-reverse">
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">החלטות פעילות</p>
+                    <p className="text-sm text-blue-600 font-medium">הצבעות פעילות</p>
                     <p className="text-3xl font-bold text-blue-900">{activeDecisions.length}</p>
                   </div>
                   <Clock className="w-8 h-8 text-blue-400" />
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200 text-right">
+              <Card
+                className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200 text-right cursor-pointer transition hover:border-green-400"
+                onClick={() => {
+                  openDecisionView("approved");
+                }}
+              >
                 <div className="flex items-center justify-between flex-row-reverse">
                   <div>
                     <p className="text-sm text-green-600 font-medium">החלטות מאושרות</p>
@@ -343,7 +385,12 @@ export default function Governance() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200 text-right">
+              <Card
+                className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200 text-right cursor-pointer transition hover:border-red-400"
+                onClick={() => {
+                  openDecisionView("rejected");
+                }}
+              >
                 <div className="flex items-center justify-between flex-row-reverse">
                   <div>
                     <p className="text-sm text-red-600 font-medium">החלטות שנדחו</p>
@@ -355,7 +402,12 @@ export default function Governance() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 text-right">
+              <Card
+                className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 text-right cursor-pointer transition hover:border-purple-400"
+                onClick={() => {
+                  setLocation("/governance/decisions-summary");
+                }}
+              >
                 <div className="flex items-center justify-between flex-row-reverse">
                   <div>
                     <p className="text-sm text-purple-600 font-medium">סה"כ החלטות</p>
@@ -366,90 +418,76 @@ export default function Governance() {
               </Card>
             </div>
 
-            {/* Active Decisions Summary - Only show decisions with < 24 hours remaining */}
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">⏱️ החלטות משרדיות בהצבעה פעילה (פחות מ-24 שעות)</h3>
-              <div className="space-y-3">
-                {activeDecisions
-                  .filter((decision) => {
-                    if (!decision.publicVotingEndsAt) return false;
-                    const now = new Date();
-                    const end = new Date(decision.publicVotingEndsAt);
-                    const diff = end.getTime() - now.getTime();
-                    const hoursRemaining = diff / (1000 * 60 * 60);
-                    return hoursRemaining < 24 && hoursRemaining > 0;
-                  })
-                  .length === 0 ? (
-                  <Card className="p-8 text-center">
-                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">אין החלטות דחופות (פחות מ-24 שעות)</p>
-                    <Button 
-                      onClick={() => setLocation("/governance#decisions")}
-                      className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      צפה בכל ההחלטות
-                    </Button>
-                  </Card>
-                ) : (
-                  activeDecisions
-                    .filter((decision) => {
-                      if (!decision.publicVotingEndsAt) return false;
-                      const now = new Date();
-                      const end = new Date(decision.publicVotingEndsAt);
-                      const diff = end.getTime() - now.getTime();
-                      const hoursRemaining = diff / (1000 * 60 * 60);
-                      return hoursRemaining < 24 && hoursRemaining > 0;
-                    })
-                    .map((decision) => {
-                  const baseVotes = 5000 + (decision.id * 50);
-                  const forPercentage = ((decision.id * 17) % 100);
-                  const votesFor = Math.floor(baseVotes * (forPercentage / 100));
-                  const votesAgainst = baseVotes - votesFor;
-                  const totalVotes = votesFor + votesAgainst;
-                  const percentageFor = totalVotes > 0 ? (votesFor / totalVotes) * 100 : 0;
-                  const percentageAgainst = totalVotes > 0 ? (votesAgainst / totalVotes) * 100 : 0;
-                  const baseHours = 24 + ((decision.id * 7) % 48);
-                  const minutes = (decision.id * 13) % 60;
-                  const timeRemaining = `${baseHours}h ${minutes}m`;
-
-                  return (
-                    <Card key={decision.id} className="p-3 border-l-4 border-yellow-500 text-right">
-                      <div className="flex items-start justify-between flex-row-reverse mb-2">
-                        <div className="flex-1">
-                          <h4 className="font-bold text-slate-900 text-sm">{decision.title}</h4>
-                          <p className="text-xs text-slate-600 mt-0.5">{decision.description}</p>
-                        </div>
-                        <Badge className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-200 text-xs">🕐 {timeRemaining}</Badge>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-slate-500">
-                        <div className="text-right">
-                          <span className="font-medium text-green-600">{votesFor}</span> בעד ({percentageFor.toFixed(1)}%) | 
-                          <span className="font-medium text-red-600 mr-1">{votesAgainst}</span> נגד ({percentageAgainst.toFixed(1)}%)
-                        </div>
-                      </div>
-                      <div className="mt-1.5 w-full bg-gray-200 rounded-full h-2 overflow-hidden flex">
-                        <div 
-                          className="bg-green-500 h-full transition-all duration-300" 
-                          style={{ width: `${percentageFor}%` }}
-                        ></div>
-                        <div 
-                          className="bg-red-500 h-full transition-all duration-300" 
-                          style={{ width: `${percentageAgainst}%` }}
-                        ></div>
-                      </div>
-                    </Card>
-                  );
-                })
-                )}
+            <Card className="p-6 bg-white border-slate-200 text-right">
+              <div className="mb-5">
+                <h3 className="text-xl font-bold text-slate-900">ניתוח מהיר</h3>
+                <p className="text-sm text-slate-600">הצבעות פעילות מרוכזות תמיד לפי הזמן שנותר, מהדחופה ביותר והלאה.</p>
               </div>
-            </div>
-            
-            <Button 
-              onClick={() => setLocation("/governance#decisions")}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              📊 צפה בפרטים המלאים
-            </Button>
+
+              <div className="grid gap-6 lg:grid-cols-3">
+                <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                  <h4 className="mb-3 text-sm font-bold text-slate-800">סטטוס החלטות</h4>
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={decisionStatusData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={46}
+                          outerRadius={78}
+                          paddingAngle={3}
+                        >
+                          {decisionStatusData.map((entry) => (
+                            <Cell key={entry.name} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-2 flex flex-wrap justify-center gap-3 text-xs">
+                    {decisionStatusData.map((entry) => (
+                      <span key={entry.name} className="flex items-center gap-1">
+                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                        {entry.name}: {entry.value}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                  <h4 className="mb-3 text-sm font-bold text-slate-800">בעד מול נגד בהצבעות הדחופות</h4>
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={voteBalanceData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                        <XAxis type="number" tick={{ fontSize: 11 }} />
+                        <YAxis type="category" dataKey="name" width={92} tick={{ fontSize: 10 }} />
+                        <Tooltip />
+                        <Bar dataKey="forVotes" name="בעד" fill="#16a34a" radius={[0, 4, 4, 0]} />
+                        <Bar dataKey="againstVotes" name="נגד" fill="#dc2626" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                  <h4 className="mb-3 text-sm font-bold text-slate-800">השתתפות לפי משרד</h4>
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={ministryParticipationData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} />
+                        <YAxis tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Bar dataKey="votes" name="קולות" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            </Card>
 
             {/* How It Works */}
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
@@ -457,32 +495,71 @@ export default function Governance() {
               <div className="grid md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">1</div>
-                  <p className="text-sm font-medium text-slate-900">השר מציע</p>
-                  <p className="text-xs text-slate-600">השר מציע החלטה חדשה</p>
+                  <p className="text-sm font-medium text-slate-900">השר מציע הצעה</p>
+                  <p className="text-xs text-slate-600">הצעות השר עולות להצבעה לפי רמת חשיבות ההחלטה, בסיוע עובדי המשרד בבחינת החשיבות</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">2</div>
-                  <p className="text-sm font-medium text-slate-900">אזרחים מצביעים</p>
-                  <p className="text-xs text-slate-600">אזרחים מצביעים בעד או נגד</p>
+                  <p className="text-sm font-medium text-slate-900">שינוי מהותי עולה לציבור</p>
+                  <p className="text-xs text-slate-600">כל שינוי מהותי במדיניות יעלה להצבעת הציבור למשך 72 שעות, עם רוב של לפחות 40 אלף מצביעים כדי להכריע</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">3</div>
-                  <p className="text-sm font-medium text-slate-900">כוח מחייב אזרחי נגד = דחייה</p>
-                  <p className="text-xs text-slate-600">אם יותר מ-כוח מחייב אזרחי מצביעים נגד</p>
+                  <p className="text-sm font-medium text-slate-900">נימוק ושכנוע</p>
+                  <p className="text-xs text-slate-600">אם הציבור שלל את ההצעה, לשר יש 72 שעות לנמק ולשכנע לקראת הצבעה נוספת של 72 שעות</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">4</div>
-                  <p className="text-sm font-medium text-slate-900">72 שעות הצבעה</p>
-                  <p className="text-xs text-slate-600">כל החלטה זוכה לזמן הצבעה</p>
+                  <p className="text-sm font-medium text-slate-900">הצבעה אחרונה</p>
+                  <p className="text-xs text-slate-600">אם הציבור שלל שוב, השר מזמן הצבעה אחרונה שבה נדרש רוב מעל 50% כדי לגנוז את ההחלטה</p>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-center">
+                <Button
+                  variant="outline"
+                  className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                  onClick={() => document.getElementById("process-problems")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                >
+                  קרא עוד
+                </Button>
+              </div>
+            </Card>
+
+            <Card id="process-problems" className="p-6 bg-white border-blue-100 text-right scroll-mt-24">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">תהליך ובעיות שהמנגנון פותר</h3>
+              <div className="grid md:grid-cols-2 gap-5 text-sm leading-7 text-slate-700">
+                <div>
+                  <h4 className="font-bold text-blue-900 mb-2">איך נקבעת חשיבות ההחלטה?</h4>
+                  <p>
+                    רמת החשיבות נבחנת לפי היקף ההשפעה על הציבור, שינוי במדיניות קיימת, תקציב, דחיפות ומספר האזרחים שיושפעו מההחלטה. עובדי המשרד מסייעים לשר לסווג את ההצעה, אך שינוי מדיניות מהותי לא נסגר בתוך המשרד בלבד.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-blue-900 mb-2">מה קורה כשהציבור מתנגד?</h4>
+                  <p>
+                    הצבעה ראשונה נפתחת ל-72 שעות לאחר פרסום הצעת ההחלטה. אם הציבור מסרב, השר מגיב ומנמק את עמדתו, ולאחר 72 שעות נפתחת הצבעה נוספת. אם גם בהצבעה השנייה הציבור מסרב, נפתחת הצבעה שלישית. אם בהצבעה השלישית יש סירוב ברוב מוחלט, ההחלטה תיגנז.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-blue-900 mb-2">איזו בעיה זה פותר?</h4>
+                  <p>
+                    המנגנון מצמצם החלטות חד-צדדיות, מחייב שקיפות לפני שינויי מדיניות משמעותיים, ונותן לציבור דרך ברורה להשפיע בלי לשתק את עבודת הממשלה.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-blue-900 mb-2">מה נשאר בידי השר?</h4>
+                  <p>
+                    השר עדיין מוביל מדיניות ומציע החלטות, אבל כאשר ההחלטה מהותית הוא נדרש להציג אותה לציבור, לשמוע התנגדויות, ולנמק לפני שמתקדמים.
+                  </p>
                 </div>
               </div>
             </Card>
           </TabsContent>
 
           {/* Active Decisions Tab */}
-          <TabsContent value="decisions" className="space-y-4">
+          <TabsContent value="decisions" className="space-y-4 scroll-mt-24" ref={decisionsSectionRef}>
             <div className="flex justify-between items-center mb-4 flex-row-reverse">
-              <h2 className="text-2xl font-bold">החלטות פעילות</h2>
+              <h2 className="text-2xl font-bold">{decisionsTitle}</h2>
               <div>
                 <Select value={selectedMinistry?.toString() || "all"} onValueChange={(value) => setSelectedMinistry(value === "all" ? null : parseInt(value))}>
                   <SelectTrigger className="w-48">
@@ -499,14 +576,14 @@ export default function Governance() {
               </div>
             </div>
 
-            {activeDecisions.length === 0 ? (
+            {displayedDecisions.length === 0 ? (
               <Card className="p-8 text-center">
                 <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">אין החלטות פעילות כרגע</p>
+                <p className="text-gray-600">{emptyDecisionsText}</p>
               </Card>
             ) : (
               <div className="space-y-4">
-                {activeDecisions
+                {displayedDecisions
                   .filter((d) => !selectedMinistry || d.ministryId === selectedMinistry)
                   .map((decision) => {
                     // Use same formula as overview tab for consistent vote numbers
@@ -517,8 +594,7 @@ export default function Governance() {
                     const totalVotes = votesFor + votesAgainst;
                     const percentageFor = (votesFor / totalVotes) * 100;
                     const percentageAgainst = (votesAgainst / totalVotes) * 100;
-                    const willBeVetoed = percentageAgainst > 51;
-
+                    const isFinalDecision = decision.status === "approved" || decision.status === "rejected";
                     return (
                       <Card key={decision.id} className={`p-6 ${getCategoryColor(decision.category)}`}>
                         <div className="flex justify-between items-start mb-3">
@@ -529,14 +605,16 @@ export default function Governance() {
                             </div>
                             <p className="text-sm text-slate-700 mb-2">{decision.description}</p>
                             <div className="flex gap-2">
-                              <Badge variant="outline">{ministries.find((m) => m.id === decision.ministryId)?.name}</Badge>
+                              <Badge variant="outline">{getMinistryName(decision.ministryId)}</Badge>
                               <Badge variant="outline">{getCategoryLabel(decision.category)}</Badge>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-xs text-slate-500 font-medium">זמן נותר:</p>
-                            <p className="text-sm font-bold text-slate-900">{timeRemaining[decision.id] || "חישוב..."}</p>
-                          </div>
+                          {(decisionView === "active" || (decisionView === "all" && decision.status === "voting")) && (
+                            <div className="text-right">
+                              <p className="text-xs text-slate-500 font-medium">זמן נותר:</p>
+                              <p className="text-sm font-bold text-slate-900">{publicTimeRemaining[decision.id] || "חישוב..."}</p>
+                            </div>
+                          )}
                         </div>
 
                         {/* Voting Stats */}
@@ -556,29 +634,36 @@ export default function Governance() {
                             </div>
                             <Progress value={percentageAgainst} className="h-2" />
                           </div>
-
-                          {willBeVetoed && (
-                            <div className="bg-red-50 border border-red-200 p-2 rounded text-xs text-red-700 font-medium">
-                              ⚠️ ההחלטה תידחה בהצלת קול אזרחית (יותר מ-כוח מחייב אזרחי נגד)
-                            </div>
-                          )}
                         </div>
 
-                        {/* Voting Buttons */}
-                        <div className="flex gap-3 mt-4 flex-row-reverse">
-                          <Button 
-                            onClick={() => handleVote(decision.id, 'for')}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            ✓ בעד
-                          </Button>
-                          <Button 
-                            onClick={() => handleVote(decision.id, 'against')}
-                            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-                          >
-                            ✗ נגד
-                          </Button>
-                        </div>
+                        {isFinalDecision ? (
+                          <div className="mt-4">
+                            <Button
+                              className={`w-full text-white cursor-default ${
+                                decision.status === "approved"
+                                  ? "bg-green-600 hover:bg-green-600"
+                                  : "bg-red-600 hover:bg-red-600"
+                              }`}
+                            >
+                              תוצאה: {decision.status === "approved" ? "בעד" : "נגד"}
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-3 mt-4 flex-row-reverse">
+                            <Button 
+                              onClick={() => handleVote(decision.id, 'for')}
+                              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              ✓ בעד
+                            </Button>
+                            <Button 
+                              onClick={() => handleVote(decision.id, 'against')}
+                              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                            >
+                              ✗ נגד
+                            </Button>
+                          </div>
+                        )}
                       </Card>
                     );
                   })}

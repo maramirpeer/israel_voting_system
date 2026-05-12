@@ -15,8 +15,13 @@ import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
 
 export default function MK121() {
   const { user, isAuthenticated } = useAuth();
+  const demoUser = user || { id: 1, name: "ישראל ישראלי", email: "demo@example.local" };
   const [, setLocation] = useLocation();
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [localBillVotes, setLocalBillVotes] = useState<number[]>([]);
+  const [localQuestionVotes, setLocalQuestionVotes] = useState<number[]>([]);
+  const [localBillVoteIncrements, setLocalBillVoteIncrements] = useState<Record<number, number>>({});
+  const [localQuestionVoteIncrements, setLocalQuestionVoteIncrements] = useState<Record<number, number>>({});
 
   // Queries with auto-refresh polling (every 30 seconds for live updates)
   const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery();
@@ -29,20 +34,20 @@ export default function MK121() {
     { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 } // Refresh every 30 seconds
   );
   const userBillVotesQuery = trpc.mk121.getUserBillVotes.useQuery(
-    { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+    { userId: demoUser.id, cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
   const userQuestionVotesQuery = trpc.mk121.getUserQuestionVotes.useQuery(
-    { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+    { userId: demoUser.id, cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
   const userBillSupportsQuery = trpc.mk121.getUserBillSupports.useQuery(
-    { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+    { userId: demoUser.id, cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
   const userQuestionSupportsQuery = trpc.mk121.getUserQuestionSupports.useQuery(
-    { userId: user?.id || 0, cycleId: currentCycleQuery.data?.id || 0 },
-    { enabled: !!user?.id && !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+    { userId: demoUser.id, cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 }
   );
 
   // Note: refetchInterval automatically stops when component unmounts
@@ -66,7 +71,7 @@ export default function MK121() {
       questionsQuery.refetch();
     },
     onError: () => {
-      toast.error("אתה כבר הצבעת על שאילתה זו");
+      toast.error("אתה כבר הצבעת על שאילתא זו");
     },
   });
 
@@ -99,7 +104,7 @@ export default function MK121() {
       questionsQuery.refetch();
     },
     onError: () => {
-      toast.error("שגיאה בתמיכה בשאילתה");
+      toast.error("שגיאה בתמיכה בשאילתא");
     },
   });
 
@@ -126,36 +131,92 @@ export default function MK121() {
       cycleError: currentCycleQuery.error,
     });
   }, [currentCycleQuery.data, currentCycleQuery.isLoading, currentCycleQuery.error]);
-  const userBillVotes = userBillVotesQuery.data || [];
-  const userQuestionVotes = userQuestionVotesQuery.data || [];
+  const userBillVotes = Array.from(new Set([...(userBillVotesQuery.data || []), ...localBillVotes]));
+  const userQuestionVotes = Array.from(new Set([...(userQuestionVotesQuery.data || []), ...localQuestionVotes]));
   const userBillSupports = userBillSupportsQuery.data || [];
   const userQuestionSupports = userQuestionSupportsQuery.data || [];
+  const demoExpertNames = ["יעל בן דוד", "דניאל מזרחי", "הילה שפירא", "רועי אלון", "נעמה כץ", "אורי גבאי"];
+  const legalExperts = [
+    {
+      name: "עו\"ד תמר לוי",
+      role: "חקיקה וממשל",
+      expertise: ["ניסוח חקיקה", "משפט ציבורי", "איזונים חוקתיים"],
+      endorsements: 1280,
+    },
+    {
+      name: "פרופ' אמיר כהן",
+      role: "משפט חוקתי",
+      expertise: ["ביקורת חוקתית", "סמכויות הכנסת", "זכויות ציבור"],
+      endorsements: 970,
+    },
+    {
+      name: "ד\"ר מיכל ברק",
+      role: "מדיניות ציבורית",
+      expertise: ["השפעות רגולציה", "יישום חוק", "פיקוח פרלמנטרי"],
+      endorsements: 845,
+    },
+  ];
+
+  const getQuestionExperts = (ministryId: number | null | undefined, ministryName: string | null | undefined) => {
+    const cleanMinistryName = (ministryName || "המשרד הרלוונטי").replace("משרד ", "");
+    const base = ministryId || 1;
+    return [0, 1, 2].map((index) => ({
+      name: demoExpertNames[(base + index) % demoExpertNames.length],
+      role: `מומחה/ית ${cleanMinistryName}`,
+      expertise: [`מדיניות ${cleanMinistryName}`, "ניתוח החלטות", "שיתוף ציבור"],
+      endorsements: 620 + ((base + index) * 137) % 1400,
+    }));
+  };
 
   const handleVoteBill = (billId: number) => {
-    if (!user?.id) return;
-    voteBillMutation.mutate({ billId, userId: user.id });
+    if (userBillVotes.includes(billId)) {
+      setLocalBillVotes((current) => current.filter((id) => id !== billId));
+      setLocalBillVoteIncrements((current) => ({
+        ...current,
+        [billId]: Math.max((current[billId] || 0) - 1, -1),
+      }));
+      toast.success("ההצבעה בוטלה");
+      return;
+    }
+    setLocalBillVotes((current) => [...current, billId]);
+    setLocalBillVoteIncrements((current) => ({
+      ...current,
+      [billId]: (current[billId] || 0) + 1,
+    }));
+    voteBillMutation.mutate({ billId, userId: demoUser.id });
   };
 
   const handleVoteQuestion = (questionId: number) => {
-    if (!user?.id) return;
-    voteQuestionMutation.mutate({ questionId, userId: user.id });
+    if (userQuestionVotes.includes(questionId)) {
+      setLocalQuestionVotes((current) => current.filter((id) => id !== questionId));
+      setLocalQuestionVoteIncrements((current) => ({
+        ...current,
+        [questionId]: Math.max((current[questionId] || 0) - 1, -1),
+      }));
+      toast.success("ההצבעה בוטלה");
+      return;
+    }
+    setLocalQuestionVotes((current) => [...current, questionId]);
+    setLocalQuestionVoteIncrements((current) => ({
+      ...current,
+      [questionId]: (current[questionId] || 0) + 1,
+    }));
+    voteQuestionMutation.mutate({ questionId, userId: demoUser.id });
   };
 
   const handleSupportBill = (billId: number) => {
-    if (!user?.id) return;
     if (userBillSupports.includes(billId)) {
-      removeBillSupportMutation.mutate({ billId, userId: user.id });
+      removeBillSupportMutation.mutate({ billId, userId: demoUser.id });
     } else {
-      supportBillMutation.mutate({ billId, userId: user.id });
+      supportBillMutation.mutate({ billId, userId: demoUser.id });
     }
   };
 
   const handleSupportQuestion = (questionId: number) => {
-    if (!user?.id) return;
     if (userQuestionSupports.includes(questionId)) {
-      removeQuestionSupportMutation.mutate({ questionId, userId: user.id });
+      removeQuestionSupportMutation.mutate({ questionId, userId: demoUser.id });
     } else {
-      supportQuestionMutation.mutate({ questionId, userId: user.id });
+      supportQuestionMutation.mutate({ questionId, userId: demoUser.id });
     }
   };
 
@@ -226,11 +287,20 @@ export default function MK121() {
           </Card>
         ) : (
           <>
+            <div className="mb-8">
+              <Button
+                onClick={() => setLocation("/delegate-selection?channel=mk121")}
+                className="w-full min-h-16 bg-purple-700 text-lg font-bold text-white hover:bg-purple-800"
+              >
+                🗳️ הכוון קולך
+              </Button>
+            </div>
+
             {/* Info Card */}
             <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">מה זה ח"כ 121?</h2>
               <p className="text-slate-700 mb-4">
-                כל 3 חודשים, אתה מצביע על הצעת החוק והשאילתה הדחופה ביותר. הצעת החוק הנבחרת מועברת לכנסת ישירות לקריאה ראשונה להצבעה ללא שום חסם או שינוי. השאילתה הנבחרת מועברת לנשאל לקבלת תשובה בצורת תשאול חי ומצולם.
+                כל 3 חודשים ינסה ח"כ 121 ליצור את הקול העונתי, במידה ויצביעו מינימום של 37,500 אזרחים לכל הפחות. הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. בנוסף, האזרחים יצביעו על השאילתא הנבחרת שתישלח למשרד מסוים או לראש הממשלה לטובת קבלת תשובה מהשר הנשאל, בצורת תשאול ישיר ומצולם.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white p-3 rounded border border-blue-200">
@@ -253,6 +323,9 @@ export default function MK121() {
 
               {/* Bills Tab */}
               <TabsContent value="bills" className="space-y-4">
+                <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm text-blue-700 text-right">
+                  <strong>🗳️ דרישה מינימאלית:</strong> כל הצעת חוק צריכה לפחות 37,500 קולות כדי לעבור לדיון הרשמי (1/120 מהמצביעים)
+                </div>
                 {bills.length === 0 ? (
                   <Card className="p-8 text-center bg-slate-50">
                     <p className="text-slate-600">אין הצעות חוק במחזור זה עדיין</p>
@@ -261,6 +334,7 @@ export default function MK121() {
                   bills.map((bill) => {
                     const hasVoted = userBillVotes.includes(bill.id);
                     const isWinner = bill.isWinner;
+                    const displayedVotes = (bill.votes || 0) + (localBillVoteIncrements[bill.id] || 0);
 
                     return (
                       <Card
@@ -286,7 +360,7 @@ export default function MK121() {
                             </div>
                           </div>
                           <div className="mr-4">
-                            <div className="text-3xl font-bold text-blue-600">{bill.votes}</div>
+                            <div className="text-3xl font-bold text-blue-600">{displayedVotes}</div>
                             <p className="text-xs text-slate-600">קולות</p>
                             {isWinner && (
                               <Badge className="mt-2 bg-yellow-500">🏆 נבחר</Badge>
@@ -296,12 +370,35 @@ export default function MK121() {
 
                         <p className="text-slate-700 mb-4">{bill.description}</p>
 
-                        {/* Quorum Info */}
-                        {bill.status === 'voting' && (
-                          <div className="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-200 text-sm text-blue-700">
-                            <strong>🗳️ דרישה מינימאלית:</strong> צריך לפחות 37,500 קולות בשביל להצעה לדיון הרשמי (1/120 מהמצביעים)
+                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-bold text-slate-800">רשימת מומחים משפטית</span>
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">חקיקה</Badge>
                           </div>
-                        )}
+                          <div className="grid gap-3 md:grid-cols-3">
+                            {legalExperts.map((expert) => (
+                              <div key={expert.name} className="rounded-md border border-slate-200 bg-white p-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div>
+                                    <p className="font-bold text-slate-900">{expert.name}</p>
+                                    <p className="text-xs text-slate-600">{expert.role}</p>
+                                  </div>
+                                  <div className="text-left">
+                                    <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
+                                    <p className="text-[11px] text-slate-500">מאצילים</p>
+                                  </div>
+                                </div>
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                  {expert.expertise.map((item) => (
+                                    <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
+                                      {item}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
 
                         {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
                         {bill.status === 'preliminary' && (
@@ -334,7 +431,7 @@ export default function MK121() {
 
                         <Button
                           onClick={() => handleVoteBill(bill.id)}
-                          disabled={hasVoted || voteBillMutation.isPending}
+                          disabled={voteBillMutation.isPending}
                           variant={hasVoted ? "default" : "outline"}
                           className={`w-full flex justify-center ${
                             hasVoted
@@ -370,6 +467,8 @@ export default function MK121() {
                   questions.map((question) => {
                     const hasVoted = userQuestionVotes.includes(question.id);
                     const isWinner = question.isWinner;
+                    const displayedVotes = (question.votes || 0) + (localQuestionVoteIncrements[question.id] || 0);
+                    const questionExperts = getQuestionExperts(question.ministryId, question.targetMinistry);
 
                     const urgencyColor = {
                       low: "bg-blue-50 text-blue-700 border-blue-200",
@@ -406,7 +505,7 @@ export default function MK121() {
                             </div>
                           </div>
                           <div className="mr-4">
-                            <div className="text-3xl font-bold text-purple-600">{question.votes}</div>
+                            <div className="text-3xl font-bold text-purple-600">{displayedVotes}</div>
                             <p className="text-xs text-slate-600">קולות</p>
                             {isWinner && (
                               <Badge className="mt-2 bg-yellow-500">🏆 נבחר</Badge>
@@ -415,6 +514,38 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{question.description}</p>
+
+                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-bold text-slate-800">רשימת מומחים משרדית</span>
+                            <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                              {question.targetMinistry || "משרד"}
+                            </Badge>
+                          </div>
+                          <div className="grid gap-3 md:grid-cols-3">
+                            {questionExperts.map((expert) => (
+                              <div key={`${question.id}-${expert.name}`} className="rounded-md border border-slate-200 bg-white p-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div>
+                                    <p className="font-bold text-slate-900">{expert.name}</p>
+                                    <p className="text-xs text-slate-600">{expert.role}</p>
+                                  </div>
+                                  <div className="text-left">
+                                    <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
+                                    <p className="text-[11px] text-slate-500">מאצילים</p>
+                                  </div>
+                                </div>
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                  {expert.expertise.map((item) => (
+                                    <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
+                                      {item}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
 
                         {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
                         {question.status === 'preliminary' && (
@@ -440,14 +571,14 @@ export default function MK121() {
                                   : "border-purple-300 text-purple-600 hover:bg-purple-50"
                               }`}
                             >
-                              {userQuestionSupports.includes(question.id) ? "✓ תומך" : "+ תמוך בשאילתה"}
+                              {userQuestionSupports.includes(question.id) ? "✓ תומך" : "+ תמוך בשאילתא"}
                             </Button>
                           </div>
                         )}
 
                         <Button
                           onClick={() => handleVoteQuestion(question.id)}
-                          disabled={hasVoted || voteQuestionMutation.isPending}
+                          disabled={voteQuestionMutation.isPending}
                           variant={hasVoted ? "default" : "outline"}
                           className={`w-full flex justify-center ${
                             hasVoted
@@ -463,7 +594,7 @@ export default function MK121() {
                           ) : (
                             <>
                               <ThumbsUp className="w-4 h-4 mr-2" />
-                              הצבע בעד שאילתה זו
+                              הצבע בעד שאילתא זו
                             </>
                           )}
                         </Button>

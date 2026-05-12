@@ -41,6 +41,8 @@ export function ProposalSubmissionForms({
   const [questionTitle, setQuestionTitle] = useState("");
   const [questionDescription, setQuestionDescription] = useState("");
   const [ministryId, setMinistryId] = useState<number | null>(null);
+  const [questionTarget, setQuestionTarget] = useState("");
+  const [questionTargetValue, setQuestionTargetValue] = useState("");
   const [urgency, setUrgency] = useState("medium");
 
   // Fetch ministries from database
@@ -62,15 +64,17 @@ export function ProposalSubmissionForms({
 
   const submitQuestionMutation = trpc.mk121.submitQuestionProposal.useMutation({
     onSuccess: () => {
-      toast.success("השאילתה הוגשה בהצלחה!");
+      toast.success("השאילתא הוגשה בהצלחה!");
       setQuestionTitle("");
       setQuestionDescription("");
       setMinistryId(null);
+      setQuestionTarget("");
+      setQuestionTargetValue("");
       setUrgency("medium");
       onSuccess?.();
     },
     onError: (error) => {
-      toast.error(error.message || "שגיאה בהגשת השאילתה");
+      toast.error(error.message || "שגיאה בהגשת השאילתא");
     },
   });
 
@@ -95,17 +99,16 @@ export function ProposalSubmissionForms({
       return;
     }
 
-    if (!ministryId) {
-      toast.error("אנא בחר משרד");
+    if (!questionTarget) {
+      toast.error("אנא בחר משרד יעד או ראש ממשלה");
       return;
     }
 
-    const selectedMinistry = ministries.find(m => m.id === ministryId);
     submitQuestionMutation.mutate({
       cycleId,
       title: questionTitle,
       description: questionDescription,
-      targetMinistry: selectedMinistry?.name || undefined,
+      targetMinistry: questionTarget,
       urgency: (urgency as "low" | "medium" | "high") || "medium",
       userId,
     });
@@ -130,7 +133,7 @@ export function ProposalSubmissionForms({
           <Tabs defaultValue="bill" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="bill">📋 הצעת חוק</TabsTrigger>
-              <TabsTrigger value="question">❓ שאילתה</TabsTrigger>
+              <TabsTrigger value="question">❓ שאילתא</TabsTrigger>
             </TabsList>
 
             {/* Bill Proposal Form */}
@@ -214,9 +217,9 @@ export function ProposalSubmissionForms({
             {/* Question Proposal Form */}
             <TabsContent value="question" className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">כותרת השאילתה</label>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">כותרת השאילתא</label>
                 <Input
-                  placeholder="כותרת ברורה של השאילתה"
+                  placeholder="כותרת ברורה של השאילתא"
                   value={questionTitle}
                   onChange={(e) => setQuestionTitle(e.target.value)}
                   maxLength={255}
@@ -228,7 +231,7 @@ export function ProposalSubmissionForms({
               <div>
                 <label className="block text-sm font-semibold text-slate-900 mb-2">תיאור מפורט</label>
                 <Textarea
-                  placeholder="תאר את השאילתה בפירוט. מה הנושא? למה זה דחוף?"
+                  placeholder="תאר את השאילתא בפירוט. מה הנושא? למה זה דחוף?"
                   value={questionDescription}
                   onChange={(e) => setQuestionDescription(e.target.value)}
                   maxLength={2000}
@@ -241,16 +244,28 @@ export function ProposalSubmissionForms({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-slate-900 mb-2">
-                    📢 משרד יעד (קול הציבור)
+                    📢 יעד השאילתא
                   </label>
                   <Select 
-                    value={ministryId?.toString() || ""} 
-                    onValueChange={(val) => setMinistryId(val ? parseInt(val) : null)}
+                    value={questionTargetValue} 
+                    onValueChange={(val) => {
+                      setQuestionTargetValue(val);
+                      if (val === "ראש הממשלה") {
+                        setMinistryId(null);
+                        setQuestionTarget("ראש הממשלה");
+                        return;
+                      }
+                      const id = parseInt(val);
+                      const selectedMinistry = ministries.find((m) => m.id === id);
+                      setMinistryId(Number.isFinite(id) ? id : null);
+                      setQuestionTarget(selectedMinistry?.name || "");
+                    }}
                   >
                     <SelectTrigger className="border-slate-300">
-                      <SelectValue placeholder="בחר משרד" />
+                      <SelectValue placeholder="בחר משרד או ראש ממשלה" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="ראש הממשלה">ראש הממשלה</SelectItem>
                       {ministriesQuery.isLoading ? (
                         <div className="p-2 text-sm text-slate-600">טוען משרדים...</div>
                       ) : ministries.length === 0 ? (
@@ -289,13 +304,13 @@ export function ProposalSubmissionForms({
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
                 <p className="text-sm text-purple-900 font-semibold mb-2">📝 דף מקדים (Preliminary Stage)</p>
                 <p className="text-sm text-purple-800 mb-2">
-                  השאילתה שלך תתחיל כ<strong>"דף מקדים"</strong> - לא תופיע בעמוד ח"כ 121 עדיין.
+                  השאילתא שלך תתחיל כ<strong>"דף מקדים"</strong> - לא תופיע בעמוד ח"כ 121 עדיין.
                 </p>
                 <p className="text-sm text-purple-800 mb-2">
-                  כדי שהשאילתה תיפורסם, צריכה להגיע ל<strong>100 תומכים מינימום</strong>.
+                  כדי שהשאילתא תיפורסם, צריכה להגיע ל<strong>100 תומכים מינימום</strong>.
                 </p>
                 <p className="text-sm text-purple-800">
-                  אחרי שתגיע ל-100 תומכים, השאילתה תופיע בעמוד ח"כ 121 לכל אזרח להצבעה.
+                  אחרי שתגיע ל-100 תומכים, השאילתא תופיע בעמוד ח"כ 121 לכל אזרח להצבעה.
                 </p>
               </div>
 
@@ -316,7 +331,7 @@ export function ProposalSubmissionForms({
                     משדר...
                   </>
                 ) : (
-                  "הגש שאילתה"
+                  "הגש שאילתא"
                 )}
               </Button>
             </TabsContent>

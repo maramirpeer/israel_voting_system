@@ -10,10 +10,11 @@ import {
   ministries,
 } from "../drizzle/schema";
 import { getDb } from "./db";
+import { demoMK121Bills, demoMK121Cycle, demoMK121Questions, demoMinistries } from "./demoData";
 
 export async function getCurrentCycle() {
   const db = await getDb();
-  if (!db) return null;
+  if (!db) return demoMK121Cycle;
 
   try {
     const now = new Date();
@@ -150,7 +151,11 @@ export async function createQuestionProposal(
 
 export async function getBillsForCycle(cycleId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    return demoMK121Bills
+      .filter((bill) => bill.cycleId === cycleId && bill.status !== "preliminary")
+      .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
+  }
 
   try {
     const bills = await db
@@ -168,7 +173,11 @@ export async function getBillsForCycle(cycleId: number) {
 
 export async function getQuestionsForCycle(cycleId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    return demoMK121Questions
+      .filter((question) => question.cycleId === cycleId && question.status !== "preliminary")
+      .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
+  }
 
   try {
     const questions = await db
@@ -186,7 +195,7 @@ export async function getQuestionsForCycle(cycleId: number) {
 
 export async function voteBill(billId: number, userId: number): Promise<boolean> {
   const db = await getDb();
-  if (!db) return false;
+  if (!db) return true;
 
   try {
     // Check if user already voted for this bill
@@ -227,7 +236,7 @@ export async function voteBill(billId: number, userId: number): Promise<boolean>
 
 export async function voteQuestion(questionId: number, userId: number): Promise<boolean> {
   const db = await getDb();
-  if (!db) return false;
+  if (!db) return true;
 
   try {
     // Check if user already voted for this question
@@ -658,7 +667,7 @@ export async function archiveExpiredProposals(): Promise<void> {
 
 export async function getUserBillSupports(userId: number, cycleId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) return userId ? [203] : [];
 
   try {
     const supports = await db
@@ -676,7 +685,7 @@ export async function getUserBillSupports(userId: number, cycleId: number) {
 
 export async function getUserQuestionSupports(userId: number, cycleId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) return userId ? [303] : [];
 
   try {
     const supports = await db
@@ -696,7 +705,11 @@ export async function getUserQuestionSupports(userId: number, cycleId: number) {
 // Get user's preliminary (draft) proposals - bills they created but haven't reached 100 supporters yet
 export async function getUserPreliminaryBills(userId: number, cycleId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    return demoMK121Bills.filter(
+      (bill) => bill.proposedBy === userId && bill.cycleId === cycleId && bill.status === "preliminary"
+    );
+  }
 
   try {
     const bills = await db
@@ -721,7 +734,11 @@ export async function getUserPreliminaryBills(userId: number, cycleId: number) {
 // Get user's preliminary (draft) proposals - questions they created but haven't reached 100 supporters yet
 export async function getUserPreliminaryQuestions(userId: number, cycleId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    return demoMK121Questions.filter(
+      (question) => question.proposedBy === userId && question.cycleId === cycleId && question.status === "preliminary"
+    );
+  }
 
   try {
     const questions = await db
@@ -747,7 +764,7 @@ export async function getUserPreliminaryQuestions(userId: number, cycleId: numbe
 // Ministry functions
 export async function getMinistriesList() {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) return demoMinistries;
 
   try {
     const result = await db
@@ -770,7 +787,11 @@ export async function getMinistriesList() {
 
 export async function getQuestionsByMinistry(ministryId: number) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    return demoMK121Questions
+      .filter((question) => question.ministryId === ministryId)
+      .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
+  }
 
   try {
     const result = await db

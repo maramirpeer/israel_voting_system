@@ -35,7 +35,7 @@ export default function Home() {
                 ח"כ 121
               </Button>
               <Button onClick={() => setLocation("/governance")} variant="outline" className="border-blue-300">
-                קול דינמי
+                ממשלה משתפת
               </Button>
               <Button onClick={() => setLocation("/analytics")} variant="outline" className="border-green-300">
                 📊 ניתוח
@@ -46,45 +46,22 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="container py-20 md:py-32">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 order-2 md:order-1">
-              <div className="text-right">
-                <h2 className="text-5xl md:text-6xl font-bold text-blue-900 leading-tight mb-4">
-                  מתחברים <span className="text-cyan-500">ומתקנים</span>
-                </h2>
-
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setLocation("/mk121")}>
-                  ח"כ 121 - ערוץ לכנסת
-                </Button>
-                <Button size="lg" variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50" onClick={() => setLocation("/governance")}>
-                  קול דינמי - ערוץ לממשלה
-                </Button>
-              </div>
-              <div className="flex gap-8 pt-4">
-                <div>
-                  <p className="text-3xl font-bold text-blue-900">1</p>
-                  <p className="text-sm text-gray-600">קול לכל אזרח</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold text-blue-900">✓</p>
-                  <p className="text-sm text-gray-600">כוח מחייב אזרחי</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-bold text-blue-900">∞</p>
-                  <p className="text-sm text-gray-600">האצלה גמישה</p>
-                </div>
-              </div>
-            </div>
-            <div className="relative order-1 md:order-2">
-              <img 
-                src="/manus-storage/hero-israel-clean_c99641c5.png"
-                alt="ישראל משותפת - יחד מעצבים עתיד טוב לכולם"
-                className="w-full h-auto rounded-2xl shadow-2xl"
-              />
+      <section className="relative min-h-[calc(100vh-73px)] overflow-hidden">
+        <img
+          src="/assets/decentralization-hero.png"
+          alt="חברה מודעת ומחוברת לוקחים חלק בממשלות ובתהליך קבלת ההחלטות בישראל"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white/90 via-white/45 to-transparent" />
+        <div className="relative container min-h-[calc(100vh-73px)] py-10 flex items-end justify-center">
+          <div className="w-full max-w-3xl text-center">
+            <div className="flex flex-col sm:flex-row-reverse gap-3 justify-center">
+              <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white" onClick={() => setLocation("/mk121")}>
+                ח"כ 121 - ערוץ לכנסת
+              </Button>
+              <Button size="lg" variant="outline" className="bg-white/85 border-blue-300 text-blue-900 hover:bg-white" onClick={() => setLocation("/governance")}>
+                ממשלה משתפת - ערוץ לממשלה
+              </Button>
             </div>
           </div>
         </div>
@@ -108,7 +85,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-gray-600 mb-6">
-                ערוץ אזרחי לכנסת - הציבור בוחר כל 3 חודשים את הצעת החוק והשאילתה הדחופה ביותר לקידום ציבורי
+                ערוץ אזרחי לכנסת - הציבור בוחר כל 3 חודשים את הצעת החוק והשאילתא הדחופה ביותר לקידום ציבורי
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
@@ -116,7 +93,7 @@ export default function Home() {
                   <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">בחירת הצעת חוק + שאילתה</span>
+                  <span className="text-gray-700">בחירת הצעת חוק + שאילתא</span>
                   <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
@@ -135,7 +112,7 @@ export default function Home() {
             {/* Dynamic Civic Voice Channel */}
             <Card className="p-8 border-2 border-blue-200 hover:border-blue-400 transition text-right">
               <div className="flex items-center gap-3 mb-6 justify-end">
-                <h3 className="text-2xl font-bold text-blue-900">קול ציבורי דינמי</h3>
+                <h3 className="text-2xl font-bold text-blue-900">ממשלה משתפת</h3>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                   <BarChart3 className="w-6 h-6 text-blue-600" />
                 </div>
@@ -161,7 +138,7 @@ export default function Home() {
                 onClick={() => setLocation("/governance")}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
-                כנס לקול דינמי
+                כנס לממשלה משתפת
               </Button>
             </Card>
           </div>
@@ -174,7 +151,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-right">
             <h2 className="text-4xl font-bold text-purple-900 mb-8">דף מקדים - שלב הצבירת תמיכה</h2>
             <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-              כל הצעה חדשה (חוק או שאילתה) מתחילה כ<span className="font-bold">"דף מקדים"</span> - זהו שלב ראשוני שבו אזרחים מצביעים על תמיכתם בהצעה.
+              כל הצעה חדשה (חוק או שאילתא) מתחילה כ<span className="font-bold">"דף מקדים"</span> - זהו שלב ראשוני שבו אזרחים מצביעים על תמיכתם בהצעה.
             </p>
             
             <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -198,7 +175,7 @@ export default function Home() {
                 <div className="text-3xl font-bold text-cyan-600 mb-3">4 שנים</div>
                 <h3 className="text-lg font-bold text-cyan-900 mb-2">תוקף הצעה</h3>
                 <p className="text-gray-600 text-sm">
-                  אם הצעה לא עברה את הרף תוך 4 שנים, היא תיגנז. החלטה סופית בידי הפוליטיקאים
+                  אם הצעה לא עברה את הרף תוך 4 שנים, היא תיגנז.
                 </p>
               </Card>
             </div>
@@ -215,7 +192,7 @@ export default function Home() {
                   <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">2</div>
                 </li>
                 <li className="flex items-start gap-3 justify-end">
-                  <span><span className="font-bold">3.</span> אזרחים אחרים תומכים בהצעה (או מבטלים תמיכה)</span>
+                  <span><span className="font-bold">3.</span> אזרחים אחרים תומכים בהצעה</span>
                   <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">3</div>
                 </li>
                 <li className="flex items-start gap-3 justify-end">
@@ -287,7 +264,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">כוח אזרחי</h3>
               <p className="text-gray-600">
-                כל אזרח מחזיק בקול אחד, ויכול להשפיע ישירות על החלטות ממשלתיות
+                כל אזרח יכול להשפיע ישירות או להאציל את קולו
               </p>
             </Card>
 
@@ -338,9 +315,9 @@ export default function Home() {
               
               <TabsContent value="tab1" className="space-y-4">
                 <Card className="p-6 text-right">
-                  <h3 className="font-bold text-blue-900 mb-2">מה ההבדל בין ח"כ 121 לקול דינמי?</h3>
+                  <h3 className="font-bold text-blue-900 mb-2">מה ההבדל בין ח"כ 121 לממשלה משתפת?</h3>
                   <p className="text-gray-600">
-                    ח"כ 121 הוא ערוץ לכנסת - אזרחים בוחרים כל 3 חודשים הצעת חוק ושאילתה. קול דינמי הוא ערוץ למשרדי ממשלה - אזרחים מצביעים על החלטות יומיות של השרים.
+                    ח"כ 121 הוא ערוץ לכנסת - אזרחים בוחרים כל 3 חודשים הצעת חוק ושאילתא. ממשלה משתפת היא ערוץ למשרדי ממשלה - אזרחים מצביעים על החלטות יומיות של השרים.
                   </p>
                 </Card>
 
@@ -354,10 +331,10 @@ export default function Home() {
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה קורה כשהציבור מתנגד להחלטה?</h3>
                   <p className="text-gray-600 mb-3">
-                    השר מחוייב לנמק את צעדיו ולשכנע את הציבור שיצביע שנית לאחר 72 שעות נוספות. אם הציבור עדיין מתנגד, החלטה לא תעבור.
+                    הצבעה ראשונה נפתחת ל-72 שעות לאחר פרסום הצעת ההחלטה. אם הציבור מסרב, השר מגיב ומנמק את עמדתו, ולאחר 72 שעות נפתחת הצבעה נוספת. אם גם בהצבעה השנייה הציבור מסרב, נפתחת הצבעה שלישית. אם בהצבעה השלישית יש סירוב ברוב מוחלט, ההחלטה תיגנז.
                   </p>
                   <p className="text-gray-600 text-sm border-t pt-3">
-                    כוח ההתנגדות הציבורית לא נועד לשתק את עבודת המשרד, אלא לחייב הקשבה של המשרד הממשלתית. במקרים שבהם קיימת נוכחות של רוב מוחלט בקרב האזרחים.
+                    כוח ההתנגדות הציבורית לא נועד לשתק את עבודת המשרד, אלא לחייב הקשבה, הסבר ותיקון לפני קבלת החלטות משמעותיות.
                   </p>
                 </Card>
               </TabsContent>
@@ -410,7 +387,7 @@ export default function Home() {
               className="border-white text-white hover:bg-white/20"
               onClick={() => setLocation("/governance")}
             >
-              קול דינמי - ערוץ לממשלה
+              ממשלה משתפת - ערוץ לממשלה
             </Button>
           </div>
         </div>
@@ -428,7 +405,7 @@ export default function Home() {
               <h4 className="font-bold text-white mb-4">הערוצים</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#" className="hover:text-white transition">ח"כ 121</a></li>
-                <li><a href="#" className="hover:text-white transition">קול דינמי</a></li>
+                <li><a href="#" className="hover:text-white transition">ממשלה משתפת</a></li>
               </ul>
             </div>
             <div>

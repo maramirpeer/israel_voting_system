@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Governance from "./pages/Governance";
+import DecisionsSummary from "./pages/DecisionsSummary";
 import MinistryDashboard from "./pages/MinistryDashboard";
 import MinistryDetails from "./pages/MinistryDetails";
 import DelegateSelection from "./pages/DelegateSelection";
@@ -16,10 +17,12 @@ function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={"/governance/decisions-summary"} component={DecisionsSummary} />
       <Route path={"/governance"} component={Governance} />
+      <Route path={"/"} component={Home} />
       <Route path={"/ministry/:id"} component={MinistryDetails} />
       <Route path={"/ministry-dashboard"} component={MinistryDashboard} />
+      <Route path={"/delegate-selection/:ministryId"} component={DelegateSelection} />
       <Route path={"/delegate-selection"} component={DelegateSelection} />
       <Route path={"/mk121"} component={MK121} />
       <Route path={"/analytics"} component={Analytics} />
