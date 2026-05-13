@@ -204,6 +204,8 @@ export default function MK121() {
   const cycle = currentCycleQuery.data || demoCycle;
   const bills = useDemoData ? demoBills : billsQuery.data || [];
   const questions = useDemoData ? demoQuestions : questionsQuery.data || [];
+  const featuredQuestion = questions[0];
+  const featuredQuestionExperts = getQuestionExperts(featuredQuestion?.ministryId, featuredQuestion?.targetMinistry);
 
   // Debug: Log query state
   useEffect(() => {
@@ -386,6 +388,82 @@ export default function MK121() {
               </Button>
             </div>
 
+            <Card className="p-5 mb-8 border-purple-200 bg-white text-right">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">רשימת מומחים להאצלת קול</h2>
+                  <p className="text-sm text-slate-600">
+                    אפשר לבחור מומחה דרך הכוון קולך, בנפרד מהצבעה ישירה על הצעות החוק והשאלתות.
+                  </p>
+                </div>
+                <Badge className="bg-purple-100 text-purple-700">ח"כ 121</Badge>
+              </div>
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900">מומחים להצעות חוק</h3>
+                    <Badge variant="outline" className="bg-white text-blue-700 border-blue-200">משפט וחקיקה</Badge>
+                  </div>
+                  <div className="grid gap-3">
+                    {legalExperts.map((expert) => (
+                      <div key={expert.name} className="rounded-md border border-slate-200 bg-white p-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="font-bold text-slate-900">{expert.name}</p>
+                            <p className="text-xs text-slate-600">{expert.role}</p>
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
+                            <p className="text-[11px] text-slate-500">מאצילים</p>
+                          </div>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {expert.expertise.map((item) => (
+                            <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900">מומחים לשאילתות</h3>
+                    <Badge variant="outline" className="bg-white text-purple-700 border-purple-200">
+                      {featuredQuestion?.targetMinistry || "משרדי ממשלה"}
+                    </Badge>
+                  </div>
+                  <div className="grid gap-3">
+                    {featuredQuestionExperts.map((expert) => (
+                      <div key={`featured-${expert.name}`} className="rounded-md border border-slate-200 bg-white p-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="font-bold text-slate-900">{expert.name}</p>
+                            <p className="text-xs text-slate-600">{expert.role}</p>
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
+                            <p className="text-[11px] text-slate-500">מאצילים</p>
+                          </div>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {expert.expertise.map((item) => (
+                            <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* Info Card */}
             <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">מה זה ח"כ 121?</h2>
@@ -460,36 +538,6 @@ export default function MK121() {
 
                         <p className="text-slate-700 mb-4">{bill.description}</p>
 
-                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-bold text-slate-800">רשימת מומחים משפטית</span>
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">חקיקה</Badge>
-                          </div>
-                          <div className="grid gap-3 md:grid-cols-3">
-                            {legalExperts.map((expert) => (
-                              <div key={expert.name} className="rounded-md border border-slate-200 bg-white p-3">
-                                <div className="flex items-start justify-between gap-2">
-                                  <div>
-                                    <p className="font-bold text-slate-900">{expert.name}</p>
-                                    <p className="text-xs text-slate-600">{expert.role}</p>
-                                  </div>
-                                  <div className="text-left">
-                                    <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
-                                    <p className="text-[11px] text-slate-500">מאצילים</p>
-                                  </div>
-                                </div>
-                                <div className="mt-2 flex flex-wrap gap-1">
-                                  {expert.expertise.map((item) => (
-                                    <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
-                                      {item}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
                         {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
                         {bill.status === 'preliminary' && (
                           <div className="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
@@ -558,8 +606,6 @@ export default function MK121() {
                     const hasVoted = userQuestionVotes.includes(question.id);
                     const isWinner = question.isWinner;
                     const displayedVotes = (question.votes || 0) + (localQuestionVoteIncrements[question.id] || 0);
-                    const questionExperts = getQuestionExperts(question.ministryId, question.targetMinistry);
-
                     const urgencyColor = {
                       low: "bg-blue-50 text-blue-700 border-blue-200",
                       medium: "bg-yellow-50 text-yellow-700 border-yellow-200",
@@ -604,38 +650,6 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{question.description}</p>
-
-                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-bold text-slate-800">רשימת מומחים משרדית</span>
-                            <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                              {question.targetMinistry || "משרד"}
-                            </Badge>
-                          </div>
-                          <div className="grid gap-3 md:grid-cols-3">
-                            {questionExperts.map((expert) => (
-                              <div key={`${question.id}-${expert.name}`} className="rounded-md border border-slate-200 bg-white p-3">
-                                <div className="flex items-start justify-between gap-2">
-                                  <div>
-                                    <p className="font-bold text-slate-900">{expert.name}</p>
-                                    <p className="text-xs text-slate-600">{expert.role}</p>
-                                  </div>
-                                  <div className="text-left">
-                                    <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
-                                    <p className="text-[11px] text-slate-500">מאצילים</p>
-                                  </div>
-                                </div>
-                                <div className="mt-2 flex flex-wrap gap-1">
-                                  {expert.expertise.map((item) => (
-                                    <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
-                                      {item}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
 
                         {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
                         {question.status === 'preliminary' && (
