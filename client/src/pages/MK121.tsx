@@ -12,6 +12,85 @@ import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-reac
 import { toast } from "sonner";
 import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
 
+const demoCycle = {
+  id: 1,
+  seasonName: "אביב 2026",
+  startDate: new Date("2026-04-01").toISOString(),
+  endDate: new Date("2026-06-30").toISOString(),
+};
+
+const demoBills = [
+  {
+    id: 201,
+    title: "הגבלת כהונת ראש ממשלה ל-8 שנים",
+    description: "הצעת חוק לקביעת מגבלת כהונה מצטברת של עד 8 שנים לראש ממשלה, כדי לחזק רענון שלטוני, אחריות ציבורית ותחרות פוליטית.",
+    category: "ממשל",
+    status: "voting",
+    votes: 21980,
+    supporters: 100,
+    isWinner: true,
+  },
+  {
+    id: 202,
+    title: "חובת הצבעה של כל חברי הכנסת בהצבעות מליאה",
+    description: "סוף עידן החוקים שעוברים ללא נוכחות מלאה. ניתן יהיה להצביע באופן דיגיטלי מאובטח, כולל אימות כפול למניעת זיופים.",
+    category: "כנסת",
+    status: "voting",
+    votes: 17640,
+    supporters: 100,
+    isWinner: false,
+  },
+  {
+    id: 203,
+    title: "שקיפות מלאה בדיוני ועדות הכנסת",
+    description: "חיוב פרסום סיכומים, חומרי רקע והצבעות ועדה בפורמט פתוח ונגיש לציבור.",
+    category: "שקיפות",
+    status: "voting",
+    votes: 14320,
+    supporters: 100,
+    isWinner: false,
+  },
+];
+
+const demoQuestions = [
+  {
+    id: 301,
+    title: "מהו לוח הזמנים לצמצום תורים ברפואה הציבורית?",
+    description: "שאילתא למשרד הבריאות לגבי יעדים מדידים לקיצור זמני המתנה בפריפריה ובמרכז.",
+    targetMinistry: "משרד הבריאות",
+    ministryId: 1,
+    urgency: "high",
+    status: "voting",
+    votes: 18440,
+    supporters: 100,
+    isWinner: true,
+  },
+  {
+    id: 302,
+    title: "כיצד מתקדמת תוכנית האנרגיה הירוקה?",
+    description: "שאילתא למשרד החדשנות ואיכות הסביבה לגבי עמידה ביעדי אנרגיה מתחדשת לשנת 2030.",
+    targetMinistry: "משרד החדשנות ואיכות הסביבה",
+    ministryId: 4,
+    urgency: "medium",
+    status: "voting",
+    votes: 12670,
+    supporters: 100,
+    isWinner: false,
+  },
+  {
+    id: 303,
+    title: "מה עמדת ראש הממשלה לגבי חיזוק השתתפות הציבור?",
+    description: "שאילתא לראש הממשלה על שילוב מנגנוני הצבעה, שיתוף והאצלת קול בקבלת החלטות ציבורית.",
+    targetMinistry: "ראש הממשלה",
+    ministryId: null,
+    urgency: "medium",
+    status: "voting",
+    votes: 11290,
+    supporters: 100,
+    isWinner: false,
+  },
+];
+
 
 export default function MK121() {
   const { user, isAuthenticated } = useAuth();
@@ -24,7 +103,9 @@ export default function MK121() {
   const [localQuestionVoteIncrements, setLocalQuestionVoteIncrements] = useState<Record<number, number>>({});
 
   // Queries with auto-refresh polling (every 30 seconds for live updates)
-  const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery();
+  const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery(undefined, {
+    retry: false,
+  });
   const billsQuery = trpc.mk121.getBillsForCycle.useQuery(
     { cycleId: currentCycleQuery.data?.id || 0 },
     { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 } // Refresh every 30 seconds
@@ -119,9 +200,10 @@ export default function MK121() {
     },
   });
 
-  const cycle = currentCycleQuery.data;
-  const bills = billsQuery.data || [];
-  const questions = questionsQuery.data || [];
+  const useDemoData = !currentCycleQuery.isLoading && (!currentCycleQuery.data || Boolean(currentCycleQuery.error));
+  const cycle = currentCycleQuery.data || demoCycle;
+  const bills = useDemoData ? demoBills : billsQuery.data || [];
+  const questions = useDemoData ? demoQuestions : questionsQuery.data || [];
 
   // Debug: Log query state
   useEffect(() => {
@@ -183,7 +265,11 @@ export default function MK121() {
       ...current,
       [billId]: (current[billId] || 0) + 1,
     }));
-    voteBillMutation.mutate({ billId, userId: demoUser.id });
+    if (!useDemoData) {
+      voteBillMutation.mutate({ billId, userId: demoUser.id });
+    } else {
+      toast.success("הקול שלך נרשם!");
+    }
   };
 
   const handleVoteQuestion = (questionId: number) => {
@@ -201,7 +287,11 @@ export default function MK121() {
       ...current,
       [questionId]: (current[questionId] || 0) + 1,
     }));
-    voteQuestionMutation.mutate({ questionId, userId: demoUser.id });
+    if (!useDemoData) {
+      voteQuestionMutation.mutate({ questionId, userId: demoUser.id });
+    } else {
+      toast.success("הקול שלך נרשם!");
+    }
   };
 
   const handleSupportBill = (billId: number) => {
