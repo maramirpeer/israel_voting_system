@@ -12,6 +12,11 @@ import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-reac
 import { toast } from "sonner";
 import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
 
+type MK121Assignment = { type: "direct" | "expert" | "citizen"; name?: string };
+const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
+type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
+const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
+
 const demoCycle = {
   id: 1,
   seasonName: "אביב 2026",
@@ -101,6 +106,16 @@ export default function MK121() {
   const [localQuestionVotes, setLocalQuestionVotes] = useState<number[]>([]);
   const [localBillVoteIncrements, setLocalBillVoteIncrements] = useState<Record<number, number>>({});
   const [localQuestionVoteIncrements, setLocalQuestionVoteIncrements] = useState<Record<number, number>>({});
+  const [mk121Assignment, setMk121Assignment] = useState<MK121Assignment>(() => {
+    if (typeof window === "undefined") return { type: "direct" };
+    const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
+    return saved ? JSON.parse(saved) : { type: "direct" };
+  });
+  const [mk121QuestionAssignments, setMK121QuestionAssignments] = useState<Record<number, MK121QuestionAssignment>>(() => {
+    if (typeof window === "undefined") return {};
+    const saved = window.localStorage.getItem(MK121_QUESTION_ASSIGNMENTS_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
 
   // Queries with auto-refresh polling (every 30 seconds for live updates)
   const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery(undefined, {
@@ -200,12 +215,12 @@ export default function MK121() {
     },
   });
 
-  const useDemoData = !currentCycleQuery.isLoading && (!currentCycleQuery.data || Boolean(currentCycleQuery.error));
+  const useDemoData = !currentCycleQuery.data || Boolean(currentCycleQuery.error);
   const cycle = currentCycleQuery.data || demoCycle;
   const bills = useDemoData ? demoBills : billsQuery.data || [];
-  const questions = useDemoData ? demoQuestions : questionsQuery.data || [];
-  const featuredQuestion = questions[0];
-  const featuredQuestionExperts = getQuestionExperts(featuredQuestion?.ministryId, featuredQuestion?.targetMinistry);
+  const questions = [...(useDemoData ? demoQuestions : questionsQuery.data || [])].sort(
+    (a, b) => (b.votes || 0) - (a.votes || 0)
+  );
 
   // Debug: Log query state
   useEffect(() => {
@@ -219,6 +234,25 @@ export default function MK121() {
   const userQuestionVotes = Array.from(new Set([...(userQuestionVotesQuery.data || []), ...localQuestionVotes]));
   const userBillSupports = userBillSupportsQuery.data || [];
   const userQuestionSupports = userQuestionSupportsQuery.data || [];
+  const assignmentLabel =
+    mk121Assignment.type === "direct"
+      ? "בחירה ישירה"
+      : mk121Assignment.type === "expert"
+        ? `מואצל למומחה: ${mk121Assignment.name}`
+        : `מואצל לאזרח: ${mk121Assignment.name}`;
+  const assignmentBadgeClass =
+    mk121Assignment.type === "direct"
+      ? "bg-green-100 text-green-700 hover:bg-green-100"
+      : "bg-purple-100 text-purple-700 hover:bg-purple-100";
+  const getQuestionAssignmentLabel = (ministryId: number | null | undefined) => {
+    if (!ministryId) return "בחירה ישירה";
+    const assignment = mk121QuestionAssignments[ministryId];
+    return assignment?.delegateName ? `מואצל למומחה משרד: ${assignment.delegateName}` : "בחירה ישירה";
+  };
+  const getQuestionAssignmentBadgeClass = (ministryId: number | null | undefined) =>
+    ministryId && mk121QuestionAssignments[ministryId]
+      ? "bg-purple-100 text-purple-700 hover:bg-purple-100"
+      : "bg-green-100 text-green-700 hover:bg-green-100";
   const demoExpertNames = ["יעל בן דוד", "דניאל מזרחי", "הילה שפירא", "רועי אלון", "נעמה כץ", "אורי גבאי"];
   const legalExperts = [
     {
@@ -241,7 +275,7 @@ export default function MK121() {
     },
   ];
 
-  const getQuestionExperts = (ministryId: number | null | undefined, ministryName: string | null | undefined) => {
+  function getQuestionExperts(ministryId: number | null | undefined, ministryName: string | null | undefined) {
     const cleanMinistryName = (ministryName || "המשרד הרלוונטי").replace("משרד ", "");
     const base = ministryId || 1;
     return [0, 1, 2].map((index) => ({
@@ -250,7 +284,46 @@ export default function MK121() {
       expertise: [`מדיניות ${cleanMinistryName}`, "ניתוח החלטות", "שיתוף ציבור"],
       endorsements: 620 + ((base + index) * 137) % 1400,
     }));
+  }
+
+  const setBillsDirect = () => {
+    const directAssignment: MK121Assignment = { type: "direct" };
+    setMk121Assignment(directAssignment);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(directAssignment));
+    }
+    toast.success("הצעות החוק הוחזרו לבחירה ישירה");
   };
+
+  const setQuestionDirect = (ministryId: number | null | undefined) => {
+    if (!ministryId) return;
+    setMK121QuestionAssignments((current) => {
+      const next = { ...current };
+      delete next[ministryId];
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(MK121_QUESTION_ASSIGNMENTS_KEY, JSON.stringify(next));
+      }
+      return next;
+    });
+    toast.success("השאילתות במשרד הזה הוחזרו לבחירה ישירה");
+  };
+
+  useEffect(() => {
+    const loadAssignment = () => {
+      const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
+      setMk121Assignment(saved ? JSON.parse(saved) : { type: "direct" });
+      const savedQuestionAssignments = window.localStorage.getItem(MK121_QUESTION_ASSIGNMENTS_KEY);
+      setMK121QuestionAssignments(savedQuestionAssignments ? JSON.parse(savedQuestionAssignments) : {});
+    };
+
+    loadAssignment();
+    window.addEventListener("storage", loadAssignment);
+    window.addEventListener("focus", loadAssignment);
+    return () => {
+      window.removeEventListener("storage", loadAssignment);
+      window.removeEventListener("focus", loadAssignment);
+    };
+  }, []);
 
   const handleVoteBill = (billId: number) => {
     if (userBillVotes.includes(billId)) {
@@ -315,7 +388,7 @@ export default function MK121() {
   // Public access - no authentication required for demo
 
   // Show loading state
-  if (currentCycleQuery.isLoading) {
+  if (false && currentCycleQuery.isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
         <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
@@ -388,96 +461,29 @@ export default function MK121() {
               </Button>
             </div>
 
-            <Card className="p-5 mb-8 border-purple-200 bg-white text-right">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">רשימת מומחים להאצלת קול</h2>
-                  <p className="text-sm text-slate-600">
-                    אפשר לבחור מומחה דרך הכוון קולך, בנפרד מהצבעה ישירה על הצעות החוק והשאלתות.
-                  </p>
-                </div>
-                <Badge className="bg-purple-100 text-purple-700">ח"כ 121</Badge>
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900">מומחים להצעות חוק</h3>
-                    <Badge variant="outline" className="bg-white text-blue-700 border-blue-200">משפט וחקיקה</Badge>
-                  </div>
-                  <div className="grid gap-3">
-                    {legalExperts.map((expert) => (
-                      <div key={expert.name} className="rounded-md border border-slate-200 bg-white p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <p className="font-bold text-slate-900">{expert.name}</p>
-                            <p className="text-xs text-slate-600">{expert.role}</p>
-                          </div>
-                          <div className="text-left">
-                            <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
-                            <p className="text-[11px] text-slate-500">מאצילים</p>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {expert.expertise.map((item) => (
-                            <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
-                              {item}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900">מומחים לשאילתות</h3>
-                    <Badge variant="outline" className="bg-white text-purple-700 border-purple-200">
-                      {featuredQuestion?.targetMinistry || "משרדי ממשלה"}
-                    </Badge>
-                  </div>
-                  <div className="grid gap-3">
-                    {featuredQuestionExperts.map((expert) => (
-                      <div key={`featured-${expert.name}`} className="rounded-md border border-slate-200 bg-white p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <p className="font-bold text-slate-900">{expert.name}</p>
-                            <p className="text-xs text-slate-600">{expert.role}</p>
-                          </div>
-                          <div className="text-left">
-                            <p className="text-sm font-bold text-purple-700">{expert.endorsements}</p>
-                            <p className="text-[11px] text-slate-500">מאצילים</p>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {expert.expertise.map((item) => (
-                            <Badge key={item} variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[11px]">
-                              {item}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-
             {/* Info Card */}
             <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">מה זה ח"כ 121?</h2>
               <p className="text-slate-700 mb-4">
-                כל 3 חודשים ינסה ח"כ 121 ליצור את הקול העונתי, במידה ויצביעו מינימום של 37,500 אזרחים לכל הפחות. הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. בנוסף, האזרחים יצביעו על השאילתא הנבחרת שתישלח למשרד מסוים או לראש הממשלה לטובת קבלת תשובה מהשר הנשאל, בצורת תשאול ישיר ומצולם.
+                כל 3 חודשים ינסה ח"כ 121 ליצור את הקול העונתי, במידה ויצביעו מינימום של 37,500 אזרחים לכל הפחות{" "}
+                <Button variant="link" onClick={() => setLocation("/mk121/threshold")} className="h-auto p-0 text-blue-700">(קרא עוד)</Button>.
+                הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. בנוסף, האזרחים יצביעו על השאילתא הנבחרת שתישלח למשרד מסוים או לראש הממשלה לטובת קבלת תשובה מהשר הנשאל, בצורת תשאול ישיר ומצולם.
               </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-3 rounded border border-blue-200">
-                  <p className="text-sm font-bold text-blue-600">📋 הצעות חוק</p>
-                  <p className="text-lg font-bold text-slate-900">{bills.length}</p>
-                </div>
-                <div className="bg-white p-3 rounded border border-blue-200">
-                  <p className="text-sm font-bold text-blue-600">❓ שאילתות</p>
-                  <p className="text-lg font-bold text-slate-900">{questions.length}</p>
+              <div className="mb-4 rounded-lg border border-blue-200 bg-white p-4">
+                <h3 className="mb-3 text-lg font-bold text-slate-900">איך הקול מנותב?</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="rounded-md border border-blue-200 bg-blue-50 p-4">
+                    <p className="mb-2 text-base font-extrabold text-blue-800">הצעות חוק</p>
+                    <p className="text-sm leading-6 text-slate-700">
+                      אפשר להצביע ישירות או להאציל למומחה משפטי.
+                    </p>
+                  </div>
+                  <div className="rounded-md border border-purple-200 bg-purple-50 p-4">
+                    <p className="mb-2 text-base font-extrabold text-purple-800">שאילתות</p>
+                    <p className="text-sm leading-6 text-slate-700">
+                      אם בחרת להאציל, הקול מנותב למומחה מהרשימה המשרדית של המשרד שאליו השאילתא מופנית.
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -492,7 +498,9 @@ export default function MK121() {
               {/* Bills Tab */}
               <TabsContent value="bills" className="space-y-4">
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm text-blue-700 text-right">
-                  <strong>🗳️ דרישה מינימאלית:</strong> כל הצעת חוק צריכה לפחות 37,500 קולות כדי לעבור לדיון הרשמי (1/120 מהמצביעים)
+                  <strong>🗳️ דרישה מינימאלית:</strong> כל הצעת חוק צריכה לפחות 37,500 קולות{" "}
+                  <Button variant="link" onClick={() => setLocation("/mk121/threshold")} className="h-auto p-0 text-blue-700">(קרא עוד)</Button>{" "}
+                  כדי לעבור לדיון הרשמי (1/120 מהמצביעים)
                 </div>
                 {bills.length === 0 ? (
                   <Card className="p-8 text-center bg-slate-50">
@@ -537,6 +545,24 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{bill.description}</p>
+
+                        <div className="mb-4 flex flex-col gap-2 rounded-lg border border-purple-200 bg-purple-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+                          <span className="text-sm font-bold text-slate-800">סטטוס הקול שלך בהצעה זו</span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge className={assignmentBadgeClass}>{assignmentLabel}</Badge>
+                            {mk121Assignment.type !== "direct" && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={setBillsDirect}
+                                className="border-green-300 text-green-700 hover:bg-green-50"
+                              >
+                                בחירה ישירה להצעה זו
+                              </Button>
+                            )}
+                          </div>
+                        </div>
 
                         {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
                         {bill.status === 'preliminary' && (
@@ -606,12 +632,6 @@ export default function MK121() {
                     const hasVoted = userQuestionVotes.includes(question.id);
                     const isWinner = question.isWinner;
                     const displayedVotes = (question.votes || 0) + (localQuestionVoteIncrements[question.id] || 0);
-                    const urgencyColor = {
-                      low: "bg-blue-50 text-blue-700 border-blue-200",
-                      medium: "bg-yellow-50 text-yellow-700 border-yellow-200",
-                      high: "bg-red-50 text-red-700 border-red-200",
-                    };
-
                     return (
                       <Card
                         key={question.id}
@@ -625,19 +645,9 @@ export default function MK121() {
                             <div className="mt-2 flex gap-2 flex-row-reverse">
                               {question.targetMinistry && (
                                 <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                                  📢 קול הציבור: {question.targetMinistry}
+                                  📢 {question.targetMinistry}
                                 </Badge>
                               )}
-                              <Badge
-                                variant="outline"
-                                className={urgencyColor[question.urgency as keyof typeof urgencyColor]}
-                              >
-                                {question.urgency === "low"
-                                  ? "🟢 נמוכה"
-                                  : question.urgency === "medium"
-                                    ? "🟡 בינונית"
-                                    : "🔴 גבוהה"}
-                              </Badge>
                             </div>
                           </div>
                           <div className="mr-4">
@@ -650,6 +660,24 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{question.description}</p>
+
+                        <div className="mb-4 flex flex-col gap-2 rounded-lg border border-purple-200 bg-purple-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+                          <span className="text-sm font-bold text-slate-800">סטטוס הקול שלך בשאילתא זו</span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge className={getQuestionAssignmentBadgeClass(question.ministryId)}>{getQuestionAssignmentLabel(question.ministryId)}</Badge>
+                            {question.ministryId && mk121QuestionAssignments[question.ministryId] && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setQuestionDirect(question.ministryId)}
+                                className="border-green-300 text-green-700 hover:bg-green-50"
+                              >
+                                בחירה ישירה לשאילתא זו
+                              </Button>
+                            )}
+                          </div>
+                        </div>
 
                         {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
                         {question.status === 'preliminary' && (

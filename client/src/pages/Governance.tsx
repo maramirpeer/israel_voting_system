@@ -15,6 +15,94 @@ import { useLocation } from "wouter";
 import { PendingDecisionsGrid } from "@/components/PendingDecisionsGrid";
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+const hoursFromNow = (hours: number) => new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+const localDemoMinistries = [
+  { id: 8, name: "משרד האוצר", description: "ניהול תקציב המדינה, מדיניות כלכלית, מיסוי והשקעות." },
+  { id: 11, name: "משרד הפנים, החברה והרווחה", description: "רשויות מקומיות, פיתוח כפרי, רווחה חברתית ושירותים לאזרח." },
+  { id: 6, name: "משרד הביטחון", description: "ביטחון המדינה, פיקוח על צה\"ל ומדיניות אסטרטגית." },
+  { id: 9, name: "משרד המשפטים", description: "ייעוץ משפטי, מערכת המשפט, חקיקה ואכיפה." },
+  { id: 4, name: "משרד החדשנות ואיכות הסביבה", description: "טכנולוגיה, אנרגיה ירוקה, מדיניות סביבתית וחדשנות." },
+  { id: 7, name: "משרד החוץ וההסברה העולמית", description: "יחסים בינלאומיים, דיפלומטיה, תדמית המדינה והסברה." },
+  { id: 3, name: "משרד החינוך", description: "מערכת החינוך, תוכניות לימוד ורווחת תלמידים." },
+  { id: 1, name: "משרד הבריאות", description: "מערכת הבריאות, קידום בריאות ורפואה ציבורית." },
+  { id: 17, name: "משרד התרבות", description: "תרבות, אמנות, ספורט וזהות תרבותית." },
+];
+
+const localDemoDecisions = [
+  {
+    id: 101,
+    ministryId: 1,
+    title: "קיצור תורים לרפואה מומחית",
+    description: "הקצאת תקציב ייעודי לפתיחת מרפאות ערב וקיצור זמני המתנה בפריפריה.",
+    category: "major",
+    status: "voting",
+    createdAt: daysAgo(2),
+    publicVotingEndsAt: hoursFromNow(9),
+  },
+  {
+    id: 102,
+    ministryId: 4,
+    title: "האצת התקנת אנרגיה סולארית במבני ציבור",
+    description: "תוכנית רב-שנתית להתקנת מערכות סולאריות בבתי ספר, מתנ\"סים ומבני ממשלה.",
+    category: "medium",
+    status: "voting",
+    createdAt: daysAgo(1),
+    publicVotingEndsAt: hoursFromNow(18),
+  },
+  {
+    id: 105,
+    ministryId: 3,
+    title: "תוכנית העשרה דיגיטלית בבתי ספר",
+    description: "הרחבת לימודי מיומנויות דיגיטליות, חשיבה ביקורתית ואוריינות מידע.",
+    category: "medium",
+    status: "voting",
+    createdAt: daysAgo(3),
+    publicVotingEndsAt: hoursFromNow(28),
+  },
+  {
+    id: 106,
+    ministryId: 8,
+    title: "פרסום תקציב פתוח לציבור",
+    description: "הנגשת סעיפי התקציב לציבור בפורמט פשוט, פתוח ובר השוואה.",
+    category: "routine",
+    status: "voting",
+    createdAt: daysAgo(4),
+    publicVotingEndsAt: hoursFromNow(41),
+  },
+  {
+    id: 201,
+    ministryId: 11,
+    title: "מוקד שירות אחוד לרשויות מקומיות",
+    description: "איחוד פניות אזרחים לרשויות המקומיות במערכת אחת עם מעקב שקוף.",
+    category: "medium",
+    status: "approved",
+    createdAt: daysAgo(8),
+    publicVotingEndsAt: hoursFromNow(-24),
+  },
+  {
+    id: 202,
+    ministryId: 17,
+    title: "קרן קהילתית לתרבות וספורט",
+    description: "הפניית תמיכות לפי השתתפות ציבורית ומדדי נגישות.",
+    category: "routine",
+    status: "approved",
+    createdAt: daysAgo(12),
+    publicVotingEndsAt: hoursFromNow(-72),
+  },
+  {
+    id: 301,
+    ministryId: 7,
+    title: "קמפיין הסברה בינלאומי חדש",
+    description: "הצעת קמפיין רחב היקף שנדחתה לאחר התנגדות ציבורית.",
+    category: "major",
+    status: "rejected",
+    createdAt: daysAgo(16),
+    publicVotingEndsAt: hoursFromNow(-120),
+  },
+];
+
 export default function Governance() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
@@ -40,9 +128,11 @@ export default function Governance() {
     },
   });
 
-  const ministries = ministriesQuery.data || [];
-  const decisions = decisionsQuery.data || [];
-  const activeDecisions = activeDecisionsQuery.data || [];
+  const ministries = ministriesQuery.data && ministriesQuery.data.length > 0 ? ministriesQuery.data : localDemoMinistries;
+  const decisions = decisionsQuery.data && decisionsQuery.data.length > 0 ? decisionsQuery.data : localDemoDecisions;
+  const activeDecisions = activeDecisionsQuery.data && activeDecisionsQuery.data.length > 0
+    ? activeDecisionsQuery.data
+    : localDemoDecisions.filter((decision) => decision.status === "voting");
   const sortedActiveDecisions = [...activeDecisions]
     .sort((a: any, b: any) => {
       const endA = a.publicVotingEndsAt ? new Date(a.publicVotingEndsAt).getTime() : 0;

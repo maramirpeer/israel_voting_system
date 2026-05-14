@@ -10,6 +10,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, CheckCircle, Users, Target, Search } from "lucide-react";
 import { toast } from "sonner";
 
+type MK121Assignment = { type: "direct" | "expert" | "citizen"; name?: string };
+const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
+type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
+const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
+
+const demoMinistries = [
+  { id: 8, name: "משרד האוצר", description: "ניהול תקציב המדינה, מדיניות כלכלית, מיסוי והשקעות." },
+  { id: 11, name: "משרד הפנים, החברה והרווחה", description: "רשויות מקומיות, פיתוח כפרי, רווחה חברתית ושירותים לאזרח." },
+  { id: 6, name: "משרד הביטחון", description: "ביטחון המדינה, פיקוח על צה\"ל ומדיניות אסטרטגית." },
+  { id: 9, name: "משרד המשפטים", description: "ייעוץ משפטי, מערכת המשפט, חקיקה ואכיפה." },
+  { id: 4, name: "משרד החדשנות ואיכות הסביבה", description: "טכנולוגיה, אנרגיה ירוקה, מדיניות סביבתית וחדשנות." },
+  { id: 7, name: "משרד החוץ וההסברה העולמית", description: "יחסים בינלאומיים, דיפלומטיה, תדמית המדינה והסברה." },
+  { id: 3, name: "משרד החינוך", description: "מערכת החינוך, תוכניות לימוד ורווחת תלמידים." },
+  { id: 1, name: "משרד הבריאות", description: "מערכת הבריאות, קידום בריאות ורפואה ציבורית." },
+  { id: 17, name: "משרד התרבות", description: "תרבות, אמנות, ספורט וזהות תרבותית." },
+];
+
+const demoDelegateNames = ["יעל בן דוד", "דניאל מזרחי", "הילה שפירא", "רועי אלון", "נעמה כץ", "אורי גבאי"];
+const getDemoMinistryDelegates = (ministryId: number, ministryName?: string) => {
+  const cleanName = (ministryName || "המשרד").replace("משרד ", "");
+  return [0, 1, 2].map((index) => ({
+    id: ministryId * 100 + index,
+    name: demoDelegateNames[(ministryId + index) % demoDelegateNames.length],
+    bio: `מומחה/ית ${cleanName} עם ניסיון בניתוח מדיניות, עבודת מטה ושיתוף ציבור.`,
+    endorsements: 740 + ((ministryId + index) * 173) % 1200,
+    expertise: [`מדיניות ${cleanName}`, "ניתוח החלטות", "שיתוף ציבור"],
+    values: ["שקיפות", "אחריות ציבורית"],
+  }));
+};
+
 export default function DelegateSelection() {
   const { user, isAuthenticated } = useAuth();
   const demoUser = user || { id: 1, name: "ישראל ישראלי", email: "demo@example.local" };
@@ -21,10 +51,20 @@ export default function DelegateSelection() {
   const [selectedMinistryId, setSelectedMinistryId] = useState<number | null>(null);
   const [selectedDelegateId, setSelectedDelegateId] = useState<number | null>(null);
   const [votingMethod, setVotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
+  const [mk121VotingMethod, setMK121VotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
   const [citizenSearchId, setCitizenSearchId] = useState<string>("");
   const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
   const [localAssignments, setLocalAssignments] = useState<Record<number, any>>({});
-  const [mk121Assignment, setMk121Assignment] = useState<{ type: "direct" | "expert" | "citizen"; name?: string }>({ type: "direct" });
+  const [mk121Assignment, setMk121Assignment] = useState<MK121Assignment>(() => {
+    if (typeof window === "undefined") return { type: "direct" };
+    const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
+    return saved ? JSON.parse(saved) : { type: "direct" };
+  });
+  const [mk121QuestionAssignments, setMK121QuestionAssignments] = useState<Record<number, MK121QuestionAssignment>>(() => {
+    if (typeof window === "undefined") return {};
+    const saved = window.localStorage.getItem(MK121_QUESTION_ASSIGNMENTS_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();
@@ -51,8 +91,11 @@ export default function DelegateSelection() {
     },
   });
 
-  const ministries = ministriesQuery.data || [];
-  const delegates = delegatesQuery.data || [];
+  const ministries = ministriesQuery.data && ministriesQuery.data.length > 0 ? ministriesQuery.data : demoMinistries;
+  const selectedMinistryForDelegates = ministries.find((m) => m.id === ministryId);
+  const delegates = delegatesQuery.data && delegatesQuery.data.length > 0
+    ? delegatesQuery.data
+    : getDemoMinistryDelegates(ministryId, selectedMinistryForDelegates?.name);
   const assignments = assignmentsQuery.data || [];
 
   const getAssignmentForMinistry = (ministryId: number) =>
@@ -94,7 +137,9 @@ export default function DelegateSelection() {
   // Initialize first ministry on load
   useEffect(() => {
     if (isMK121Mode) {
-      setVotingMethod("direct");
+      if (!selectedMinistryId && ministries.length > 0) {
+        setSelectedMinistryId(ministries[0].id);
+      }
       return;
     }
     if (routeMinistryId && Number.isFinite(routeMinistryId)) {
@@ -125,6 +170,34 @@ export default function DelegateSelection() {
   });
   const directVotesCount = voteRoutingSummary.filter((item) => !item.isDelegated).length;
   const delegatedVotesCount = voteRoutingSummary.filter((item) => item.isDelegated).length;
+
+  const updateMK121Assignment = (assignment: MK121Assignment) => {
+    setMk121Assignment(assignment);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(assignment));
+    }
+    toast.success("סטטוס הקול עודכן");
+  };
+
+  const updateMK121QuestionAssignment = (delegateId: number) => {
+    if (!selectedMinistryId) return;
+    const delegate = delegates.find((item) => item.id === delegateId);
+    const assignment: MK121QuestionAssignment = {
+      ministryId: selectedMinistryId,
+      ministryName: selectedMinistry?.name,
+      delegateId,
+      delegateName: delegate?.name,
+    };
+    const next = {
+      ...mk121QuestionAssignments,
+      [selectedMinistryId]: assignment,
+    };
+    setMK121QuestionAssignments(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(MK121_QUESTION_ASSIGNMENTS_KEY, JSON.stringify(next));
+    }
+    toast.success("מומחה השאילתות עודכן");
+  };
 
   const handleAssignDelegate = (delegateId: number) => {
     if (!demoUser.id || !selectedMinistryId) return;
@@ -172,11 +245,8 @@ export default function DelegateSelection() {
   };
 
   const handleSearchCitizen = async () => {
-    const citizenId = parseInt(citizenSearchId);
-    if (!citizenId || !demoUser.id) {
-      toast.error("הכנס מספר ת.ז תקין");
-      return;
-    }
+    const citizenId = parseInt(citizenSearchId) || Math.floor(100000000 + Math.random() * 899999999);
+    if (!demoUser.id) return;
     const name = demoCitizenNames[citizenId % demoCitizenNames.length];
     const citizen = {
       id: citizenId,
@@ -185,6 +255,18 @@ export default function DelegateSelection() {
     };
     setSelectedCitizen(citizen);
     toast.success(`נמצא אזרח: ${name}`);
+  };
+
+  const handleRandomCitizen = () => {
+    const randomId = Math.floor(100000000 + Math.random() * 899999999);
+    const name = demoCitizenNames[randomId % demoCitizenNames.length];
+    setCitizenSearchId(String(randomId));
+    setSelectedCitizen({
+      id: randomId,
+      name,
+      email: `citizen-${randomId}@example.local`,
+    });
+    toast.success(`נבחר אזרח: ${name}`);
   };
 
   const handleAssignCitizen = () => {
@@ -237,7 +319,7 @@ export default function DelegateSelection() {
             </div>
           </Card>
 
-          <Tabs value={votingMethod} onValueChange={(v) => setVotingMethod(v as any)} className="w-full">
+          <Tabs value={mk121VotingMethod} onValueChange={(v) => setMK121VotingMethod(v as any)} className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="direct">בחירה ישירה</TabsTrigger>
               <TabsTrigger value="delegate">מומחה משפטי</TabsTrigger>
@@ -250,9 +332,11 @@ export default function DelegateSelection() {
                   <Target className="w-8 h-8 text-green-600 mt-1" />
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-slate-900 mb-2">בחירה ישירה</h3>
-                    <p className="text-slate-700 mb-4">הקול שלך בח"כ 121 נשאר אצלך, ותוכל להצביע בעצמך על הצעות החוק והשאלתות.</p>
-                    <Button onClick={() => setMk121Assignment({ type: "direct" })} className="bg-green-600 hover:bg-green-700">
-                      אשר בחירה ישירה
+                <p className="text-slate-700 mb-4">
+                  הקול שלך להצעות החוק בח"כ 121 נשאר אצלך. האצלות משרדיות לשאילתות נשמרות בנפרד, לפי המשרד שאליו השאילתא מופנית.
+                </p>
+                    <Button onClick={() => updateMK121Assignment({ type: "direct" })} className="bg-green-600 hover:bg-green-700">
+                      אשר בחירה ישירה להצעות חוק
                     </Button>
                   </div>
                 </div>
@@ -280,7 +364,7 @@ export default function DelegateSelection() {
                     </div>
                   </div>
                   <Button
-                    onClick={() => setMk121Assignment({ type: "expert", name: expert.name })}
+                    onClick={() => updateMK121Assignment({ type: "expert", name: expert.name })}
                     className="w-full mt-4"
                     variant={mk121Assignment.name === expert.name ? "default" : "outline"}
                   >
@@ -294,7 +378,7 @@ export default function DelegateSelection() {
               <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
                 <h3 className="text-xl font-bold text-slate-900 mb-2">אזרח לפי ת.ז</h3>
                 <p className="text-slate-700 mb-4">הזן ת.ז כדי לדמות איתור אזרח אחר שאליו תרצה להאציל את קולך בח"כ 121.</p>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <Input
                     type="number"
                     placeholder="הכנס ת.ז של האזרח"
@@ -302,8 +386,11 @@ export default function DelegateSelection() {
                     onChange={(e) => setCitizenSearchId(e.target.value)}
                     className="flex-1"
                   />
-                  <Button onClick={handleSearchCitizen} disabled={!citizenSearchId} className="bg-orange-600 hover:bg-orange-700">
+                  <Button onClick={handleSearchCitizen} className="bg-orange-600 hover:bg-orange-700">
                     חפש אזרח
+                  </Button>
+                  <Button onClick={handleRandomCitizen} variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-50">
+                    בחר אזרח אקראי
                   </Button>
                 </div>
                 {selectedCitizen && (
@@ -311,7 +398,7 @@ export default function DelegateSelection() {
                     <p className="font-bold text-slate-900">{selectedCitizen.name}</p>
                     <p className="text-sm text-slate-600">{selectedCitizen.email}</p>
                     <Button
-                      onClick={() => setMk121Assignment({ type: "citizen", name: selectedCitizen.name })}
+                      onClick={() => updateMK121Assignment({ type: "citizen", name: selectedCitizen.name })}
                       className="w-full mt-4 bg-orange-600 hover:bg-orange-700"
                     >
                       אשר האצלה לאזרח
@@ -321,6 +408,97 @@ export default function DelegateSelection() {
               </Card>
             </TabsContent>
           </Tabs>
+
+          <Card className="mt-8 p-6 bg-white border-purple-200">
+            <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">האצלת קול לשאילתות</h2>
+                <p className="text-sm text-slate-600">
+                  בשאילתות, הקול מנותב לפי המשרד שאליו השאילתא מופנית ומתבסס על רשימת המומחים המשרדית הקיימת.
+                </p>
+              </div>
+              <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100">
+                {selectedMinistry ? selectedMinistry.name : "בחר משרד"}
+              </Badge>
+            </div>
+
+            <Tabs
+              value={selectedMinistryId?.toString() || ""}
+              onValueChange={(value) => {
+                const id = Number(value);
+                if (Number.isFinite(id)) {
+                  setSelectedMinistryId(id);
+                }
+              }}
+            >
+              <div className="overflow-x-auto pb-2">
+                <TabsList className="h-auto w-max min-w-full justify-start grid grid-cols-1 gap-2 bg-slate-100 p-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {ministries.map((ministry) => {
+                    const assignment = mk121QuestionAssignments[ministry.id];
+                    return (
+                      <TabsTrigger
+                        key={ministry.id}
+                        value={ministry.id.toString()}
+                        className="h-auto min-h-16 justify-between rounded-md border bg-white px-3 py-2 text-right data-[state=active]:border-purple-500 data-[state=active]:bg-purple-50"
+                      >
+                        <span className="flex w-full items-start justify-between gap-3">
+                          <span>
+                            <span className="block text-sm font-bold text-slate-900">{ministry.name}</span>
+                            <span className="mt-1 block text-xs leading-5 text-slate-600">
+                              {assignment?.delegateName ? `מואצל אל: ${assignment.delegateName}` : "בחירה ישירה"}
+                            </span>
+                          </span>
+                          <span className={`rounded-full px-2 py-1 text-xs font-medium ${assignment ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
+                            {assignment ? "מואצל" : "ישיר"}
+                          </span>
+                        </span>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
+              </div>
+            </Tabs>
+
+            <div className="mt-5 space-y-4">
+              {delegates.length === 0 ? (
+                <p className="py-6 text-center text-slate-600">אין מומחים זמינים למשרד הזה עדיין</p>
+              ) : (
+                delegates.map((delegate) => {
+                  const isSelected = selectedMinistryId ? mk121QuestionAssignments[selectedMinistryId]?.delegateId === delegate.id : false;
+                  return (
+                    <Card key={`mk121-question-${delegate.id}`} className={`p-4 border-2 ${isSelected ? "border-purple-500 bg-purple-50" : "border-slate-200"}`}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900">{delegate.name}</h3>
+                          <p className="mt-1 text-sm text-slate-600">{delegate.bio}</p>
+                          {delegate.expertise && delegate.expertise.length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {delegate.expertise.map((item, index) => (
+                                <Badge key={index} variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                  {item}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-left">
+                          <p className="text-2xl font-bold text-purple-700">{delegate.endorsements}</p>
+                          <p className="text-xs text-slate-600">מאצילים</p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => updateMK121QuestionAssignment(delegate.id)}
+                        className="mt-4 w-full"
+                        variant={isSelected ? "default" : "outline"}
+                      >
+                        {isSelected ? "✓ מומחה שאילתות נבחר" : "האצל שאילתות למומחה זה"}
+                      </Button>
+                    </Card>
+                  );
+                })
+              )}
+            </div>
+          </Card>
         </main>
       </div>
     );

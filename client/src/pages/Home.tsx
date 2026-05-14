@@ -221,7 +221,16 @@ export default function Home() {
       <section id="vision" className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center text-right">
-            <h2 className="text-4xl font-bold text-blue-900 mb-8">משפט החזון</h2>
+            <h2 className="text-4xl font-bold text-blue-900 mb-8">הקדמת המפתח</h2>
+            <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
+              <span className="text-blue-900 font-extrabold">קול הציבור</span> - מערכת שמכוונת להיות תוסף מהפכני למערכת הפוליטית הקיימת.
+            </p>
+            <p className="mt-4 text-xl text-gray-700 leading-relaxed font-semibold">
+              תוסף זה רוצה לקבל תמיכה גורפת מכלל הציבור ונבחריו.
+            </p>
+            <p className="mt-3 text-lg text-gray-700 leading-relaxed">
+              זהו תוסף שכל מי שטובת המדינה בראש מעייניו אמור להיות מסוגל לתמוך בו.
+            </p>
             <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
               "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול אזרחי חי, דינמי ומבוזר."
             </p>
@@ -316,8 +325,10 @@ export default function Home() {
               <TabsContent value="tab1" className="space-y-4">
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה ההבדל בין ח"כ 121 לממשלה משתפת?</h3>
-                  <p className="text-gray-600">
-                    ח"כ 121 הוא ערוץ לכנסת - אזרחים בוחרים כל 3 חודשים הצעת חוק ושאילתא. ממשלה משתפת היא ערוץ למשרדי ממשלה - אזרחים מצביעים על החלטות יומיות של השרים.
+                  <p className="text-gray-600 leading-7">
+                    <span className="font-bold text-purple-800">ח"כ 121</span> הוא ערוץ לכנסת: הצעות חוק ושאילתות.
+                    <br />
+                    <span className="font-bold text-blue-800">ממשלה משתפת</span> היא ערוץ למשרדי הממשלה: הצבעות על החלטות שרים.
                   </p>
                 </Card>
 
