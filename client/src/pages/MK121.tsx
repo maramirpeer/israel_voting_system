@@ -590,11 +590,13 @@ export default function MK121() {
                         <p className="text-slate-700 mb-4">{bill.description}</p>
 
                         <div className="mb-4 flex flex-col gap-2 rounded-md border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
-                          <span className="text-sm font-semibold text-slate-700">סטטוס ההצבעה שלך בהצעה זו</span>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className={`rounded border px-2 py-1 text-xs font-medium ${getBillAssignmentBadgeClass(bill.id)}`}>
+                          <p className="text-sm text-slate-700">
+                            <span className="font-semibold">סטטוס ההצבעה שלך:</span>{" "}
+                            <span className={isBillDirect(bill.id) ? "text-green-700" : "text-purple-700"}>
                               {getBillAssignmentLabel(bill.id)}
                             </span>
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
                             {mk121Assignment.type !== "direct" && !billDirectOverrides[bill.id] && (
                               <Button
                                 type="button"
