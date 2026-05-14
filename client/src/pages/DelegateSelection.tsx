@@ -51,7 +51,7 @@ export default function DelegateSelection() {
   const [selectedMinistryId, setSelectedMinistryId] = useState<number | null>(null);
   const [selectedDelegateId, setSelectedDelegateId] = useState<number | null>(null);
   const [votingMethod, setVotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
-  const [mk121VotingMethod, setMK121VotingMethod] = useState<"direct" | "delegate" | "citizen">("direct");
+  const [mk121VotingMethod, setMK121VotingMethod] = useState<"direct" | "delegate">("direct");
   const [citizenSearchId, setCitizenSearchId] = useState<string>("");
   const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
   const [localAssignments, setLocalAssignments] = useState<Record<number, any>>({});
@@ -177,6 +177,17 @@ export default function DelegateSelection() {
       window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(assignment));
     }
     toast.success("סטטוס הקול עודכן");
+  };
+
+  const resetMK121AllDelegations = () => {
+    const directAssignment: MK121Assignment = { type: "direct" };
+    setMk121Assignment(directAssignment);
+    setMK121QuestionAssignments({});
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(directAssignment));
+      window.localStorage.removeItem(MK121_QUESTION_ASSIGNMENTS_KEY);
+    }
+    toast.success("כל ההאצלות בח\"כ 121 אופסו לבחירה ישירה");
   };
 
   const updateMK121QuestionAssignment = (delegateId: number) => {
@@ -311,19 +322,20 @@ export default function DelegateSelection() {
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-slate-900">מצב הקול בח"כ 121</h2>
-                <p className="text-sm text-slate-600">ברירת המחדל היא בחירה ישירה. אפשר להאציל למומחה משפטי או לאזרח אחר.</p>
+                <p className="text-sm text-slate-600">
+                  בחירה ישירה מאפסת את כל ההאצלות. מומחה משפטי משפיע רק על הצעות חוק, והאצלה לפי משרד משפיעה רק על שאילתות.
+                </p>
               </div>
               <Badge className={mk121Assignment.type === "direct" ? "bg-green-100 text-green-700 hover:bg-green-100" : "bg-purple-100 text-purple-700 hover:bg-purple-100"}>
-                {mk121Assignment.type === "direct" ? "בחירה ישירה" : `מואצל אל: ${mk121Assignment.name}`}
+                {mk121Assignment.type === "direct" ? "בחירה ישירה בכל ח״כ 121" : `הצעות חוק: מואצל אל ${mk121Assignment.name}`}
               </Badge>
             </div>
           </Card>
 
           <Tabs value={mk121VotingMethod} onValueChange={(v) => setMK121VotingMethod(v as any)} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="direct">בחירה ישירה</TabsTrigger>
               <TabsTrigger value="delegate">מומחה משפטי</TabsTrigger>
-              <TabsTrigger value="citizen">אזרח לפי ת.ז</TabsTrigger>
             </TabsList>
 
             <TabsContent value="direct">
@@ -333,10 +345,10 @@ export default function DelegateSelection() {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-slate-900 mb-2">בחירה ישירה</h3>
                 <p className="text-slate-700 mb-4">
-                  הקול שלך להצעות החוק בח"כ 121 נשאר אצלך. האצלות משרדיות לשאילתות נשמרות בנפרד, לפי המשרד שאליו השאילתא מופנית.
+                  הקול שלך נשאר אצלך גם בהצעות חוק וגם בשאילתות. לחיצה כאן מאפסת את כל ההאצלות הקיימות ומחזירה את ח"כ 121 לבחירה ישירה.
                 </p>
-                    <Button onClick={() => updateMK121Assignment({ type: "direct" })} className="bg-green-600 hover:bg-green-700">
-                      אשר בחירה ישירה להצעות חוק
+                    <Button onClick={resetMK121AllDelegations} className="bg-green-600 hover:bg-green-700">
+                      אשר בחירה ישירה ואפס את כל ההאצלות
                     </Button>
                   </div>
                 </div>
@@ -368,45 +380,12 @@ export default function DelegateSelection() {
                     className="w-full mt-4"
                     variant={mk121Assignment.name === expert.name ? "default" : "outline"}
                   >
-                    {mk121Assignment.name === expert.name ? "✓ מואצל נבחר" : "האצל למומחה משפטי"}
+                    {mk121Assignment.name === expert.name ? "✓ מומחה משפטי נבחר להצעות חוק" : "האצל הצעות חוק למומחה משפטי"}
                   </Button>
                 </Card>
               ))}
             </TabsContent>
 
-            <TabsContent value="citizen">
-              <Card className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
-                <h3 className="text-xl font-bold text-slate-900 mb-2">אזרח לפי ת.ז</h3>
-                <p className="text-slate-700 mb-4">הזן ת.ז כדי לדמות איתור אזרח אחר שאליו תרצה להאציל את קולך בח"כ 121.</p>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Input
-                    type="number"
-                    placeholder="הכנס ת.ז של האזרח"
-                    value={citizenSearchId}
-                    onChange={(e) => setCitizenSearchId(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button onClick={handleSearchCitizen} className="bg-orange-600 hover:bg-orange-700">
-                    חפש אזרח
-                  </Button>
-                  <Button onClick={handleRandomCitizen} variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-50">
-                    בחר אזרח אקראי
-                  </Button>
-                </div>
-                {selectedCitizen && (
-                  <div className="mt-4 rounded-md border border-orange-300 bg-white p-4">
-                    <p className="font-bold text-slate-900">{selectedCitizen.name}</p>
-                    <p className="text-sm text-slate-600">{selectedCitizen.email}</p>
-                    <Button
-                      onClick={() => updateMK121Assignment({ type: "citizen", name: selectedCitizen.name })}
-                      className="w-full mt-4 bg-orange-600 hover:bg-orange-700"
-                    >
-                      אשר האצלה לאזרח
-                    </Button>
-                  </div>
-                )}
-              </Card>
-            </TabsContent>
           </Tabs>
 
           <Card className="mt-8 p-6 bg-white border-purple-200">
@@ -414,7 +393,7 @@ export default function DelegateSelection() {
               <div>
                 <h2 className="text-2xl font-bold text-slate-900">האצלת קול לשאילתות</h2>
                 <p className="text-sm text-slate-600">
-                  בשאילתות, הקול מנותב לפי המשרד שאליו השאילתא מופנית ומתבסס על רשימת המומחים המשרדית הקיימת.
+                  האזור הזה שייך לשאילתות בלבד: הקול מנותב לפי המשרד שאליו השאילתא מופנית ומתבסס על רשימת המומחים המשרדית הקיימת.
                 </p>
               </div>
               <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100">
