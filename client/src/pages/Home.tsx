@@ -12,6 +12,13 @@ export default function Home() {
     setLocation("/mk121");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   };
+  const goToGovernanceTop = () => {
+    setLocation("/governance");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
+  const scrollToSection = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50" dir="rtl">
@@ -38,7 +45,7 @@ export default function Home() {
               <Button onClick={goToMK121Top} className="bg-purple-600 hover:bg-purple-700">
                 ח"כ 121
               </Button>
-              <Button onClick={() => setLocation("/governance")} variant="outline" className="border-blue-300">
+              <Button onClick={goToGovernanceTop} variant="outline" className="border-blue-300">
                 ממשלה משתפת
               </Button>
               <Button onClick={() => setLocation("/analytics")} variant="outline" className="border-green-300">
@@ -63,7 +70,7 @@ export default function Home() {
               <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white" onClick={goToMK121Top}>
                 ח"כ 121 - ערוץ לכנסת
               </Button>
-              <Button size="lg" variant="outline" className="bg-white/85 border-blue-300 text-blue-900 hover:bg-white" onClick={() => setLocation("/governance")}>
+              <Button size="lg" variant="outline" className="bg-white/85 border-blue-300 text-blue-900 hover:bg-white" onClick={goToGovernanceTop}>
                 ממשלה משתפת - ערוץ לממשלה
               </Button>
             </div>
@@ -139,7 +146,7 @@ export default function Home() {
                 </div>
               </div>
               <Button 
-                onClick={() => setLocation("/governance")}
+                onClick={goToGovernanceTop}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
                 כנס לממשלה משתפת
@@ -348,7 +355,7 @@ export default function Home() {
               size="lg" 
               variant="outline"
               className="border-white text-white hover:bg-white/20"
-              onClick={() => setLocation("/governance")}
+              onClick={goToGovernanceTop}
             >
               ממשלה משתפת - ערוץ לממשלה
             </Button>
@@ -357,7 +364,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
+      <footer id="contact" className="bg-gray-900 text-gray-400 py-12">
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -367,22 +374,22 @@ export default function Home() {
             <div>
               <h4 className="font-bold text-white mb-4">הערוצים</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition">ח"כ 121</a></li>
-                <li><a href="#" className="hover:text-white transition">ממשלה משתפת</a></li>
+                <li><a href="/mk121" onClick={(event) => { event.preventDefault(); goToMK121Top(); }} className="hover:text-white transition">ח"כ 121</a></li>
+                <li><a href="/governance" onClick={(event) => { event.preventDefault(); goToGovernanceTop(); }} className="hover:text-white transition">ממשלה משתפת</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">מידע</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#vision" className="hover:text-white transition">החזון</a></li>
-                <li><a href="#features" className="hover:text-white transition">תכונות</a></li>
+                <li><a href="#vision" onClick={(event) => { event.preventDefault(); scrollToSection("vision"); }} className="hover:text-white transition">החזון</a></li>
+                <li><a href="#features" onClick={(event) => { event.preventDefault(); scrollToSection("features"); }} className="hover:text-white transition">תכונות</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">עזרה</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#faq" className="hover:text-white transition">שאלות נפוצות</a></li>
-                <li><a href="#" className="hover:text-white transition">צור קשר</a></li>
+                <li><a href="#faq" onClick={(event) => { event.preventDefault(); scrollToSection("faq"); }} className="hover:text-white transition">שאלות נפוצות</a></li>
+                <li><a href="#contact" onClick={(event) => { event.preventDefault(); scrollToSection("contact"); }} className="hover:text-white transition">צור קשר</a></li>
               </ul>
             </div>
           </div>
