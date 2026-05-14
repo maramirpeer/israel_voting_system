@@ -401,73 +401,81 @@ export default function DelegateSelection() {
               </Badge>
             </div>
 
-            <div className="grid grid-cols-1 gap-2 rounded-lg bg-slate-100 p-2 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-3 rounded-lg bg-slate-100 p-2">
               {ministries.map((ministry) => {
                 const assignment = mk121QuestionAssignments[ministry.id];
                 const isActive = selectedMinistryId === ministry.id;
                 return (
-                  <button
+                  <div
                     key={ministry.id}
-                    type="button"
-                    onClick={() => setSelectedMinistryId(ministry.id)}
-                    className={`min-h-16 rounded-md border px-3 py-2 text-right transition ${
-                      isActive ? "border-purple-500 bg-purple-50 shadow-sm" : "border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50"
+                    className={`rounded-md border transition ${
+                      isActive ? "border-purple-500 bg-white shadow-sm" : "border-slate-200 bg-white"
                     }`}
                   >
-                    <span className="flex w-full items-start justify-between gap-3">
-                      <span>
-                        <span className="block text-sm font-bold text-slate-900">{ministry.name}</span>
-                        <span className="mt-1 block text-xs leading-5 text-slate-600">
-                          {assignment?.delegateName ? `מואצל אל: ${assignment.delegateName}` : "בחירה ישירה"}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedMinistryId(isActive ? null : ministry.id)}
+                      className={`min-h-16 w-full px-3 py-2 text-right transition ${
+                        isActive ? "bg-purple-50" : "hover:bg-purple-50"
+                      }`}
+                    >
+                      <span className="flex w-full items-start justify-between gap-3">
+                        <span>
+                          <span className="block text-sm font-bold text-slate-900">{ministry.name}</span>
+                          <span className="mt-1 block text-xs leading-5 text-slate-600">
+                            {assignment?.delegateName ? `מואצל אל: ${assignment.delegateName}` : "בחירה ישירה"}
+                          </span>
+                        </span>
+                        <span className={`rounded-full px-2 py-1 text-xs font-medium ${assignment ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
+                          {isActive ? "פתוח" : assignment ? "מואצל" : "ישיר"}
                         </span>
                       </span>
-                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${assignment ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
-                        {isActive ? "נבחר" : assignment ? "מואצל" : "ישיר"}
-                      </span>
-                    </span>
-                  </button>
+                    </button>
+
+                    {isActive && (
+                      <div className="space-y-3 border-t border-purple-100 bg-white p-3">
+                        {delegates.length === 0 ? (
+                          <p className="py-4 text-center text-slate-600">אין מומחים זמינים למשרד הזה עדיין</p>
+                        ) : (
+                          delegates.map((delegate) => {
+                            const isSelected = mk121QuestionAssignments[ministry.id]?.delegateId === delegate.id;
+                            return (
+                              <Card key={`mk121-question-${delegate.id}`} className={`p-4 border-2 ${isSelected ? "border-purple-500 bg-purple-50" : "border-slate-200"}`}>
+                                <div className="flex items-start justify-between gap-4">
+                                  <div>
+                                    <h3 className="text-lg font-bold text-slate-900">{delegate.name}</h3>
+                                    <p className="mt-1 text-sm text-slate-600">{delegate.bio}</p>
+                                    {delegate.expertise && delegate.expertise.length > 0 && (
+                                      <div className="mt-3 flex flex-wrap gap-2">
+                                        {delegate.expertise.map((item, index) => (
+                                          <Badge key={index} variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                            {item}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-left">
+                                    <p className="text-2xl font-bold text-purple-700">{delegate.endorsements}</p>
+                                    <p className="text-xs text-slate-600">מאצילים</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  onClick={() => updateMK121QuestionAssignment(delegate.id)}
+                                  className="mt-4 w-full"
+                                  variant={isSelected ? "default" : "outline"}
+                                >
+                                  {isSelected ? "✓ מומחה שאילתות נבחר" : "האצל שאילתות למומחה זה"}
+                                </Button>
+                              </Card>
+                            );
+                          })
+                        )}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
-            </div>
-
-            <div className="mt-5 space-y-4">
-              {delegates.length === 0 ? (
-                <p className="py-6 text-center text-slate-600">אין מומחים זמינים למשרד הזה עדיין</p>
-              ) : (
-                delegates.map((delegate) => {
-                  const isSelected = selectedMinistryId ? mk121QuestionAssignments[selectedMinistryId]?.delegateId === delegate.id : false;
-                  return (
-                    <Card key={`mk121-question-${delegate.id}`} className={`p-4 border-2 ${isSelected ? "border-purple-500 bg-purple-50" : "border-slate-200"}`}>
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <h3 className="text-lg font-bold text-slate-900">{delegate.name}</h3>
-                          <p className="mt-1 text-sm text-slate-600">{delegate.bio}</p>
-                          {delegate.expertise && delegate.expertise.length > 0 && (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {delegate.expertise.map((item, index) => (
-                                <Badge key={index} variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                  {item}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-left">
-                          <p className="text-2xl font-bold text-purple-700">{delegate.endorsements}</p>
-                          <p className="text-xs text-slate-600">מאצילים</p>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => updateMK121QuestionAssignment(delegate.id)}
-                        className="mt-4 w-full"
-                        variant={isSelected ? "default" : "outline"}
-                      >
-                        {isSelected ? "✓ מומחה שאילתות נבחר" : "האצל שאילתות למומחה זה"}
-                      </Button>
-                    </Card>
-                  );
-                })
-              )}
             </div>
           </Card>
         </main>
