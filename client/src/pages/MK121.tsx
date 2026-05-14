@@ -252,7 +252,7 @@ export default function MK121() {
       ? "bg-green-100 text-green-700 hover:bg-green-100"
       : "bg-purple-100 text-purple-700 hover:bg-purple-100";
   const getBillAssignmentLabel = (billId: number) =>
-    billDirectOverrides[billId] || mk121Assignment.type === "direct" ? "בחירה ישירה להצעה זו" : assignmentLabel;
+    billDirectOverrides[billId] ? "בחירה ישירה להצעה זו" : mk121Assignment.type === "direct" ? "בחירה ישירה" : assignmentLabel;
   const getBillAssignmentBadgeClass = (billId: number) =>
     billDirectOverrides[billId] || mk121Assignment.type === "direct"
       ? "bg-green-100 text-green-700 hover:bg-green-100"
