@@ -307,16 +307,6 @@ export default function MK121() {
     toast.success("ההצעה הזו הוחזרה לבחירה ישירה");
   };
 
-  const restoreBillDelegation = (billId: number) => {
-    const next = { ...billDirectOverrides };
-    delete next[billId];
-    setBillDirectOverrides(next);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(MK121_BILL_DIRECT_OVERRIDES_KEY, JSON.stringify(next));
-    }
-    toast.success("ההצעה הזו חזרה להאצלה למומחה");
-  };
-
   const setQuestionDirect = (ministryId: number | null | undefined) => {
     if (!ministryId) return;
     setMK121QuestionAssignments((current) => {
@@ -583,17 +573,6 @@ export default function MK121() {
                                 className="border-green-300 text-green-700 hover:bg-green-50"
                               >
                                 בחירה ישירה להצעה זו
-                              </Button>
-                            )}
-                            {mk121Assignment.type !== "direct" && billDirectOverrides[bill.id] && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => restoreBillDelegation(bill.id)}
-                                className="border-purple-300 text-purple-700 hover:bg-purple-50"
-                              >
-                                החזר להאצלה למומחה
                               </Button>
                             )}
                           </div>
