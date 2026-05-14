@@ -124,6 +124,10 @@ export default function MK121() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  useEffect(() => {
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  }, []);
+
   // Queries with auto-refresh polling (every 30 seconds for live updates)
   const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery(undefined, {
     retry: false,

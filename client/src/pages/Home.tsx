@@ -8,6 +8,10 @@ import { useLocation } from "wouter";
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const goToMK121Top = () => {
+    setLocation("/mk121");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50" dir="rtl">
@@ -31,7 +35,7 @@ export default function Home() {
           </div>
           {isAuthenticated && (
             <div className="flex gap-2">
-              <Button onClick={() => setLocation("/mk121")} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={goToMK121Top} className="bg-purple-600 hover:bg-purple-700">
                 ח"כ 121
               </Button>
               <Button onClick={() => setLocation("/governance")} variant="outline" className="border-blue-300">
@@ -56,7 +60,7 @@ export default function Home() {
         <div className="relative container min-h-[calc(100vh-73px)] py-10 flex items-end justify-center">
           <div className="w-full max-w-3xl text-center">
             <div className="flex flex-col sm:flex-row-reverse gap-3 justify-center">
-              <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white" onClick={() => setLocation("/mk121")}>
+              <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white" onClick={goToMK121Top}>
                 ח"כ 121 - ערוץ לכנסת
               </Button>
               <Button size="lg" variant="outline" className="bg-white/85 border-blue-300 text-blue-900 hover:bg-white" onClick={() => setLocation("/governance")}>
@@ -102,7 +106,7 @@ export default function Home() {
                 </div>
               </div>
               <Button 
-                onClick={() => setLocation("/mk121")}
+                onClick={goToMK121Top}
                 className="w-full bg-purple-600 hover:bg-purple-700"
               >
                 כנס לח"כ 121
@@ -336,7 +340,7 @@ export default function Home() {
             <Button 
               size="lg" 
               className="bg-white text-blue-600 hover:bg-blue-50"
-              onClick={() => setLocation("/mk121")}
+              onClick={goToMK121Top}
             >
               ח"כ 121 - ערוץ לכנסת
             </Button>
