@@ -401,42 +401,34 @@ export default function DelegateSelection() {
               </Badge>
             </div>
 
-            <Tabs
-              value={selectedMinistryId?.toString() || ""}
-              onValueChange={(value) => {
-                const id = Number(value);
-                if (Number.isFinite(id)) {
-                  setSelectedMinistryId(id);
-                }
-              }}
-            >
-              <div className="overflow-x-auto pb-2">
-                <TabsList className="h-auto w-max min-w-full justify-start grid grid-cols-1 gap-2 bg-slate-100 p-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {ministries.map((ministry) => {
-                    const assignment = mk121QuestionAssignments[ministry.id];
-                    return (
-                      <TabsTrigger
-                        key={ministry.id}
-                        value={ministry.id.toString()}
-                        className="h-auto min-h-16 justify-between rounded-md border bg-white px-3 py-2 text-right data-[state=active]:border-purple-500 data-[state=active]:bg-purple-50"
-                      >
-                        <span className="flex w-full items-start justify-between gap-3">
-                          <span>
-                            <span className="block text-sm font-bold text-slate-900">{ministry.name}</span>
-                            <span className="mt-1 block text-xs leading-5 text-slate-600">
-                              {assignment?.delegateName ? `מואצל אל: ${assignment.delegateName}` : "בחירה ישירה"}
-                            </span>
-                          </span>
-                          <span className={`rounded-full px-2 py-1 text-xs font-medium ${assignment ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
-                            {assignment ? "מואצל" : "ישיר"}
-                          </span>
+            <div className="grid grid-cols-1 gap-2 rounded-lg bg-slate-100 p-2 sm:grid-cols-2 lg:grid-cols-3">
+              {ministries.map((ministry) => {
+                const assignment = mk121QuestionAssignments[ministry.id];
+                const isActive = selectedMinistryId === ministry.id;
+                return (
+                  <button
+                    key={ministry.id}
+                    type="button"
+                    onClick={() => setSelectedMinistryId(ministry.id)}
+                    className={`min-h-16 rounded-md border px-3 py-2 text-right transition ${
+                      isActive ? "border-purple-500 bg-purple-50 shadow-sm" : "border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50"
+                    }`}
+                  >
+                    <span className="flex w-full items-start justify-between gap-3">
+                      <span>
+                        <span className="block text-sm font-bold text-slate-900">{ministry.name}</span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-600">
+                          {assignment?.delegateName ? `מואצל אל: ${assignment.delegateName}` : "בחירה ישירה"}
                         </span>
-                      </TabsTrigger>
-                    );
-                  })}
-                </TabsList>
-              </div>
-            </Tabs>
+                      </span>
+                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${assignment ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
+                        {isActive ? "נבחר" : assignment ? "מואצל" : "ישיר"}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
             <div className="mt-5 space-y-4">
               {delegates.length === 0 ? (
