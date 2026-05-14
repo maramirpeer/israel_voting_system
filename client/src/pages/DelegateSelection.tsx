@@ -12,6 +12,7 @@ import { toast } from "sonner";
 
 type MK121Assignment = { type: "direct" | "expert" | "citizen"; name?: string };
 const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
+const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 
@@ -185,6 +186,7 @@ export default function DelegateSelection() {
     setMK121QuestionAssignments({});
     if (typeof window !== "undefined") {
       window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(directAssignment));
+      window.localStorage.removeItem(MK121_BILL_DIRECT_OVERRIDES_KEY);
       window.localStorage.removeItem(MK121_QUESTION_ASSIGNMENTS_KEY);
     }
     toast.success("כל ההאצלות בח\"כ 121 אופסו לבחירה ישירה");

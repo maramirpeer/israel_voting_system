@@ -14,6 +14,7 @@ import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
 
 type MK121Assignment = { type: "direct" | "expert" | "citizen"; name?: string };
 const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
+const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 
@@ -110,6 +111,11 @@ export default function MK121() {
     if (typeof window === "undefined") return { type: "direct" };
     const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
     return saved ? JSON.parse(saved) : { type: "direct" };
+  });
+  const [billDirectOverrides, setBillDirectOverrides] = useState<Record<number, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    const saved = window.localStorage.getItem(MK121_BILL_DIRECT_OVERRIDES_KEY);
+    return saved ? JSON.parse(saved) : {};
   });
   const [mk121QuestionAssignments, setMK121QuestionAssignments] = useState<Record<number, MK121QuestionAssignment>>(() => {
     if (typeof window === "undefined") return {};
@@ -244,6 +250,12 @@ export default function MK121() {
     mk121Assignment.type === "direct"
       ? "bg-green-100 text-green-700 hover:bg-green-100"
       : "bg-purple-100 text-purple-700 hover:bg-purple-100";
+  const getBillAssignmentLabel = (billId: number) =>
+    billDirectOverrides[billId] || mk121Assignment.type === "direct" ? "בחירה ישירה להצעה זו" : assignmentLabel;
+  const getBillAssignmentBadgeClass = (billId: number) =>
+    billDirectOverrides[billId] || mk121Assignment.type === "direct"
+      ? "bg-green-100 text-green-700 hover:bg-green-100"
+      : assignmentBadgeClass;
   const getQuestionAssignmentLabel = (ministryId: number | null | undefined) => {
     if (!ministryId) return "בחירה ישירה";
     const assignment = mk121QuestionAssignments[ministryId];
@@ -286,13 +298,23 @@ export default function MK121() {
     }));
   }
 
-  const setBillsDirect = () => {
-    const directAssignment: MK121Assignment = { type: "direct" };
-    setMk121Assignment(directAssignment);
+  const setBillDirect = (billId: number) => {
+    const next = { ...billDirectOverrides, [billId]: true };
+    setBillDirectOverrides(next);
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(directAssignment));
+      window.localStorage.setItem(MK121_BILL_DIRECT_OVERRIDES_KEY, JSON.stringify(next));
     }
-    toast.success("הצעות החוק הוחזרו לבחירה ישירה");
+    toast.success("ההצעה הזו הוחזרה לבחירה ישירה");
+  };
+
+  const restoreBillDelegation = (billId: number) => {
+    const next = { ...billDirectOverrides };
+    delete next[billId];
+    setBillDirectOverrides(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(MK121_BILL_DIRECT_OVERRIDES_KEY, JSON.stringify(next));
+    }
+    toast.success("ההצעה הזו חזרה להאצלה למומחה");
   };
 
   const setQuestionDirect = (ministryId: number | null | undefined) => {
@@ -312,6 +334,8 @@ export default function MK121() {
     const loadAssignment = () => {
       const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
       setMk121Assignment(saved ? JSON.parse(saved) : { type: "direct" });
+      const savedBillOverrides = window.localStorage.getItem(MK121_BILL_DIRECT_OVERRIDES_KEY);
+      setBillDirectOverrides(savedBillOverrides ? JSON.parse(savedBillOverrides) : {});
       const savedQuestionAssignments = window.localStorage.getItem(MK121_QUESTION_ASSIGNMENTS_KEY);
       setMK121QuestionAssignments(savedQuestionAssignments ? JSON.parse(savedQuestionAssignments) : {});
     };
@@ -549,16 +573,27 @@ export default function MK121() {
                         <div className="mb-4 flex flex-col gap-2 rounded-lg border border-purple-200 bg-purple-50 p-3 sm:flex-row sm:items-center sm:justify-between">
                           <span className="text-sm font-bold text-slate-800">סטטוס הקול שלך בהצעה זו</span>
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={assignmentBadgeClass}>{assignmentLabel}</Badge>
-                            {mk121Assignment.type !== "direct" && (
+                            <Badge className={getBillAssignmentBadgeClass(bill.id)}>{getBillAssignmentLabel(bill.id)}</Badge>
+                            {mk121Assignment.type !== "direct" && !billDirectOverrides[bill.id] && (
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={setBillsDirect}
+                                onClick={() => setBillDirect(bill.id)}
                                 className="border-green-300 text-green-700 hover:bg-green-50"
                               >
                                 בחירה ישירה להצעה זו
+                              </Button>
+                            )}
+                            {mk121Assignment.type !== "direct" && billDirectOverrides[bill.id] && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => restoreBillDelegation(bill.id)}
+                                className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                              >
+                                החזר להאצלה למומחה
                               </Button>
                             )}
                           </div>
