@@ -255,7 +255,7 @@ export default function MK121() {
     billDirectOverrides[billId] ? "בחירה ישירה להצעה זו" : mk121Assignment.type === "direct" ? "בחירה ישירה" : assignmentLabel;
   const getBillAssignmentBadgeClass = (billId: number) =>
     billDirectOverrides[billId] || mk121Assignment.type === "direct"
-      ? "bg-green-100 text-green-700 hover:bg-green-100"
+      ? "border-green-200 bg-green-50 text-green-700"
       : assignmentBadgeClass;
   const isBillDirect = (billId: number) => mk121Assignment.type === "direct" || Boolean(billDirectOverrides[billId]);
   const getQuestionAssignmentLabel = (ministryId: number | null | undefined) => {
@@ -589,10 +589,12 @@ export default function MK121() {
 
                         <p className="text-slate-700 mb-4">{bill.description}</p>
 
-                        <div className="mb-4 flex flex-col gap-2 rounded-lg border border-purple-200 bg-purple-50 p-3 sm:flex-row sm:items-center sm:justify-between">
-                          <span className="text-sm font-bold text-slate-800">סטטוס הקול שלך בהצעה זו</span>
+                        <div className="mb-4 flex flex-col gap-2 rounded-md border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+                          <span className="text-sm font-semibold text-slate-700">סטטוס ההצבעה שלך בהצעה זו</span>
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={getBillAssignmentBadgeClass(bill.id)}>{getBillAssignmentLabel(bill.id)}</Badge>
+                            <span className={`rounded border px-2 py-1 text-xs font-medium ${getBillAssignmentBadgeClass(bill.id)}`}>
+                              {getBillAssignmentLabel(bill.id)}
+                            </span>
                             {mk121Assignment.type !== "direct" && !billDirectOverrides[bill.id] && (
                               <Button
                                 type="button"
