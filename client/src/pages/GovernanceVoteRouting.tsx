@@ -52,11 +52,11 @@ export default function GovernanceVoteRouting() {
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
         <div className="container flex items-center justify-between py-4 flex-row-reverse">
           <Button variant="ghost" onClick={() => setLocation("/governance")} className="flex items-center gap-2 justify-end">
-            חזרה לממשלה שקופה
+            חזרה לממשלה משתפת
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold text-slate-900">איך הקול שלי מנותב</h1>
-          <span className="text-sm text-slate-600">ממשלה שקופה</span>
+          <span className="text-sm text-slate-600">ממשלה משתפת</span>
         </div>
       </header>
 

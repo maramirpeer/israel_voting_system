@@ -344,7 +344,7 @@ export default function Governance() {
   //               <Home className="w-4 h-4" />
   //             </Button>
   //           </div>
-  //           <h1 className="text-2xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
+  //           <h1 className="text-2xl font-bold text-slate-900">🏰️ מערכת ממשל משתפת</h1>
   //         </div>
   //       </header>
   //
@@ -370,7 +370,7 @@ export default function Governance() {
               <Home className="w-4 h-4" />
             </Button>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל שקופה</h1>
+          <h1 className="text-3xl font-bold text-slate-900">🏰️ מערכת ממשל משתפת</h1>
           <div className="flex items-center gap-2 flex-row-reverse">
             <div>
               <p className="text-sm text-slate-600">ברוכים הבאים, {user?.name || "ישראל ישראלי"}</p>
