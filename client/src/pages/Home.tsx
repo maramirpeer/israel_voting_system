@@ -36,8 +36,8 @@ export default function Home() {
               <Lock className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-blue-900">קול אזרחי</h1>
-              <p className="text-xs text-cyan-600 font-medium">מערכת דמוקרטיה מבוזרת</p>
+              <h1 className="text-lg font-bold text-blue-900">קול משותף</h1>
+              <p className="text-xs text-cyan-600 font-medium">מערכת דמוקרטית מתקדמת</p>
             </div>
           </div>
           {isAuthenticated && (
@@ -171,7 +171,7 @@ export default function Home() {
               זהו תוסף שכל מי שטובת המדינה בראש מעייניו אמור להיות מסוגל לתמוך בו.
             </p>
             <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
-              "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול אזרחי חי, דינמי ומבוזר."
+              "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול משותף חי, דינמי ומבוזר."
             </p>
             <p className="text-lg text-gray-600 mt-8 leading-relaxed">
               מערכת זו מציעה שתי דרכים מעשיות לשיתוף אזרחים בקבלת החלטות ממשלתיות, תוך שמירה על יציבות המערכת הפוליטית והמשפטית הקיימת. כל אזרח מחזיק בקול אחד בכל ערוץ, ויכול להצביע בעצמו או להאציל את קולו לאזרח אחר שהוא סומך עליו.
@@ -274,7 +274,7 @@ export default function Home() {
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">האם זה מחליף את הממשל הקיים?</h3>
                   <p className="text-gray-600">
-                    לא. המערכת מחברת את הממשל הקיים לקול אזרחי בהדרגה. השרים נשארים בתפקידם, אך חייבים לשמוע את הציבור לפני החלטות משמעותיות.
+                    לא. המערכת מחברת את הממשל הקיים לקול משותף בהדרגה. השרים נשארים בתפקידם, אך חייבים לשמוע את הציבור לפני החלטות משמעותיות.
                   </p>
                 </Card>
 
@@ -341,7 +341,7 @@ export default function Home() {
         <div className="container text-center">
           <h2 className="text-4xl font-bold text-white mb-6">מוכן להשתתף?</h2>
           <p className="text-xl text-blue-100 mb-8">
-            בואו נחבר את הממשל לקול אזרחי חי, דינמי ומבוזר
+            בואו נחבר את הממשל לקול משותף חי, דינמי ומבוזר
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -368,8 +368,8 @@ export default function Home() {
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 className="font-bold text-white mb-4">קול אזרחי</h4>
-              <p className="text-sm">מערכת דמוקרטיה מבוזרת לישראל</p>
+              <h4 className="font-bold text-white mb-4">קול משותף</h4>
+              <p className="text-sm">מערכת דמוקרטית מתקדמת לישראל</p>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">הערוצים</h4>
@@ -394,7 +394,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>&copy; 2026 קול אזרחי. כל הזכויות שמורות.</p>
+            <p>&copy; 2026 קול משותף. כל הזכויות שמורות.</p>
           </div>
         </div>
       </footer>
