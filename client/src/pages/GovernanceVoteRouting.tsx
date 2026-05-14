@@ -100,6 +100,15 @@ export default function GovernanceVoteRouting() {
           </div>
         </Card>
 
+        <Card className="border-purple-100 bg-purple-50 p-6">
+          <h2 className="text-xl font-bold text-slate-900">אפילוג</h2>
+          <p className="mt-3 leading-8 text-slate-700">
+            האצלת קול אינה ויתור על הקול. היא דרך לומר: בנושא הזה אני בוחר לסמוך על מי שמבין יותר,
+            ובכל רגע אני יכול להחזיר את ההחלטה אלי. ממשלה שקופה נבנית בדיוק מהיכולת לראות את הדרך
+            שהקול עושה, להבין מי מחזיק בו עכשיו, ולשנות כיוון כשצריך.
+          </p>
+        </Card>
+
         <Button onClick={() => setLocation("/delegate-selection")} className="w-full bg-purple-700 hover:bg-purple-800">
           עדכן ניתוב קול
         </Button>
