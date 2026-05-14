@@ -537,6 +537,72 @@ export default function MK121() {
               </div>
             </Card>
 
+            <Card className="p-6 mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-right">
+              <h2 className="text-2xl font-bold text-purple-900 mb-4">דף מקדים - שלב צבירת תמיכה</h2>
+              <p className="text-slate-700 mb-6 leading-7">
+                כל הצעה חדשה בח"כ 121, הצעת חוק או שאילתא, מתחילה כ<span className="font-bold">"דף מקדים"</span>.
+                זהו השלב הראשוני שבו אזרחים מביעים תמיכה לפני שההצעה עוברת להצבעה הרשמית של המחזור.
+              </p>
+
+              <div className="grid gap-4 md:grid-cols-3 mb-6">
+                <div className="rounded-lg border-2 border-purple-200 bg-white p-5">
+                  <div className="text-3xl font-bold text-purple-600 mb-2">100</div>
+                  <h3 className="text-lg font-bold text-purple-900 mb-2">תומכים מינימום</h3>
+                  <p className="text-sm leading-6 text-slate-600">
+                    כדי שהצעה תעבור לשלב ההצבעה הרשמי, היא צריכה לקבל תמיכה של לפחות 100 אזרחים.
+                  </p>
+                </div>
+                <div className="rounded-lg border-2 border-blue-200 bg-white p-5">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">37,500</div>
+                  <h3 className="text-lg font-bold text-blue-900 mb-2">קולות מינימום</h3>
+                  <p className="text-sm leading-6 text-slate-600">
+                    בשלב ההצבעה, הצעה זוכה צריכה לפחות 1/120 מהמצביעים כדי להתקדם.
+                  </p>
+                </div>
+                <div className="rounded-lg border-2 border-cyan-200 bg-white p-5">
+                  <div className="text-3xl font-bold text-cyan-600 mb-2">4 שנים</div>
+                  <h3 className="text-lg font-bold text-cyan-900 mb-2">תוקף הצעה</h3>
+                  <p className="text-sm leading-6 text-slate-600">
+                    אם הצעה לא עברה את הרף בתוך 4 שנים, היא תיגנז.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border-r-4 border-purple-600 bg-white p-6">
+                <h3 className="text-xl font-bold text-purple-900 mb-4">איך זה עובד?</h3>
+                <ol className="space-y-3 text-slate-700">
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">1.</span> אזרח מציע הצעה חדשה</span>
+                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">1</div>
+                  </li>
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">2.</span> ההצעה נוצרת כ"דף מקדים" בשלב צבירת התמיכה</span>
+                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">2</div>
+                  </li>
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">3.</span> אזרחים אחרים תומכים בהצעה</span>
+                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">3</div>
+                  </li>
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">4.</span> כשמגיעים ל-100 תומכים, ההצעה עולה לסדר היום הרשמי</span>
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 font-bold">4</div>
+                  </li>
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">5.</span> בשלב ההצבעה, אזרחים מצביעים על ההצעה או השאילתא</span>
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 text-blue-600 font-bold">5</div>
+                  </li>
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">6.</span> אם ההצעה המנצחת עברה את הרף, היא מקודמת בכנסת</span>
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 font-bold">6</div>
+                  </li>
+                  <li className="flex items-start gap-3 justify-end">
+                    <span><span className="font-bold">7.</span> אם לא עברה את הרף, היא עוברת למחזור הבא</span>
+                    <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 text-yellow-600 font-bold">7</div>
+                  </li>
+                </ol>
+              </div>
+            </Card>
+
             {/* Voting Tabs */}
             <Tabs defaultValue="bills" className="w-full mt-8">
               <TabsList className="grid w-full grid-cols-2 mb-8 mt-8">
