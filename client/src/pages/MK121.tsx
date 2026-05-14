@@ -8,7 +8,7 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-react";
+import { ArrowLeft, ThumbsDown, ThumbsUp, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { ProposalSubmissionForms } from "@/components/ProposalSubmissionForms";
 
@@ -104,6 +104,7 @@ export default function MK121() {
   const [, setLocation] = useLocation();
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [localBillVotes, setLocalBillVotes] = useState<number[]>([]);
+  const [localBillAgainstVotes, setLocalBillAgainstVotes] = useState<number[]>([]);
   const [localQuestionVotes, setLocalQuestionVotes] = useState<number[]>([]);
   const [localBillVoteIncrements, setLocalBillVoteIncrements] = useState<Record<number, number>>({});
   const [localQuestionVoteIncrements, setLocalQuestionVoteIncrements] = useState<Record<number, number>>({});
@@ -256,6 +257,7 @@ export default function MK121() {
     billDirectOverrides[billId] || mk121Assignment.type === "direct"
       ? "bg-green-100 text-green-700 hover:bg-green-100"
       : assignmentBadgeClass;
+  const isBillDirect = (billId: number) => mk121Assignment.type === "direct" || Boolean(billDirectOverrides[billId]);
   const getQuestionAssignmentLabel = (ministryId: number | null | undefined) => {
     if (!ministryId) return "בחירה ישירה";
     const assignment = mk121QuestionAssignments[ministryId];
@@ -359,6 +361,7 @@ export default function MK121() {
       toast.success("ההצבעה בוטלה");
       return;
     }
+    setLocalBillAgainstVotes((current) => current.filter((id) => id !== billId));
     setLocalBillVotes((current) => [...current, billId]);
     setLocalBillVoteIncrements((current) => ({
       ...current,
@@ -369,6 +372,21 @@ export default function MK121() {
     } else {
       toast.success("הקול שלך נרשם!");
     }
+  };
+
+  const handleVoteBillAgainst = (billId: number) => {
+    if (localBillAgainstVotes.includes(billId)) {
+      setLocalBillAgainstVotes((current) => current.filter((id) => id !== billId));
+      toast.success("הצבעת הנגד בוטלה");
+      return;
+    }
+    setLocalBillVotes((current) => current.filter((id) => id !== billId));
+    setLocalBillVoteIncrements((current) => ({
+      ...current,
+      [billId]: Math.min((current[billId] || 0) - 1, 0),
+    }));
+    setLocalBillAgainstVotes((current) => [...current, billId]);
+    toast.success("הצבעת נגד נרשמה");
   };
 
   const handleVoteQuestion = (questionId: number) => {
@@ -533,6 +551,7 @@ export default function MK121() {
                 ) : (
                   bills.map((bill) => {
                     const hasVoted = userBillVotes.includes(bill.id);
+                    const hasVotedAgainst = localBillAgainstVotes.includes(bill.id);
                     const isWinner = bill.isWinner;
                     const displayedVotes = (bill.votes || 0) + (localBillVoteIncrements[bill.id] || 0);
 
@@ -628,28 +647,44 @@ export default function MK121() {
                           </div>
                         )}
 
-                        <Button
-                          onClick={() => handleVoteBill(bill.id)}
-                          disabled={voteBillMutation.isPending}
-                          variant={hasVoted ? "default" : "outline"}
-                          className={`w-full flex justify-center ${
-                            hasVoted
-                              ? "bg-green-600 hover:bg-green-700"
-                              : "border-blue-300 text-blue-600 hover:bg-blue-50"
-                          }`}
-                        >
-                          {hasVoted ? (
-                            <>
-                              ✓ הצבעת
-                              <CheckCircle className="w-4 h-4 ml-2" />
-                            </>
-                          ) : (
-                            <>
-                              הצבע בעד הצעה זו
-                              <ThumbsUp className="w-4 h-4 ml-2" />
-                            </>
-                          )}
-                        </Button>
+                        {isBillDirect(bill.id) && (
+                          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <Button
+                              onClick={() => handleVoteBill(bill.id)}
+                              disabled={voteBillMutation.isPending}
+                              variant={hasVoted ? "default" : "outline"}
+                              className={`w-full flex justify-center ${
+                                hasVoted
+                                  ? "bg-green-600 hover:bg-green-700"
+                                  : "border-blue-300 text-blue-600 hover:bg-blue-50"
+                              }`}
+                            >
+                              {hasVoted ? (
+                                <>
+                                  ✓ הצבעת בעד
+                                  <CheckCircle className="w-4 h-4 ml-2" />
+                                </>
+                              ) : (
+                                <>
+                                  הצבע בעד
+                                  <ThumbsUp className="w-4 h-4 ml-2" />
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              onClick={() => handleVoteBillAgainst(bill.id)}
+                              variant={hasVotedAgainst ? "default" : "outline"}
+                              className={`w-full flex justify-center ${
+                                hasVotedAgainst
+                                  ? "bg-red-600 hover:bg-red-700"
+                                  : "border-red-300 text-red-600 hover:bg-red-50"
+                              }`}
+                            >
+                              {hasVotedAgainst ? "✓ הצבעת נגד" : "הצבע נגד"}
+                              <ThumbsDown className="w-4 h-4 ml-2" />
+                            </Button>
+                          </div>
+                        )}
                       </Card>
                     );
                   })
