@@ -15,6 +15,16 @@ const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
 const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
+type GovernanceAssignment = {
+  userId: number;
+  ministryId: number;
+  delegateId: number | null;
+  delegateUserId: number | null;
+  votingMethod: "direct" | "delegate";
+  delegateName?: string;
+  citizenName?: string;
+};
+const GOVERNANCE_ASSIGNMENTS_KEY = "governance-vote-assignments";
 
 const demoMinistries = [
   { id: 8, name: "משרד האוצר", description: "ניהול תקציב המדינה, מדיניות כלכלית, מיסוי והשקעות." },
@@ -55,7 +65,11 @@ export default function DelegateSelection() {
   const [mk121VotingMethod, setMK121VotingMethod] = useState<"direct" | "delegate">("direct");
   const [citizenSearchId, setCitizenSearchId] = useState<string>("");
   const [selectedCitizen, setSelectedCitizen] = useState<{ id: number; name: string; email: string } | null>(null);
-  const [localAssignments, setLocalAssignments] = useState<Record<number, any>>({});
+  const [localAssignments, setLocalAssignments] = useState<Record<number, GovernanceAssignment>>(() => {
+    if (typeof window === "undefined") return {};
+    const saved = window.localStorage.getItem(GOVERNANCE_ASSIGNMENTS_KEY);
+    return saved ? JSON.parse(saved) : {};
+  });
   const [mk121Assignment, setMk121Assignment] = useState<MK121Assignment>(() => {
     if (typeof window === "undefined") return { type: "direct" };
     const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
@@ -212,21 +226,33 @@ export default function DelegateSelection() {
     toast.success("מומחה השאילתות עודכן");
   };
 
+  const persistGovernanceAssignment = (assignment: GovernanceAssignment) => {
+    if (typeof window === "undefined") return;
+    const saved = window.localStorage.getItem(GOVERNANCE_ASSIGNMENTS_KEY);
+    const current = saved ? JSON.parse(saved) : {};
+    window.localStorage.setItem(
+      GOVERNANCE_ASSIGNMENTS_KEY,
+      JSON.stringify({ ...current, [assignment.ministryId]: assignment })
+    );
+  };
+
   const handleAssignDelegate = (delegateId: number) => {
     if (!demoUser.id || !selectedMinistryId) return;
     const delegate = delegates.find((item) => item.id === delegateId);
+    const assignment: GovernanceAssignment = {
+      userId: demoUser.id,
+      ministryId: selectedMinistryId,
+      delegateId,
+      delegateUserId: null,
+      votingMethod: "delegate",
+      delegateName: delegate?.name,
+    };
 
     setLocalAssignments((current) => ({
       ...current,
-      [selectedMinistryId]: {
-        userId: demoUser.id,
-        ministryId: selectedMinistryId,
-        delegateId,
-        delegateUserId: null,
-        votingMethod: "delegate",
-        delegateName: delegate?.name,
-      },
+      [selectedMinistryId]: assignment,
     }));
+    persistGovernanceAssignment(assignment);
 
     assignDelegateMutation.mutate({
       userId: demoUser.id,
@@ -238,16 +264,19 @@ export default function DelegateSelection() {
 
   const handleVoteDirect = () => {
     if (!demoUser.id || !selectedMinistryId) return;
+    const assignment: GovernanceAssignment = {
+      userId: demoUser.id,
+      ministryId: selectedMinistryId,
+      delegateId: null,
+      delegateUserId: null,
+      votingMethod: "direct",
+    };
+
     setLocalAssignments((current) => ({
       ...current,
-      [selectedMinistryId]: {
-        userId: demoUser.id,
-        ministryId: selectedMinistryId,
-        delegateId: null,
-        delegateUserId: null,
-        votingMethod: "direct",
-      },
+      [selectedMinistryId]: assignment,
     }));
+    persistGovernanceAssignment(assignment);
 
     assignDelegateMutation.mutate({
       userId: demoUser.id,
@@ -284,18 +313,20 @@ export default function DelegateSelection() {
 
   const handleAssignCitizen = () => {
     if (!demoUser.id || !selectedMinistryId || !selectedCitizen) return;
+    const assignment: GovernanceAssignment = {
+      userId: demoUser.id,
+      ministryId: selectedMinistryId,
+      delegateId: null,
+      delegateUserId: selectedCitizen.id,
+      votingMethod: "delegate",
+      citizenName: selectedCitizen.name,
+    };
 
     setLocalAssignments((current) => ({
       ...current,
-      [selectedMinistryId]: {
-        userId: demoUser.id,
-        ministryId: selectedMinistryId,
-        delegateId: null,
-        delegateUserId: selectedCitizen.id,
-        votingMethod: "delegate",
-        citizenName: selectedCitizen.name,
-      },
+      [selectedMinistryId]: assignment,
     }));
+    persistGovernanceAssignment(assignment);
 
     assignDelegateMutation.mutate({
       userId: demoUser.id,

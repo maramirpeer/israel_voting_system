@@ -494,12 +494,19 @@ export default function MK121() {
           </Card>
         ) : (
           <>
-            <div className="mb-8">
+            <div className="mb-8 grid gap-3 md:grid-cols-2">
               <Button
                 onClick={() => setLocation("/delegate-selection?channel=mk121")}
                 className="w-full min-h-16 bg-purple-700 text-lg font-bold text-white hover:bg-purple-800"
               >
                 🗳️ הכוון קולך
+              </Button>
+              <Button
+                onClick={() => setLocation("/mk121/vote-routing")}
+                variant="outline"
+                className="w-full min-h-16 border-purple-300 text-lg font-bold text-purple-700 hover:bg-purple-50"
+              >
+                איך הקול שלי מנותב
               </Button>
             </div>
 

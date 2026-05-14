@@ -12,6 +12,8 @@ import MinistryDetails from "./pages/MinistryDetails";
 import DelegateSelection from "./pages/DelegateSelection";
 import MK121 from "./pages/MK121";
 import MK121Threshold from "./pages/MK121Threshold";
+import MK121VoteRouting from "./pages/MK121VoteRouting";
+import GovernanceVoteRouting from "./pages/GovernanceVoteRouting";
 import { Analytics } from "./pages/Analytics";
 
 function Router() {
@@ -19,12 +21,14 @@ function Router() {
   return (
     <Switch>
       <Route path={"/governance/decisions-summary"} component={DecisionsSummary} />
+      <Route path={"/governance/vote-routing"} component={GovernanceVoteRouting} />
       <Route path={"/governance"} component={Governance} />
       <Route path={"/"} component={Home} />
       <Route path={"/ministry/:id"} component={MinistryDetails} />
       <Route path={"/ministry-dashboard"} component={MinistryDashboard} />
       <Route path={"/delegate-selection/:ministryId"} component={DelegateSelection} />
       <Route path={"/delegate-selection"} component={DelegateSelection} />
+      <Route path={"/mk121/vote-routing"} component={MK121VoteRouting} />
       <Route path={"/mk121/threshold"} component={MK121Threshold} />
       <Route path={"/mk121"} component={MK121} />
       <Route path={"/analytics"} component={Analytics} />

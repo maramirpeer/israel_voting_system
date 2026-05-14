@@ -376,12 +376,19 @@ export default function Governance() {
       </header>
 
       <main className="container py-8">
-        <div className="mb-8">
+        <div className="mb-8 grid gap-3 md:grid-cols-2">
           <Button
             onClick={() => setLocation("/delegate-selection")}
             className="w-full min-h-20 bg-purple-700 text-xl font-bold text-white hover:bg-purple-800"
           >
             🗳️ הכוון קולך
+          </Button>
+          <Button
+            onClick={() => setLocation("/governance/vote-routing")}
+            variant="outline"
+            className="w-full min-h-20 border-purple-300 text-xl font-bold text-purple-700 hover:bg-purple-50"
+          >
+            איך הקול שלי מנותב
           </Button>
         </div>
 
