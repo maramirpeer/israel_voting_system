@@ -100,19 +100,6 @@ export default function GovernanceVoteRouting() {
           </div>
         </Card>
 
-        <Card className="border-purple-100 bg-purple-50 p-6">
-          <h2 className="text-xl font-bold text-slate-900">אפילוג</h2>
-          <p className="mt-3 leading-8 text-slate-700">
-            הפרויקט הוא שירת הברבור של הדמוקרטיה הנוכחית. אנחנו הדור האחרון: דור שמבין
-            שהוא עומד על סף שינוי עמוק, ולכן בוחר להפוך את שנותיו האחרונות של כוח והשפעה
-            למהלך של תיקון, אחריות והורשה לדורות הבאים.
-          </p>
-          <p className="mt-3 leading-8 text-slate-700">
-            האצלת קול אינה ויתור על הקול. היא דרך לראות את האחריות עוברת בצורה גלויה:
-            מי מחזיק בקול עכשיו, בשם מה הוא מחזיק בו, ומתי אני בוחר להחזיר אותו אלי.
-          </p>
-        </Card>
-
         <Button onClick={() => setLocation("/delegate-selection")} className="w-full bg-purple-700 hover:bg-purple-800">
           עדכן ניתוב קול
         </Button>

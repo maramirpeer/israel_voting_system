@@ -377,6 +377,26 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Epilogue Section */}
+      <section className="py-20 bg-white">
+        <div className="container max-w-4xl text-right" dir="rtl">
+          <Card className="p-8 bg-purple-50 border-purple-100">
+            <h2 className="text-3xl font-bold text-blue-900 mb-6">אפילוג</h2>
+            <div className="space-y-4 text-lg leading-9 text-slate-700">
+              <p>
+                הפרויקט הוא שירת הברבור של הדמוקרטיה הנוכחית. אנחנו הדור האחרון: דור שמבין
+                שהוא עומד על סף שינוי עמוק, ולכן בוחר להפוך את שנותיו האחרונות של כוח והשפעה
+                למהלך של תיקון, אחריות והורשה לדורות הבאים.
+              </p>
+              <p>
+                האצלת קול אינה ויתור על הקול. היא דרך לראות את האחריות עוברת בצורה גלויה:
+                מי מחזיק בקול עכשיו, בשם מה הוא מחזיק בו, ומתי אני בוחר להחזיר אותו אלי.
+              </p>
+            </div>
+          </Card>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
         <div className="container text-center">

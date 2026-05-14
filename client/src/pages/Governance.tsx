@@ -651,6 +651,7 @@ export default function Governance() {
                 </div>
               </div>
             </Card>
+
           </TabsContent>
 
           {/* Active Decisions Tab */}
