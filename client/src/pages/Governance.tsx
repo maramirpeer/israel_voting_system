@@ -265,6 +265,11 @@ export default function Governance() {
   };
 
   const handleVote = async (decisionId: number, vote: "for" | "against") => {
+    setUserVotes((current) => ({
+      ...current,
+      [decisionId]: current[decisionId] === vote ? null : vote,
+    }));
+
     try {
       await castVoteMutation.mutateAsync({
         decisionId,
@@ -687,8 +692,9 @@ export default function Governance() {
                     // Use same formula as overview tab for consistent vote numbers
                     const baseVotes = 400 + ((decision.id * 137) % 9600); // 400-10000
                     const forPercentage = ((decision.id * 17) % 100); // 0-99%
-                    const votesFor = Math.floor(baseVotes * (forPercentage / 100));
-                    const votesAgainst = baseVotes - votesFor;
+                    const userVote = userVotes[decision.id];
+                    const votesFor = Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "for" ? 1 : 0);
+                    const votesAgainst = baseVotes - Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "against" ? 1 : 0);
                     const totalVotes = votesFor + votesAgainst;
                     const percentageFor = (votesFor / totalVotes) * 100;
                     const percentageAgainst = (votesAgainst / totalVotes) * 100;
@@ -734,6 +740,16 @@ export default function Governance() {
                           </div>
                         </div>
 
+                        {userVote && (
+                          <div className={`rounded-md border p-3 text-sm font-bold ${
+                            userVote === "for"
+                              ? "border-green-200 bg-green-50 text-green-700"
+                              : "border-red-200 bg-red-50 text-red-700"
+                          }`}>
+                            ההצבעה שלך: {userVote === "for" ? "בעד" : "נגד"}
+                          </div>
+                        )}
+
                         {isFinalDecision ? (
                           <div className="mt-4">
                             <Button
@@ -750,15 +766,19 @@ export default function Governance() {
                           <div className="flex gap-3 mt-4 flex-row-reverse">
                             <Button 
                               onClick={() => handleVote(decision.id, 'for')}
-                              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                              className={`flex-1 text-white ${
+                                userVote === "for" ? "bg-green-800 hover:bg-green-800" : "bg-green-600 hover:bg-green-700"
+                              }`}
                             >
-                              ✓ בעד
+                              {userVote === "for" ? "✓ בעד נבחר" : "✓ בעד"}
                             </Button>
                             <Button 
                               onClick={() => handleVote(decision.id, 'against')}
-                              className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                              className={`flex-1 text-white ${
+                                userVote === "against" ? "bg-red-800 hover:bg-red-800" : "bg-red-600 hover:bg-red-700"
+                              }`}
                             >
-                              ✗ נגד
+                              {userVote === "against" ? "✗ נגד נבחר" : "✗ נגד"}
                             </Button>
                           </div>
                         )}
