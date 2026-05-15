@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Music, VolumeX } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import { useState } from "react";
 
 const SPOTIFY_EMBED_URL = "https://open.spotify.com/embed/track/1O3lvpDcOZDYm21Z75n7xp?utm_source=generator";
@@ -12,25 +12,23 @@ export function BackgroundMusicPlayer() {
       {!isPlayerVisible ? (
         <Button
           type="button"
+          aria-label="הפעל מוזיקת רקע"
           onClick={() => setIsPlayerVisible(true)}
-          className="h-9 rounded-full bg-slate-950 px-3 text-xs text-white shadow-lg hover:bg-slate-800"
+          className="h-10 w-10 rounded-full bg-slate-950 p-0 text-white shadow-lg hover:bg-slate-800"
         >
-          <Music className="ml-1.5 h-3.5 w-3.5" />
-          הפעל
+          <Play className="h-4 w-4 fill-current" />
         </Button>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white/95 p-1.5 shadow-2xl backdrop-blur">
-          <div className="mb-1.5 flex items-center justify-between gap-2">
-            <p className="truncate text-[11px] font-bold text-slate-900">לחץ Play בנגן</p>
+          <div className="mb-1.5 flex justify-end">
             <Button
               type="button"
+              aria-label="עצור מוזיקת רקע"
               variant="outline"
-              size="sm"
               onClick={() => setIsPlayerVisible(false)}
-              className="h-7 shrink-0 border-slate-300 px-1.5 text-[11px] text-slate-700"
+              className="h-7 w-7 shrink-0 rounded-full border-slate-300 p-0 text-slate-700"
             >
-              <VolumeX className="ml-1 h-3 w-3" />
-              עצור
+              <Pause className="h-3.5 w-3.5 fill-current" />
             </Button>
           </div>
           <iframe
