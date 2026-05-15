@@ -351,6 +351,97 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Public Candidate Contract Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="container max-w-5xl text-right" dir="rtl">
+          <Card className="border-slate-200 bg-white p-8">
+            <p className="mb-3 text-sm font-bold text-blue-700">חוזה ציבורי</p>
+            <h2 className="mb-4 text-3xl font-bold text-blue-900">חוזה בין המועמדים לכנסת הבאה לבין הציבור - לנצח</h2>
+            <p className="mb-5 text-lg leading-8 text-slate-700">
+              מועמד שחותם על החוזה מתחייב כי אם ייבחר לכנסת, יצביע בעד הצעת החוק שתסדיר את הקמת מנגנון קול משותף - לא יאוחר משנה ממועד הבחירות.
+            </p>
+            <p className="mb-6 rounded-lg border-r-4 border-blue-600 bg-blue-50 p-4 text-xl font-bold leading-8 text-blue-950">
+              נבחרת בזכות הציבור - התחייב לקדם את החוק שמחזיר את הכוח לציבור.
+            </p>
+
+            <details className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+              <summary className="cursor-pointer text-lg font-bold text-slate-900">הצג את נוסח החוזה המלא</summary>
+              <div className="mt-6 space-y-6 leading-8 text-slate-700">
+                <div>
+                  <h3 className="mb-3 text-2xl font-bold text-slate-900">חוזה ציבורי בין מועמד/ת לכנסת לבין ציבור הבוחרים</h3>
+                  <p>
+                    אני, החתום/ה מטה, כמועמד/ת לבחירות לכנסת ישראל, מצהיר/ה בזאת כי אני מכיר/ה בכך שהמנדט הציבורי אינו רכוש אישי, מפלגתי או סיעתי בלבד, אלא שליחות הניתנת לי מאת ציבור הבוחרים.
+                  </p>
+                  <p className="mt-3">
+                    מתוך הכרה זו, אני מתחייב/ת לפעול לקידום עקרונות של דמוקרטיה מתקדמת, שקיפות, אחריות ציבורית, שיתוף אזרחי והחזרת כוח ההשפעה אל הציבור.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 text-xl font-bold text-slate-900">התחייבות מרכזית</h4>
+                  <p>
+                    אם אבחר לכנסת, אני מתחייב/ת להצביע בעד הצעת חוק שתסדיר את הקמת מנגנון <span className="font-bold">קול משותף</span> - מנגנון ציבורי, שקוף, ישיר, דינמי ומואצל, שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
+                  </p>
+                  <p className="mt-3">
+                    התחייבות זו תחול על הצעת חוק שתונח בפני הכנסת <span className="font-bold">לא יאוחר משנה אחת ממועד הבחירות</span>.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 text-xl font-bold text-slate-900">מהות ההתחייבות</h4>
+                  <p>
+                    אני מתחייב/ת כי לא אתייחס להצעת החוק כאל עניין טכני או הצהרתי בלבד, אלא כאל התחייבות ציבורית מהותית שניתנה מראש לבוחרים.
+                  </p>
+                  <p className="mt-3">
+                    במסגרת זו, אפעל בתום לב, בשקיפות ובאחריות כדי לאפשר את קידום ההצעה, דיון ציבורי בה, והצבעה עליה במסגרת הכנסת.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 text-xl font-bold text-slate-900">התחייבויות משלימות</h4>
+                  <ol className="list-decimal space-y-2 pr-6">
+                    <li>לפרסם לציבור את עמדתי בנושאים מהותיים לפני הצבעות מרכזיות.</li>
+                    <li>לנמק החלטות והצבעות בעלות חשיבות ציבורית.</li>
+                    <li>לאפשר התייעצות ציבורית באמצעות מנגנונים פתוחים, ישירים או מואצלים.</li>
+                    <li>לפעול לחיזוק אמון הציבור בנבחריו באמצעות שקיפות, אחריות והקשבה רציפה.</li>
+                  </ol>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 text-xl font-bold text-slate-900">גבולות ההתחייבות</h4>
+                  <p>
+                    ידוע לי כי כהונתי כחבר/ת כנסת כפופה לדין, לחוקי מדינת ישראל, לכללי האתיקה של הכנסת, ולחובותיי כנבחר/ת ציבור.
+                  </p>
+                  <p className="mt-3">
+                    אין בהתחייבות זו כדי לחייב פעולה בלתי חוקית, פגיעה בזכויות יסוד, או פעולה הסותרת במובהק את טובת הציבור ואת עקרונות היסוד של מדינת ישראל כמדינה יהודית ודמוקרטית.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 text-xl font-bold text-slate-900">הצהרה ציבורית</h4>
+                  <p>אני מבין/ה כי חתימתי על חוזה זה היא התחייבות ציבורית גלויה כלפי הבוחרים.</p>
+                  <p className="mt-3 font-bold text-slate-900">
+                    מי שמבקש את קול הציבור - מתחייב לפעול להשבת קולו של הציבור אל תהליך קבלת ההחלטות.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 rounded-lg bg-white p-4 text-sm text-slate-700 md:grid-cols-2">
+                  <p>שם המועמד/ת: ____________</p>
+                  <p>מספר זהות: ____________</p>
+                  <p>מפלגה / רשימה: ____________</p>
+                  <p>תאריך: ____________</p>
+                  <p>חתימה: ____________</p>
+                </div>
+              </div>
+            </details>
+
+            <p className="mt-4 text-sm leading-6 text-slate-500">
+              נוסח זה הוא בסיס רעיוני-ציבורי, ויעבור התאמה משפטית לפני שימוש רשמי מול מועמדים.
+            </p>
+          </Card>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer id="contact" className="bg-gray-900 text-gray-400 py-12">
         <div className="container">
