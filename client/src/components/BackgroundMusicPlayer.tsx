@@ -3,12 +3,13 @@ import { Music, X } from "lucide-react";
 import { useState } from "react";
 
 const SPOTIFY_EMBED_URL = "https://open.spotify.com/embed/track/1O3lvpDcOZDYm21Z75n7xp?utm_source=generator";
+const SPOTIFY_TRACK_URL = "https://open.spotify.com/track/1O3lvpDcOZDYm21Z75n7xp";
 
 export function BackgroundMusicPlayer() {
   const [isPlayerVisible, setIsPlayerVisible] = useState(false);
 
   return (
-    <div className={`fixed bottom-3 left-3 z-50 max-w-[calc(100vw-1.5rem)] text-right ${isPlayerVisible ? "w-[300px]" : "w-auto"}`} dir="rtl">
+    <div className={`fixed right-3 top-1/2 z-50 max-w-[calc(100vw-1.5rem)] -translate-y-1/2 text-right ${isPlayerVisible ? "w-[320px]" : "w-auto"}`} dir="rtl">
       {!isPlayerVisible ? (
         <Button
           type="button"
@@ -20,7 +21,15 @@ export function BackgroundMusicPlayer() {
         </Button>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur">
-          <div className="mb-1.5 flex justify-end">
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <a
+              href={SPOTIFY_TRACK_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[11px] font-bold text-green-700 underline-offset-2 hover:underline"
+            >
+              פתח ב-Spotify
+            </a>
             <Button
               type="button"
               aria-label="סגור נגן"
@@ -36,7 +45,7 @@ export function BackgroundMusicPlayer() {
             style={{ borderRadius: "12px" }}
             src={SPOTIFY_EMBED_URL}
             width="100%"
-            height="80"
+            height="152"
             frameBorder="0"
             allowFullScreen
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
