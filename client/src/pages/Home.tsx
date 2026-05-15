@@ -368,14 +368,13 @@ export default function Home() {
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 className="font-bold text-white mb-4">קול משותף</h4>
-              <p className="text-sm">מערכת דמוקרטית מתקדמת לישראל</p>
+              <h4 className="font-bold text-white mb-4 whitespace-nowrap">קול משותף - מערכת דמוקרטית מתקדמת לישראל</h4>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">הערוצים</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="/mk121" onClick={(event) => { event.preventDefault(); goToMK121Top(); }} className="hover:text-white transition">ח"כ 121</a></li>
-                <li><a href="/governance" onClick={(event) => { event.preventDefault(); goToGovernanceTop(); }} className="hover:text-white transition">ממשלה משתפת</a></li>
+                <li><a href="/governance" onClick={(event) => { event.preventDefault(); goToGovernanceTop(); }} className="hover:text-white transition">ממשלה משותפת</a></li>
               </ul>
             </div>
             <div>
