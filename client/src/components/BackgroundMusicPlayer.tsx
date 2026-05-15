@@ -8,7 +8,7 @@ export function BackgroundMusicPlayer() {
   const [isPlayerVisible, setIsPlayerVisible] = useState(false);
 
   return (
-    <div className={`fixed bottom-3 left-3 z-50 max-w-[calc(100vw-1.5rem)] text-right ${isPlayerVisible ? "w-[240px]" : "w-auto"}`} dir="rtl">
+    <div className={`fixed bottom-3 left-3 z-50 max-w-[calc(100vw-1.5rem)] text-right ${isPlayerVisible ? "w-[280px]" : "w-auto"}`} dir="rtl">
       {!isPlayerVisible ? (
         <Button
           type="button"
@@ -16,12 +16,12 @@ export function BackgroundMusicPlayer() {
           className="h-9 rounded-full bg-slate-950 px-3 text-xs text-white shadow-lg hover:bg-slate-800"
         >
           <Music className="ml-1.5 h-3.5 w-3.5" />
-          מוזיקת רקע
+          הפעל
         </Button>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white/95 p-1.5 shadow-2xl backdrop-blur">
           <div className="mb-1.5 flex items-center justify-between gap-2">
-            <p className="truncate text-[11px] font-bold text-slate-900">Zelão - Sérgio Ricardo</p>
+            <p className="truncate text-[11px] font-bold text-slate-900">לחץ Play בנגן</p>
             <Button
               type="button"
               variant="outline"
