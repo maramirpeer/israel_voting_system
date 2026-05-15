@@ -336,6 +336,22 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Political Entity Section */}
+      <section className="py-20 bg-blue-50">
+        <div className="container max-w-4xl text-right" dir="rtl">
+          <Card className="p-8 bg-white border-blue-100">
+            <div className="space-y-4 text-lg leading-9 text-slate-700">
+              <p>
+                <span className="font-bold text-blue-900">קול משותף</span> היא יוזמה לשדרוג המערכת הפוליטית בישראל למערכת מתקדמת, גמישה, שקופה ומשתפת יותר - כזו שמחברת את הציבור לתהליך קבלת ההחלטות באופן רציף, ישיר ודינמי.
+              </p>
+              <p>
+                מתוך היוזמה הזאת עולה כעת ההצעה לייסד את <span className="font-bold text-blue-900">קול משותף</span> כישות פוליטית וכמפלגה מאחדת: מפלגה שאינה נבנית סביב מחנה אחד, אדם אחד או אידיאולוגיה מפלגת, אלא סביב מנגנון חדש של אחריות משותפת, השתתפות אזרחית והחזרת הכוח הציבורי אל הציבור עצמו.
+              </p>
+            </div>
+          </Card>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
         <div className="container text-center">
