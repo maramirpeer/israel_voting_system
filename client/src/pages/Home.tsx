@@ -348,23 +348,6 @@ export default function Home() {
               מתוך היוזמה הזאת עולה כעת ההצעה לייסד את <span className="font-bold text-white">קול משותף</span> כישות פוליטית וכמפלגה מאחדת: מפלגה שאינה נבנית סביב מחנה אחד, אדם אחד או אידיאולוגיה מפלגת, אלא סביב מנגנון חדש של אחריות משותפת, השתתפות אזרחית והחזרת הכוח הציבורי אל הציבור עצמו.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-600 hover:bg-blue-50"
-              onClick={goToMK121Top}
-            >
-              ח"כ 121 - ערוץ לכנסת
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-white text-white hover:bg-white/20"
-              onClick={goToGovernanceTop}
-            >
-              ממשלה משתפת - ערוץ לממשלה
-            </Button>
-          </div>
         </div>
       </section>
 
