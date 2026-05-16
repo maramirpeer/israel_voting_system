@@ -208,26 +208,26 @@ export default function Home() {
             {/* MK 121 Channel */}
             <Card className="p-8 border-2 border-[#c8a96a] bg-[#fbf7ed]/88 hover:border-[#2f7d5c] transition text-right shadow-md">
               <div className="flex items-center gap-3 mb-6 justify-end">
-                <h3 className="text-2xl font-bold text-[#17324d]">ח"כ 121</h3>
                 <div className="w-12 h-12 bg-[#eef6ef] rounded-lg flex items-center justify-center">
                   <Megaphone className="w-6 h-6 text-[#2f7d5c]" />
                 </div>
+                <h3 className="text-2xl font-bold text-[#17324d]">ח"כ 121</h3>
               </div>
-              <p className="text-lg font-bold leading-8 text-[#17324d] mb-6">
+              <p className="mb-6 text-right text-lg font-bold leading-8 text-[#17324d]">
                 ערוץ אזרחי לכנסת שמחבר בין הציבור לנבחריו אחת לעונה (כל 3 חודשים).
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">כל 3 חודשים נבחרי הציבור יצביעו ישירות בקריאה ראשונה על הצעת החוק הנבחרת.</span>
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">כל 3 חודשים נבחרי הציבור יצביעו ישירות בקריאה ראשונה על הצעת החוק הנבחרת.</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">השר הנשאל בשאילתא הציבורית ישיב עליה בתשובה ישירה ומצולמת.</span>
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">השר הנשאל בשאילתא הציבורית ישיב עליה בתשובה ישירה ומצולמת.</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">המצביעים יוכלו לבחור ישירות או להאציל את קולם באופן גמיש.</span>
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">המצביעים יוכלו לבחור ישירות או להאציל את קולם באופן גמיש.</span>
                 </div>
               </div>
               <Button 
@@ -241,26 +241,26 @@ export default function Home() {
             {/* Dynamic Civic Voice Channel */}
             <Card className="p-8 border-2 border-[#c7d8df] bg-[#f7fbff]/88 hover:border-[#1d4f91] transition text-right shadow-md">
               <div className="flex items-center gap-3 mb-6 justify-end">
-                <h3 className="text-2xl font-bold text-[#17324d]">ממשלה משתפת</h3>
                 <div className="w-12 h-12 bg-[#eef6ff] rounded-lg flex items-center justify-center">
                   <BarChart3 className="w-6 h-6 text-[#1d4f91]" />
                 </div>
+                <h3 className="text-2xl font-bold text-[#17324d]">ממשלה משתפת</h3>
               </div>
-              <p className="text-lg font-bold leading-8 text-[#17324d] mb-6">
+              <p className="mb-6 text-right text-lg font-bold leading-8 text-[#17324d]">
                 ערוץ אזרחי למשרדי ממשלה - השר מחויב לשמוע את עמדת הציבור לפני החלטות משמעותיות בתחום משרדו
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">הצבעה על החלטות חשובות</span>
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">הצבעה על החלטות חשובות</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">כוח מחייב אזרחי</span>
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">כוח מחייב אזרחי</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">שקיפות מלאה של תהליך</span>
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">שקיפות מלאה של תהליך</span>
                 </div>
               </div>
               <Button 
