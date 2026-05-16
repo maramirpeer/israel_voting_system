@@ -71,9 +71,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,rgba(248,243,230,0.92)_0%,rgba(255,255,255,0.9)_34%,rgba(238,246,239,0.88)_68%,rgba(247,251,255,0.9)_100%),url('/assets/decentralization-hero.png')] bg-cover bg-center bg-fixed" dir="rtl">
+    <div className="relative min-h-screen overflow-hidden bg-[#fbf7ed]" dir="rtl">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center opacity-18"
+        style={{ backgroundImage: "url('/assets/decentralization-hero.png')" }}
+      />
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(180deg,rgba(251,247,237,0.86)_0%,rgba(255,255,255,0.78)_34%,rgba(238,246,239,0.78)_68%,rgba(238,246,255,0.82)_100%)]" />
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 bg-[#fbf7ed]/85 backdrop-blur-md border-b border-[#d8c79f]">
+      <header className="sticky top-0 z-50 bg-[#fbf7ed]/88 backdrop-blur-md border-b border-[#c8a96a]">
         <div className="container flex items-center justify-between py-4">
           <nav className="hidden md:flex items-center gap-8">
             <a href="#channels" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">הערוצים</a>
@@ -107,7 +113,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative min-h-[calc(100vh-73px)] overflow-hidden">
+      <section className="relative z-10 min-h-[calc(100vh-73px)] overflow-hidden">
         <img
           src="/assets/decentralization-hero.png"
           alt="חברה מודעת ומחוברת לוקחים חלק בממשלות ובתהליך קבלת ההחלטות בישראל"
@@ -129,7 +135,7 @@ export default function Home() {
       </section>
 
       {/* Two Channels Section */}
-      <section id="channels" className="py-20 bg-[linear-gradient(180deg,#fbf7ed_0%,#ffffff_50%,#eef6ef_100%)]">
+      <section id="channels" className="relative z-10 py-20 bg-[linear-gradient(180deg,rgba(251,247,237,0.9)_0%,rgba(255,255,255,0.82)_48%,rgba(238,246,239,0.9)_100%)]">
         <div className="container">
           <div className="text-center mb-16 text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
@@ -145,7 +151,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* MK 121 Channel */}
-            <Card className="p-8 border-2 border-[#d8c79f] bg-white/90 hover:border-[#2f7d5c] transition text-right shadow-sm">
+            <Card className="p-8 border-2 border-[#c8a96a] bg-[#fbf7ed]/88 hover:border-[#2f7d5c] transition text-right shadow-md">
               <div className="flex items-center gap-3 mb-6 justify-end">
                 <h3 className="text-2xl font-bold text-[#17324d]">ח"כ 121</h3>
                 <div className="w-12 h-12 bg-[#eef6ef] rounded-lg flex items-center justify-center">
@@ -178,7 +184,7 @@ export default function Home() {
             </Card>
 
             {/* Dynamic Civic Voice Channel */}
-            <Card className="p-8 border-2 border-[#c7d8df] bg-white/90 hover:border-[#1d4f91] transition text-right shadow-sm">
+            <Card className="p-8 border-2 border-[#c7d8df] bg-[#f7fbff]/88 hover:border-[#1d4f91] transition text-right shadow-md">
               <div className="flex items-center gap-3 mb-6 justify-end">
                 <h3 className="text-2xl font-bold text-[#17324d]">ממשלה משתפת</h3>
                 <div className="w-12 h-12 bg-[#eef6ff] rounded-lg flex items-center justify-center">
@@ -214,7 +220,7 @@ export default function Home() {
       </section>
 
       {/* Vision Section */}
-      <section id="vision" className="py-20 bg-[linear-gradient(120deg,#eef6ff_0%,#fbf7ed_48%,#eef6ef_100%)]">
+      <section id="vision" className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(238,246,255,0.88)_0%,rgba(251,247,237,0.82)_48%,rgba(238,246,239,0.88)_100%)]">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
@@ -238,7 +244,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section id="features" className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
         <div className="container">
           <div className="mx-auto mb-12 max-w-3xl text-center text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">תכונות מרכזיות</h2>
@@ -247,7 +253,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="mx-auto grid max-w-5xl divide-y divide-[#d8c79f] border-y border-[#d8c79f] bg-[#fbf7ed]/45 md:grid-cols-3 md:divide-x md:divide-y">
+          <div className="mx-auto grid max-w-5xl divide-y divide-[#c8a96a] border-y border-[#c8a96a] bg-[#fbf7ed]/78 shadow-sm md:grid-cols-3 md:divide-x md:divide-y">
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#2f7d5c]">אמון</p>
               <h3 className="mt-1 text-lg font-bold text-[#17324d]">קול מוגן</h3>
@@ -283,7 +289,7 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-[#f8f3e6]">
+      <section id="faq" className="relative z-10 py-20 bg-[#f8f3e6]/88 backdrop-blur-[1px]">
         <div className="container">
           <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center text-right">שאלות נפוצות</h2>
           
@@ -350,7 +356,7 @@ export default function Home() {
       </section>
 
       {/* Origin Note Section */}
-      <section className="py-12 bg-white/88 backdrop-blur-[1px]">
+      <section className="relative z-10 py-12 bg-white/82 backdrop-blur-[1px]">
         <div className="container max-w-4xl text-right" dir="rtl">
           <div className="border-r-4 border-[#2f7d5c] pr-5 text-lg leading-9 text-[#4a3722]">
             <p className="font-bold text-[#17324d]">
@@ -365,7 +371,7 @@ export default function Home() {
       </section>
 
       {/* Epilogue Section */}
-      <section className="py-20 bg-white/86 backdrop-blur-[1px]">
+      <section className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
         <div className="container max-w-4xl text-right" dir="rtl">
           <Card className="p-8 bg-[#fbf7ed]/92 border-[#d8c79f] shadow-sm">
             <h2 className="text-3xl font-bold text-[#17324d] mb-6">אפילוג</h2>
@@ -380,7 +386,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[linear-gradient(120deg,#17324d_0%,#1d4f91_42%,#2f7d5c_72%,#8a6a3f_100%)]">
+      <section className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(23,50,77,0.96)_0%,rgba(29,79,145,0.94)_38%,rgba(47,125,92,0.94)_70%,rgba(138,106,63,0.96)_100%)]">
         <div className="container max-w-4xl text-center">
           <h2 className="text-4xl font-bold text-white mb-6">מוכן להשתתף?</h2>
           <div className="mx-auto mb-8 space-y-4 text-lg leading-9 text-blue-50" dir="rtl">
@@ -482,7 +488,7 @@ export default function Home() {
       </section>
 
       {/* Public Candidate Contract Section */}
-      <section className="py-20 bg-[#fbf7ed]">
+      <section className="relative z-10 py-20 bg-[#fbf7ed]/90 backdrop-blur-[1px]">
         <div className="container max-w-5xl text-right" dir="rtl">
           <Card className="border-[#d8c79f] bg-white p-8 shadow-sm">
             <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
@@ -578,7 +584,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="bg-[#17324d] text-[#d8c79f] py-12">
+      <footer id="contact" className="relative z-10 bg-[#17324d] text-[#d8c79f] py-12">
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
