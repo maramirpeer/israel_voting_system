@@ -56,7 +56,7 @@ export default function MK121VoteRouting() {
   const directQuestionCount = ministries.length - delegatedQuestions.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fbf7ed_0%,#ffffff_42%,#eef6ef_100%)] text-right" dir="rtl">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white shadow-sm">
         <div className="container flex items-center justify-between py-4 flex-row-reverse">
           <Button variant="ghost" onClick={() => setLocation("/mk121")} className="flex items-center gap-2 justify-end">

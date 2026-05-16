@@ -70,34 +70,34 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-cyan-50" dir="rtl">
+    <div className="min-h-screen bg-[linear-gradient(180deg,rgba(248,243,230,0.92)_0%,rgba(255,255,255,0.9)_34%,rgba(238,246,239,0.88)_68%,rgba(247,251,255,0.9)_100%),url('/assets/decentralization-hero.png')] bg-cover bg-center bg-fixed" dir="rtl">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-blue-100">
+      <header className="sticky top-0 z-50 bg-[#fbf7ed]/85 backdrop-blur-md border-b border-[#d8c79f]">
         <div className="container flex items-center justify-between py-4">
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#channels" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">הערוצים</a>
-            <a href="#vision" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">החזון</a>
-            <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">תכונות</a>
-            <a href="#faq" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">שאלות נפוצות</a>
+            <a href="#channels" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">הערוצים</a>
+            <a href="#vision" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">החזון</a>
+            <a href="#features" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">תכונות</a>
+            <a href="#faq" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">שאלות נפוצות</a>
           </nav>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#1d4f91] via-[#2f7d5c] to-[#c8a96a] rounded-lg flex items-center justify-center">
               <Lock className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-lg font-bold text-blue-900">קול משותף</h1>
-              <p className="text-xs text-cyan-600 font-medium">מערכת דמוקרטית מתקדמת</p>
+              <p className="text-xs text-[#2f7d5c] font-medium">מערכת דמוקרטית מתקדמת</p>
             </div>
           </div>
           {isAuthenticated && (
             <div className="flex gap-2">
-              <Button onClick={goToMK121Top} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={goToMK121Top} className="bg-[#1d4f91] hover:bg-[#173f74]">
                 ח"כ 121
               </Button>
-              <Button onClick={goToGovernanceTop} variant="outline" className="border-blue-300">
+              <Button onClick={goToGovernanceTop} variant="outline" className="border-[#2f7d5c] text-[#1d4f91]">
                 ממשלה משתפת
               </Button>
-              <Button onClick={() => setLocation("/analytics")} variant="outline" className="border-green-300">
+              <Button onClick={() => setLocation("/analytics")} variant="outline" className="border-[#c8a96a] text-[#4a3722]">
                 📊 ניתוח
               </Button>
             </div>
@@ -112,14 +112,14 @@ export default function Home() {
           alt="חברה מודעת ומחוברת לוקחים חלק בממשלות ובתהליך קבלת ההחלטות בישראל"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white/90 via-white/45 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#fbf7ed]/95 via-white/45 to-transparent" />
         <div className="relative container min-h-[calc(100vh-73px)] py-10 flex items-end justify-center">
           <div className="w-full max-w-3xl text-center">
             <div className="flex flex-col sm:flex-row-reverse gap-3 justify-center">
-              <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white" onClick={goToMK121Top}>
+              <Button size="lg" className="bg-[#1d4f91] hover:bg-[#173f74] text-white" onClick={goToMK121Top}>
                 ח"כ 121 - ערוץ לכנסת
               </Button>
-              <Button size="lg" variant="outline" className="bg-white/85 border-blue-300 text-blue-900 hover:bg-white" onClick={goToGovernanceTop}>
+              <Button size="lg" variant="outline" className="bg-[#fbf7ed]/90 border-[#c8a96a] text-[#17324d] hover:bg-white" onClick={goToGovernanceTop}>
                 ממשלה משתפת - ערוץ לממשלה
               </Button>
             </div>
@@ -128,82 +128,82 @@ export default function Home() {
       </section>
 
       {/* Two Channels Section */}
-      <section id="channels" className="py-20 bg-white">
+      <section id="channels" className="py-20 bg-[linear-gradient(180deg,#fbf7ed_0%,#ffffff_50%,#eef6ef_100%)]">
         <div className="container">
           <div className="text-center mb-16 text-right">
-            <h2 className="text-4xl font-bold text-blue-900 mb-4">שני ערוצי שיתוף מעשיים</h2>
-            <p className="text-lg text-gray-600">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל לאזרח אחר</p>
-            <div className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-gray-600">
+            <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
+            <p className="text-lg text-[#5f513e]">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל לאזרח אחר</p>
+            <div className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-[#5f513e]">
               <p>
                 האצלת קול אינה ויתור על קולי בהצבעה. אלא היא דרך להפקיד את קולי בצורה מודעת,
                 תוך הבנה מי מחזיק בקולי ובשם אילו ערכים הוא פועל.
               </p>
-              <p className="mt-2 font-bold text-blue-900">אם וכאשר ארצה - הקול יוחזר אלי.</p>
+              <p className="mt-2 font-bold text-[#1d4f91]">אם וכאשר ארצה - הקול יוחזר אלי.</p>
             </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* MK 121 Channel */}
-            <Card className="p-8 border-2 border-purple-200 hover:border-purple-400 transition text-right">
+            <Card className="p-8 border-2 border-[#d8c79f] bg-white/90 hover:border-[#2f7d5c] transition text-right shadow-sm">
               <div className="flex items-center gap-3 mb-6 justify-end">
-                <h3 className="text-2xl font-bold text-purple-900">ח"כ 121</h3>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Megaphone className="w-6 h-6 text-purple-600" />
+                <h3 className="text-2xl font-bold text-[#17324d]">ח"כ 121</h3>
+                <div className="w-12 h-12 bg-[#eef6ef] rounded-lg flex items-center justify-center">
+                  <Megaphone className="w-6 h-6 text-[#2f7d5c]" />
                 </div>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-[#5f513e] mb-6">
                 ערוץ אזרחי לכנסת - הציבור בוחר כל 3 חודשים את הצעת החוק והשאילתא הדחופה ביותר לקידום ציבורי
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">הצבעה כל 3 חודשים</span>
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#4a3722]">הצבעה כל 3 חודשים</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">בחירת הצעת חוק + שאילתא</span>
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#4a3722]">בחירת הצעת חוק + שאילתא</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">האצלת קול גמישה</span>
-                  <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#4a3722]">האצלת קול גמישה</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                 </div>
               </div>
               <Button 
                 onClick={goToMK121Top}
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full bg-[#1d4f91] hover:bg-[#173f74]"
               >
                 כנס לח"כ 121
               </Button>
             </Card>
 
             {/* Dynamic Civic Voice Channel */}
-            <Card className="p-8 border-2 border-blue-200 hover:border-blue-400 transition text-right">
+            <Card className="p-8 border-2 border-[#c7d8df] bg-white/90 hover:border-[#1d4f91] transition text-right shadow-sm">
               <div className="flex items-center gap-3 mb-6 justify-end">
-                <h3 className="text-2xl font-bold text-blue-900">ממשלה משתפת</h3>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-blue-600" />
+                <h3 className="text-2xl font-bold text-[#17324d]">ממשלה משתפת</h3>
+                <div className="w-12 h-12 bg-[#eef6ff] rounded-lg flex items-center justify-center">
+                  <BarChart3 className="w-6 h-6 text-[#1d4f91]" />
                 </div>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-[#5f513e] mb-6">
                 ערוץ אזרחי למשרדי ממשלה - השר מחויב לשמוע את עמדת הציבור לפני החלטות משמעותיות בתחום משרדו
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">הצבעה על החלטות חשובות</span>
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#4a3722]">הצבעה על החלטות חשובות</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">כוח מחייב אזרחי</span>
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#4a3722]">כוח מחייב אזרחי</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">שקיפות מלאה של תהליך</span>
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <span className="text-[#4a3722]">שקיפות מלאה של תהליך</span>
+                  <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
                 </div>
               </div>
               <Button 
                 onClick={goToGovernanceTop}
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-[#2f7d5c] hover:bg-[#27684d]"
               >
                 כנס לממשלה משתפת
               </Button>
@@ -213,23 +213,23 @@ export default function Home() {
       </section>
 
       {/* Vision Section */}
-      <section id="vision" className="py-20 bg-gradient-to-r from-blue-50 to-cyan-50">
+      <section id="vision" className="py-20 bg-[linear-gradient(120deg,#eef6ff_0%,#fbf7ed_48%,#eef6ef_100%)]">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center text-right">
-            <h2 className="text-4xl font-bold text-blue-900 mb-8">הקדמת המפתח</h2>
-            <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
+            <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
+            <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
               <span className="font-bold">קול משותף</span> - מערכת שמכוונת להיות תוסף מהפכני למערכת הפוליטית הקיימת.
             </p>
-            <p className="mt-4 text-xl text-gray-700 leading-relaxed font-semibold">
+            <p className="mt-4 text-xl text-[#4a3722] leading-relaxed font-semibold">
               תוסף זה רוצה לקבל תמיכה גורפת מכלל הציבור ונבחריו.
             </p>
-            <p className="mt-3 text-lg text-gray-700 leading-relaxed">
+            <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
               זהו תוסף שכל מי שטובת המדינה בראש מעייניו ירצה לתמוך בו.
             </p>
-            <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
+            <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
               "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול משותף חי, דינמי ומבוזר."
             </p>
-            <p className="text-lg text-gray-600 mt-8 leading-relaxed">
+            <p className="text-lg text-[#5f513e] mt-8 leading-relaxed">
               מערכת זו מציעה שתי דרכים מעשיות לשיתוף אזרחים בקבלת החלטות ממשלתיות, תוך שמירה על יציבות המערכת הפוליטית והמשפטית הקיימת. כל אזרח מחזיק בקול אחד בכל ערוץ, ויכול להצביע בעצמו או להאציל את קולו לאזרח אחר שהוא סומך עליו.
             </p>
           </div>
@@ -240,49 +240,49 @@ export default function Home() {
       <section id="features" className="py-20 bg-white">
         <div className="container">
           <div className="mx-auto mb-12 max-w-3xl text-center text-right">
-            <h2 className="text-4xl font-bold text-blue-900 mb-4">תכונות מרכזיות</h2>
-            <p className="text-lg leading-8 text-gray-600">
+            <h2 className="text-4xl font-bold text-[#17324d] mb-4">תכונות מרכזיות</h2>
+            <p className="text-lg leading-8 text-[#5f513e]">
               המערכת בנויה כך שהאזרח יכול להשפיע בלי לוותר על פרטיות, אחריות או יציבות.
             </p>
           </div>
           
-          <div className="mx-auto grid max-w-5xl divide-y divide-slate-200 border-y border-slate-200 md:grid-cols-3 md:divide-x md:divide-y">
+          <div className="mx-auto grid max-w-5xl divide-y divide-[#d8c79f] border-y border-[#d8c79f] bg-[#fbf7ed]/45 md:grid-cols-3 md:divide-x md:divide-y">
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-blue-700">אמון</p>
-              <h3 className="mt-1 text-lg font-bold text-blue-900">קול מוגן</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">שמירה מאובטחת על הקול ומניעת שימוש לרעה.</p>
+              <p className="text-xs font-bold text-[#2f7d5c]">אמון</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">קול מוגן</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">שמירה מאובטחת על הקול ומניעת שימוש לרעה.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-blue-700">אמון</p>
-              <h3 className="mt-1 text-lg font-bold text-blue-900">שקיפות ניתנת לבדיקה</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">מה הוחלט, מתי, ולפי איזה קול ציבורי.</p>
+              <p className="text-xs font-bold text-[#2f7d5c]">אמון</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">שקיפות ניתנת לבדיקה</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">מה הוחלט, מתי, ולפי איזה קול ציבורי.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-purple-700">השפעה</p>
-              <h3 className="mt-1 text-lg font-bold text-blue-900">כוח אזרחי רציף</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">השפעה גם בין בחירות, בנושאים שעל סדר היום.</p>
+              <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">כוח אזרחי רציף</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">השפעה גם בין בחירות, בנושאים שעל סדר היום.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-purple-700">השפעה</p>
-              <h3 className="mt-1 text-lg font-bold text-blue-900">האצלה מודעת</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">להפקיד את הקול, ולהחזיר אותו בכל עת.</p>
+              <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">האצלה מודעת</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">להפקיד את הקול, ולהחזיר אותו בכל עת.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-cyan-700">התפתחות</p>
-              <h3 className="mt-1 text-lg font-bold text-blue-900">דינמיקה חיה</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">תגובה מתמשכת לציבור, לא רק ברגעי בחירה.</p>
+              <p className="text-xs font-bold text-[#1d4f91]">התפתחות</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">דינמיקה חיה</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">תגובה מתמשכת לציבור, לא רק ברגעי בחירה.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-cyan-700">התפתחות</p>
-              <h3 className="mt-1 text-lg font-bold text-blue-900">התקדמות הדרגתית</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600">חיבור בשלבים, תוך שמירה על יציבות ואחריות.</p>
+              <p className="text-xs font-bold text-[#1d4f91]">התפתחות</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">התקדמות הדרגתית</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">חיבור בשלבים, תוך שמירה על יציבות ואחריות.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-gray-50">
+      <section id="faq" className="py-20 bg-[#f8f3e6]">
         <div className="container">
           <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center text-right">שאלות נפוצות</h2>
           
@@ -349,10 +349,10 @@ export default function Home() {
       </section>
 
       {/* Origin Note Section */}
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white/88 backdrop-blur-[1px]">
         <div className="container max-w-4xl text-right" dir="rtl">
-          <div className="border-r-4 border-blue-600 pr-5 text-lg leading-9 text-slate-700">
-            <p className="font-bold text-blue-900">
+          <div className="border-r-4 border-[#2f7d5c] pr-5 text-lg leading-9 text-[#4a3722]">
+            <p className="font-bold text-[#17324d]">
               קול משותף היא יוזמה שנולדה ככלי תיקון שמקורו בעולמות התיקון החברתי של חבורת הזוהר.
             </p>
             <p>
@@ -364,14 +364,14 @@ export default function Home() {
       </section>
 
       {/* Epilogue Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white/86 backdrop-blur-[1px]">
         <div className="container max-w-4xl text-right" dir="rtl">
-          <Card className="p-8 bg-purple-50 border-purple-100">
-            <h2 className="text-3xl font-bold text-blue-900 mb-6">אפילוג</h2>
-            <div className="space-y-4 text-lg leading-9 text-slate-700">
+          <Card className="p-8 bg-[#fbf7ed]/92 border-[#d8c79f] shadow-sm">
+            <h2 className="text-3xl font-bold text-[#17324d] mb-6">אפילוג</h2>
+            <div className="space-y-4 text-lg leading-9 text-[#4a3722]">
               <p>
-                אנחנו הדור האחרון: דור שמבין כי יש לו האחריות לייסד ולבסס מהלך של תיקון המערכת הפוליטית,
-                וקול משותף הוא הצעד הבא בדרך זו.
+                אנחנו הדור האחרון - דור שלא משלים עם המערכת הפוליטית בצורתה הנוכחית,
+                ומחבר אותה לצורתה העתידית - שקופה ומשתפת.
               </p>
             </div>
           </Card>
@@ -379,7 +379,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-cyan-500">
+      <section className="py-20 bg-[linear-gradient(120deg,#17324d_0%,#1d4f91_42%,#2f7d5c_72%,#8a6a3f_100%)]">
         <div className="container max-w-4xl text-center">
           <h2 className="text-4xl font-bold text-white mb-6">מוכן להשתתף?</h2>
           <div className="mx-auto mb-8 space-y-4 text-lg leading-9 text-blue-50" dir="rtl">
@@ -481,19 +481,19 @@ export default function Home() {
       </section>
 
       {/* Public Candidate Contract Section */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20 bg-[#fbf7ed]">
         <div className="container max-w-5xl text-right" dir="rtl">
-          <Card className="border-slate-200 bg-white p-8">
-            <p className="mb-3 text-sm font-bold text-blue-700">חוזה ציבורי</p>
-            <h2 className="mb-4 text-3xl font-bold text-blue-900">חוזה בין המועמדים לכנסת הבאה לבין הציבור - לנצח</h2>
+          <Card className="border-[#d8c79f] bg-white p-8 shadow-sm">
+            <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
+            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">חוזה בין המועמדים לכנסת הבאה לבין הציבור - לנצח</h2>
             <p className="mb-5 text-lg leading-8 text-slate-700">
               מועמד שחותם על החוזה מתחייב כי אם ייבחר לכנסת, יצביע בעד הצעת החוק שתסדיר את הקמת מנגנון קול משותף - לא יאוחר משנה ממועד הבחירות.
             </p>
-            <p className="mb-6 rounded-lg border-r-4 border-blue-600 bg-blue-50 p-4 text-xl font-bold leading-8 text-blue-950">
+            <p className="mb-6 rounded-lg border-r-4 border-[#2f7d5c] bg-[#eef6ef] p-4 text-xl font-bold leading-8 text-[#17324d]">
               נבחרת בזכות הציבור - התחייב לקדם את החוק שמחזיר את הכוח לציבור.
             </p>
 
-            <details className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+            <details className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
               <summary className="cursor-pointer text-lg font-bold text-slate-900">הצג את נוסח החוזה המלא</summary>
               <div className="mt-6 space-y-6 leading-8 text-slate-700">
                 <div>
@@ -572,7 +572,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="bg-gray-900 text-gray-400 py-12">
+      <footer id="contact" className="bg-[#17324d] text-[#d8c79f] py-12">
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -600,7 +600,7 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-sm">
+          <div className="border-t border-white/15 pt-8 text-center text-sm">
             <p>&copy; 2026 קול משותף. כל הזכויות שמורות.</p>
           </div>
         </div>

@@ -360,7 +360,7 @@ export default function Governance() {
   // }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-right" dir="rtl">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fbf7ed_0%,#ffffff_42%,#eef6ff_100%)] text-right" dir="rtl">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
         <div className="container py-4 flex items-center justify-between flex-row-reverse">
