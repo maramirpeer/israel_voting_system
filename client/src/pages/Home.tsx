@@ -214,7 +214,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-[#5f513e] mb-6 leading-8">
-                ערוץ אזרחי לכנסת שמחבר את המצביעים להצעות חוק ולשאילתות ציבוריות.
+                ערוץ אזרחי לכנסת שמחבר בין הציבור לנבחריו אחת לעונה (כל 3 חודשים).
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
