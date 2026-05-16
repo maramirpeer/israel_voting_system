@@ -170,7 +170,7 @@ export default function Home() {
       {/* Two Channels Section */}
       <section id="channels" className="relative z-10 py-20 bg-[linear-gradient(180deg,rgba(251,247,237,0.9)_0%,rgba(255,255,255,0.82)_48%,rgba(238,246,239,0.9)_100%)]">
         <div className="container">
-          <div className="text-center mb-16 text-right">
+          <div className="mb-16 text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
             <p className="text-lg text-[#5f513e]">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל לאזרח אחר</p>
             <div className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-[#5f513e]">
@@ -255,7 +255,7 @@ export default function Home() {
       {/* Vision Section */}
       <section id="vision" className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(238,246,255,0.88)_0%,rgba(251,247,237,0.82)_48%,rgba(238,246,239,0.88)_100%)]">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center text-right">
+          <div className="max-w-3xl mx-auto text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
               <span className="font-bold">קול משותף</span> - מערכת שמכוונת להיות תוסף מהפכני למערכת הפוליטית הקיימת.
@@ -279,7 +279,7 @@ export default function Home() {
       {/* Features Section */}
       <section id="features" className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
         <div className="container">
-          <div className="mx-auto mb-12 max-w-3xl text-center text-right">
+          <div className="mx-auto mb-12 max-w-3xl text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">תכונות מרכזיות</h2>
             <p className="text-lg leading-8 text-[#5f513e]">
               המערכת בנויה כך שהאזרח יכול להשפיע בלי לוותר על פרטיות, אחריות או יציבות.
@@ -324,7 +324,7 @@ export default function Home() {
       {/* FAQ Section */}
       <section id="faq" className="relative z-10 py-20 bg-[#f8f3e6]/88 backdrop-blur-[1px]">
         <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center text-right">שאלות נפוצות</h2>
+          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-right">שאלות נפוצות</h2>
           
           <div className="max-w-2xl mx-auto">
             <Tabs defaultValue="tab1" className="w-full">
@@ -420,7 +420,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(23,50,77,0.96)_0%,rgba(29,79,145,0.94)_38%,rgba(47,125,92,0.94)_70%,rgba(138,106,63,0.96)_100%)]">
-        <div className="container max-w-4xl text-center">
+        <div className="container max-w-4xl text-right" dir="rtl">
           <h2 className="text-4xl font-bold text-white mb-6">מוכן להשתתף?</h2>
           <div className="mx-auto mb-8 space-y-4 text-lg leading-9 text-blue-50" dir="rtl">
             <p>
@@ -542,7 +542,7 @@ export default function Home() {
         <div className="container max-w-5xl text-right" dir="rtl">
           <Card className="border-[#d8c79f] bg-white p-8 shadow-sm">
             <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
-            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">חוזה בין המועמדים לכנסת הבאה לבין הציבור - לנצח</h2>
+            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">חוזה בין המועמדים לכנסת הבאה לבין הציבור</h2>
             <p className="mb-5 text-lg leading-8 text-slate-700">
               מועמד שחותם על החוזה מתחייב כי אם ייבחר לכנסת, יצביע בעד הצעת החוק שתסדיר את הקמת מנגנון קול משותף - לא יאוחר משנה ממועד הבחירות.
             </p>
@@ -662,7 +662,7 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/15 pt-8 text-center text-sm">
+          <div className="border-t border-white/15 pt-8 text-right text-sm">
             <p>&copy; 2026 קול משותף. כל הזכויות שמורות.</p>
           </div>
         </div>
