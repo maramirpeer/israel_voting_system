@@ -213,7 +213,7 @@ export default function Home() {
                   <Megaphone className="w-6 h-6 text-[#2f7d5c]" />
                 </div>
               </div>
-              <p className="text-[#5f513e] mb-6 leading-8">
+              <p className="text-lg font-bold leading-8 text-[#17324d] mb-6">
                 ערוץ אזרחי לכנסת שמחבר בין הציבור לנבחריו אחת לעונה (כל 3 חודשים).
               </p>
               <div className="space-y-3 mb-6">
@@ -246,7 +246,7 @@ export default function Home() {
                   <BarChart3 className="w-6 h-6 text-[#1d4f91]" />
                 </div>
               </div>
-              <p className="text-[#5f513e] mb-6">
+              <p className="text-lg font-bold leading-8 text-[#17324d] mb-6">
                 ערוץ אזרחי למשרדי ממשלה - השר מחויב לשמוע את עמדת הציבור לפני החלטות משמעותיות בתחום משרדו
               </p>
               <div className="space-y-3 mb-6">
