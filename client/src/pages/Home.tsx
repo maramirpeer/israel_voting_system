@@ -16,6 +16,7 @@ export default function Home() {
   const [isSignupOpen, setSignupOpen] = useState(false);
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
+  const [isContractOpen, setContractOpen] = useState(false);
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     nationalId: "",
@@ -493,8 +494,13 @@ export default function Home() {
               נבחרת בזכות הציבור - התחייב לקדם את החוק שמחזיר את הכוח לציבור.
             </p>
 
-            <details className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
-              <summary className="cursor-pointer text-lg font-bold text-slate-900">הצג את נוסח החוזה המלא</summary>
+            <details
+              className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5"
+              onToggle={(event) => setContractOpen(event.currentTarget.open)}
+            >
+              <summary className="cursor-pointer text-lg font-bold text-slate-900">
+                {isContractOpen ? "הסתר את הנוסח המלא של החוזה" : "הצג את נוסח החוזה המלא"}
+              </summary>
               <div className="mt-6 space-y-6 leading-8 text-slate-700">
                 <div>
                   <h3 className="mb-3 text-2xl font-bold text-slate-900">חוזה ציבורי בין מועמד/ת לכנסת לבין ציבור הבוחרים</h3>
