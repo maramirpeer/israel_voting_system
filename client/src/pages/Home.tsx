@@ -18,6 +18,9 @@ export default function Home() {
   const [signupMessage, setSignupMessage] = useState("");
   const [isContractOpen, setContractOpen] = useState(false);
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
+  const [isMembersOpen, setMembersOpen] = useState(false);
+  const [memberNames, setMemberNames] = useState<string[]>([]);
+  const [memberNamesMessage, setMemberNamesMessage] = useState("");
   const [memberCount, setMemberCount] = useState(0);
   const [signupForm, setSignupForm] = useState({
     fullName: "",
@@ -60,6 +63,22 @@ export default function Home() {
   };
   const updateSignupForm = (field: keyof typeof signupForm, value: string) => {
     setSignupForm((current) => ({ ...current, [field]: value }));
+  };
+  const loadMemberNames = async (open: boolean) => {
+    setMembersOpen(open);
+    if (!open) return;
+
+    setMemberNamesMessage("");
+    try {
+      const response = await fetch("/api/member-signups/names");
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "טעינת השמות נכשלה");
+      }
+      setMemberNames(Array.isArray(data.names) ? data.names : []);
+    } catch (error) {
+      setMemberNamesMessage(error instanceof Error ? error.message : "טעינת השמות נכשלה");
+    }
   };
   const handleSignupSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -563,7 +582,43 @@ export default function Home() {
                   <h3 className="mt-1 text-3xl font-bold text-[#17324d]">הגרעין המייסד של קול משותף</h3>
                 </div>
                 <div className="text-right md:text-left">
-                  <p className="text-5xl font-black leading-none text-[#1d4f91]">{memberCount.toLocaleString("he-IL")}</p>
+                  <Dialog open={isMembersOpen} onOpenChange={loadMemberNames}>
+                    <DialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="text-5xl font-black leading-none text-[#1d4f91] underline-offset-4 transition hover:text-[#2f7d5c] hover:underline"
+                        aria-label="הצג את שמות המצטרפים"
+                      >
+                        {memberCount.toLocaleString("he-IL")}
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="text-right sm:max-w-lg" dir="rtl">
+                      <DialogHeader className="text-right">
+                        <DialogTitle className="text-2xl text-[#17324d]">שמות המצטרפים</DialogTitle>
+                        <DialogDescription>
+                          מוצגים שמות בלבד, ללא פרטי קשר או תעודת זהות.
+                        </DialogDescription>
+                      </DialogHeader>
+                      {memberNamesMessage ? (
+                        <p className="rounded-md bg-red-50 p-3 text-sm font-medium text-red-700">{memberNamesMessage}</p>
+                      ) : memberNames.length > 0 ? (
+                        <div className="space-y-4">
+                          <p className="rounded-md bg-[#fbf7ed] p-3 text-sm font-bold text-[#8a6a3f]">
+                            ככל שהמספר שלך קטן יותר, כך אתה חלוץ מוקדם יותר בגרעין המייסד.
+                          </p>
+                          <ul className="max-h-80 space-y-2 overflow-auto pr-5 text-right leading-7 text-slate-700">
+                            {memberNames.map((name, index) => (
+                              <li key={`${name}-${index}`} className={index === 0 ? "list-disc font-bold text-[#17324d]" : "list-disc"}>
+                                {index === 0 ? `מצטרף מספר ${index + 1}: ${name} - החבר הראשון` : `מצטרף מספר ${index + 1}: ${name}`}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <p className="text-slate-600">עדיין אין שמות להצגה.</p>
+                      )}
+                    </DialogContent>
+                  </Dialog>
                   <p className="mt-1 text-sm font-bold text-[#5f513e]">מתוך 180,000 נרשמים</p>
                 </div>
               </div>

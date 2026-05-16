@@ -21,6 +21,7 @@ type SignupStore = {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
+const foundingMemberName = "אמיר פאר";
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -39,6 +40,26 @@ async function readStore(): Promise<SignupStore> {
 async function writeStore(store: SignupStore) {
   await mkdir(dataDir, { recursive: true });
   await writeFile(dataFile, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+}
+
+function getPublicMemberName(signup: MemberSignup) {
+  if (signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com") {
+    return foundingMemberName;
+  }
+
+  return signup.fullName;
+}
+
+function getPublicMemberNames(store: SignupStore) {
+  const names = store.submissions
+    .map(getPublicMemberName)
+    .filter(Boolean);
+
+  if (!names.includes(foundingMemberName)) {
+    names.unshift(foundingMemberName);
+  }
+
+  return Array.from(new Set(names));
 }
 
 function buildWelcomeEmail(fullName: string, count: number) {
@@ -98,7 +119,12 @@ async function sendWelcomeEmail(to: string, fullName: string, count: number) {
 export function registerMemberSignupRoutes(app: Express) {
   app.get("/api/member-signups/count", async (_req: Request, res: Response) => {
     const store = await readStore();
-    res.json({ ok: true, count: store.submissions.length, target: memberTarget });
+    res.json({ ok: true, count: getPublicMemberNames(store).length, target: memberTarget });
+  });
+
+  app.get("/api/member-signups/names", async (_req: Request, res: Response) => {
+    const store = await readStore();
+    res.json({ ok: true, names: getPublicMemberNames(store) });
   });
 
   app.post("/api/member-signups", async (req: Request, res: Response) => {
@@ -157,12 +183,13 @@ export function registerMemberSignupRoutes(app: Express) {
     }
 
     await writeStore(store);
-    const emailSent = await sendWelcomeEmail(email, fullName, store.submissions.length)
+    const publicMemberCount = getPublicMemberNames(store).length;
+    const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount)
       .catch((error) => {
         console.warn("[MemberSignups] Welcome email error:", error);
         return false;
       });
 
-    res.json({ ok: true, count: store.submissions.length, isNewSignup, emailSent });
+    res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent });
   });
 }
