@@ -604,7 +604,7 @@ export default function Home() {
                       ) : memberNames.length > 0 ? (
                         <div className="space-y-4">
                           <p className="rounded-md bg-[#fbf7ed] p-3 text-sm font-bold text-[#8a6a3f]">
-                            ככל שהמספר שלך קטן יותר, כך אתה חלוץ מוקדם יותר בגרעין המייסד.
+                            ככל שהמספר שלך קרוב יותר ל-1, כך הקדמת לראות את העתיד.
                           </p>
                           <ul className="max-h-80 space-y-2 overflow-auto pr-5 text-right leading-7 text-slate-700">
                             {memberNames.map((name, index) => (
