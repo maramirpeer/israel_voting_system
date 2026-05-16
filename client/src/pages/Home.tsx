@@ -17,6 +17,7 @@ export default function Home() {
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
   const [isContractOpen, setContractOpen] = useState(false);
+  const [memberCount, setMemberCount] = useState(0);
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     nationalId: "",
@@ -53,6 +54,10 @@ export default function Home() {
 
       if (!response.ok) {
         throw new Error(data.error || "השליחה נכשלה");
+      }
+
+      if (typeof data.count === "number") {
+        setMemberCount(data.count);
       }
 
       const countText = data.isNewSignup
@@ -396,17 +401,34 @@ export default function Home() {
             <p>
               מתוך היוזמה הזאת עולה ההצעה לייסד את <span className="font-bold text-white">קול משותף</span> כישות פוליטית וכמפלגה מאחדת: מפלגה שאינה נבנית סביב מחנה אחד, אדם אחד או אידיאולוגיה מפלגת, אלא סביב מנגנון חדש של אחריות משותפת, השתתפות אזרחית והחזרת הכוח הציבורי אל הציבור עצמו.
             </p>
-            <div className="mt-8 rounded-lg border border-white/25 bg-white/10 p-5 text-right">
-              <h3 className="mb-3 text-2xl font-bold text-white">מד החברים</h3>
-              <p>
-                מד החברים סופר נרשמים - ומשמש מדד למצביעים פוטנציאליים.
-              </p>
-              <p>
-                כל אדם שנרשם באתר נספר פעם אחת כחלק מהגרעין המייסד של קול משותף. מספר הנרשמים ישמש אותנו כאומדן לכוח הציבורי האפשרי של המפלגה, אך אינו מהווה סקר, תחזית או הבטחת הצבעה בפועל.
-              </p>
-              <p className="font-bold text-white">
-                כאשר המד יגיע ל-180,000 נרשמים, נראה בכך בסיס ציבורי מספיק לפתיחת תהליך הקמת קול משותף כמפלגה רשמית.
-              </p>
+            <div className="mt-10 rounded-lg border border-[#d8c79f] bg-[#fbf7ed]/95 p-6 text-right text-[#17324d] shadow-xl">
+              <div className="flex flex-col gap-5 md:flex-row-reverse md:items-center md:justify-between">
+                <div>
+                  <p className="text-sm font-bold text-[#2f7d5c]">מד החברים</p>
+                  <h3 className="mt-1 text-3xl font-bold text-[#17324d]">הגרעין המייסד של קול משותף</h3>
+                </div>
+                <div className="text-right md:text-left">
+                  <p className="text-5xl font-black leading-none text-[#1d4f91]">{memberCount.toLocaleString("he-IL")}</p>
+                  <p className="mt-1 text-sm font-bold text-[#5f513e]">מתוך 180,000 נרשמים</p>
+                </div>
+              </div>
+              <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#e5d9bf]">
+                <div
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#2f7d5c,#1d4f91)] transition-all duration-500"
+                  style={{ width: `${Math.min((memberCount / 180000) * 100, 100)}%` }}
+                />
+              </div>
+              <div className="mt-5 space-y-3 text-base leading-8 text-[#4a3722]">
+                <p>
+                  מד החברים סופר נרשמים - ומשמש מדד למצביעים פוטנציאליים.
+                </p>
+                <p>
+                  כל אדם שנרשם באתר נספר פעם אחת כחלק מהגרעין המייסד של קול משותף. מספר הנרשמים ישמש אותנו כאומדן לכוח הציבורי האפשרי של המפלגה, אך אינו מהווה סקר, תחזית או הבטחת הצבעה בפועל.
+                </p>
+                <p className="font-bold text-[#17324d]">
+                  כאשר המד יגיע ל-180,000 נרשמים, נראה בכך בסיס ציבורי מספיק לפתיחת תהליך הקמת קול משותף כמפלגה רשמית.
+                </p>
+              </div>
             </div>
             <Dialog open={isSignupOpen} onOpenChange={setSignupOpen}>
               <DialogTrigger asChild>
