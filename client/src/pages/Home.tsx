@@ -298,7 +298,7 @@ export default function Home() {
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
               <h3 className="mt-1 text-lg font-bold text-[#17324d]">כוח אזרחי רציף</h3>
-              <p className="mt-1 text-sm leading-6 text-[#5f513e]">השפעה גם בין בחירות, בנושאים שעל סדר היום.</p>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">השפעה גם בין זמני הבחירות לכנסת.</p>
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
