@@ -239,66 +239,77 @@ export default function Home() {
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">
         <div className="container">
-          <h2 className="text-4xl font-bold text-blue-900 mb-12 text-center text-right">תכונות מרכזיות</h2>
+          <div className="mx-auto mb-12 max-w-3xl text-center text-right">
+            <h2 className="text-4xl font-bold text-blue-900 mb-4">תכונות מרכזיות</h2>
+            <p className="text-lg leading-8 text-gray-600">
+              המערכת בנויה כך שהאזרח יכול להשפיע בלי לוותר על פרטיות, אחריות או יציבות.
+            </p>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-6 text-right">
+            <Card className="border-blue-100 p-6 text-right shadow-sm">
+              <p className="mb-3 text-sm font-bold text-blue-700">אמון</p>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Lock className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">אבטחה מלאה</h3>
+              <h3 className="text-xl font-bold text-blue-900 mb-3">קול מוגן</h3>
               <p className="text-gray-600">
-                כל קול מוגן בהצפנה חזקה ובטכנולוגיית בלוקציין לאימות ושקיפות מלאה
+                כל קול צריך להישמר בצורה מאובטחת, מזוהה למערכת אך מוגן מפני שימוש לרעה.
               </p>
             </Card>
 
-            <Card className="p-6 text-right">
-              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Eye className="w-6 h-6 text-cyan-600" />
+            <Card className="border-blue-100 p-6 text-right shadow-sm">
+              <p className="mb-3 text-sm font-bold text-blue-700">אמון</p>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
+                <Eye className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">שקיפות מלאה</h3>
+              <h3 className="text-xl font-bold text-blue-900 mb-3">שקיפות ניתנת לבדיקה</h3>
               <p className="text-gray-600">
-                כל החלטה, כל הצבעה, וכל תוצאה נחשפות לציבור בזמן אמת
+                החלטות, הצבעות ותוצאות מוצגות לציבור כך שאפשר להבין מה קרה, מתי ולמה.
               </p>
             </Card>
 
-            <Card className="p-6 text-right">
+            <Card className="border-purple-100 p-6 text-right shadow-sm">
+              <p className="mb-3 text-sm font-bold text-purple-700">השפעה</p>
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">כוח אזרחי</h3>
+              <h3 className="text-xl font-bold text-blue-900 mb-3">כוח אזרחי רציף</h3>
               <p className="text-gray-600">
-                כל אזרח יכול להשפיע ישירות או להאציל את קולו
+                האזרח אינו מחכה רק לבחירות. הוא יכול להשפיע לאורך הדרך, בנושאים שעל סדר היום.
               </p>
             </Card>
 
-            <Card className="p-6 text-right">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Shield className="w-6 h-6 text-green-600" />
+            <Card className="border-purple-100 p-6 text-right shadow-sm">
+              <p className="mb-3 text-sm font-bold text-purple-700">השפעה</p>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
+                <Shield className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">אנונימיות מלאה</h3>
+              <h3 className="text-xl font-bold text-blue-900 mb-3">האצלה מודעת</h3>
               <p className="text-gray-600">
-                הקול של כל אזרח נשמר בסוד מלא - אף אחד לא יודע איך הצבעת
+                אפשר להצביע לבד או להפקיד את הקול אצל אדם שסומכים עליו, ולמשוך אותו חזרה בכל עת.
               </p>
             </Card>
 
-            <Card className="p-6 text-right">
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Zap className="w-6 h-6 text-orange-600" />
+            <Card className="border-cyan-100 p-6 text-right shadow-sm">
+              <p className="mb-3 text-sm font-bold text-cyan-700">התפתחות</p>
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
+                <Zap className="w-6 h-6 text-cyan-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">דינמיקה חיה</h3>
               <p className="text-gray-600">
-                המערכת מתגיבה בזמן אמת ל<span className="font-bold">קול משותף</span> - לא מדי פעם, אלא כל הזמן
+                <span className="font-bold">קול משותף</span> מאפשר למערכת להגיב לציבור באופן מתמשך, לא רק ברגעי בחירה נדירים.
               </p>
             </Card>
 
-            <Card className="p-6 text-right">
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <ArrowRight className="w-6 h-6 text-red-600" />
+            <Card className="border-cyan-100 p-6 text-right shadow-sm">
+              <p className="mb-3 text-sm font-bold text-cyan-700">התפתחות</p>
+              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
+                <ArrowRight className="w-6 h-6 text-cyan-600" />
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגתית</h3>
               <p className="text-gray-600">
-                מערכת זו מחברת את הממשל ל<span className="font-bold">קול משותף</span> בהדרגה, ללא שינוי דרמטי
+                החיבור בין הציבור לממשל נבנה בשלבים, מתוך שמירה על יציבות ועל אחריות ציבורית.
               </p>
             </Card>
           </div>
