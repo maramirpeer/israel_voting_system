@@ -20,6 +20,7 @@ type SignupStore = {
 
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
+const memberTarget = 180000;
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -40,6 +41,56 @@ async function writeStore(store: SignupStore) {
   await writeFile(dataFile, `${JSON.stringify(store, null, 2)}\n`, "utf8");
 }
 
+function buildWelcomeEmail(fullName: string, count: number) {
+  return {
+    subject: "ברוכים הבאים לגרעין המייסד של קול משותף",
+    html: `
+      <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#0f172a">
+        <h1 style="color:#1e3a8a">ברוכים הבאים, ${fullName}</h1>
+        <p>תודה על ההצטרפות לגרעין המייסד של קול משותף.</p>
+        <p>הרשמתך נשמרה, והמד עלה ל-<strong>${count.toLocaleString("he-IL")}</strong> נרשמים מתוך יעד של <strong>${memberTarget.toLocaleString("he-IL")}</strong>.</p>
+        <p>נשתמש במייל הזה לעדכונים עתידיים על התקדמות היוזמה, בצורה מדודה ולא מציפה.</p>
+        <p>מספר הנרשמים משמש אומדן לכוח ציבורי אפשרי, ואינו מהווה סקר, תחזית או הבטחת הצבעה בפועל.</p>
+      </div>
+    `,
+    text: `ברוכים הבאים, ${fullName}. תודה על ההצטרפות לגרעין המייסד של קול משותף. הרשמתך נשמרה, והמד עלה ל-${count.toLocaleString("he-IL")} נרשמים מתוך יעד של ${memberTarget.toLocaleString("he-IL")}. נשתמש במייל הזה לעדכונים עתידיים על התקדמות היוזמה.`,
+  };
+}
+
+async function sendWelcomeEmail(to: string, fullName: string, count: number) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.MEMBER_SIGNUP_EMAIL_FROM || process.env.EMAIL_FROM;
+
+  if (!apiKey || !from) {
+    console.warn("[MemberSignups] Email provider is not configured. Set RESEND_API_KEY and MEMBER_SIGNUP_EMAIL_FROM.");
+    return false;
+  }
+
+  const message = buildWelcomeEmail(fullName, count);
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to,
+      subject: message.subject,
+      html: message.html,
+      text: message.text,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    console.warn(`[MemberSignups] Welcome email failed (${response.status}): ${detail}`);
+    return false;
+  }
+
+  return true;
+}
+
 export function registerMemberSignupRoutes(app: Express) {
   app.post("/api/member-signups", async (req: Request, res: Response) => {
     const fullName = normalize(req.body.fullName);
@@ -58,8 +109,8 @@ export function registerMemberSignupRoutes(app: Express) {
       return;
     }
 
-    if (!email && !phone) {
-      res.status(400).json({ error: "יש למלא אימייל או טלפון" });
+    if (!email) {
+      res.status(400).json({ error: "יש למלא אימייל כדי לקבל אישור הרשמה ועדכונים עתידיים" });
       return;
     }
 
@@ -67,12 +118,13 @@ export function registerMemberSignupRoutes(app: Express) {
     const store = await readStore();
     const existingIndex = store.submissions.findIndex((signup) => {
       const sameNationalId = signup.nationalId === nationalId;
-      const sameEmail = email && signup.email.toLowerCase() === email;
+      const sameEmail = signup.email.toLowerCase() === email;
       const samePhone = phone && signup.phone === phone;
       return sameNationalId || sameEmail || samePhone;
     });
+    const isNewSignup = existingIndex < 0;
 
-    if (existingIndex >= 0) {
+    if (!isNewSignup) {
       store.submissions[existingIndex] = {
         ...store.submissions[existingIndex],
         fullName,
@@ -96,6 +148,11 @@ export function registerMemberSignupRoutes(app: Express) {
     }
 
     await writeStore(store);
-    res.json({ ok: true, count: store.submissions.length });
+    const emailSent = await sendWelcomeEmail(email, fullName, store.submissions.length).catch((error) => {
+      console.warn("[MemberSignups] Welcome email error:", error);
+      return false;
+    });
+
+    res.json({ ok: true, count: store.submissions.length, isNewSignup, emailSent });
   });
 }

@@ -54,7 +54,13 @@ export default function Home() {
         throw new Error(data.error || "השליחה נכשלה");
       }
 
-      setSignupMessage(`נשמר בהצלחה. מספר הנרשמים כעת: ${data.count}.`);
+      const countText = data.isNewSignup
+        ? `המד עלה ל-${data.count} נרשמים.`
+        : `הרשומה עודכנה. המד נשאר על ${data.count} נרשמים.`;
+      const emailText = data.emailSent
+        ? "מייל ברכה נשלח אליך."
+        : "ההרשמה נשמרה, אך מייל הברכה יישלח לאחר חיבור שירות המייל בשרת.";
+      setSignupMessage(`${countText} ${emailText}`);
       setSignupForm({ fullName: "", nationalId: "", phone: "", email: "", note: "" });
     } catch (error) {
       setSignupMessage(error instanceof Error ? error.message : "השליחה נכשלה");
@@ -412,7 +418,7 @@ export default function Home() {
                 <DialogHeader className="text-right">
                   <DialogTitle className="text-2xl text-blue-900">טופס הצטרפות לגרעין המייסד</DialogTitle>
                   <DialogDescription>
-                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. אותה תעודת זהות נספרת פעם אחת בלבד.
+                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. אותה תעודת זהות נספרת פעם אחת בלבד, ולאחר השליחה יישלח מייל ברכה.
                   </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4" onSubmit={handleSignupSubmit}>
@@ -437,7 +443,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="signup-phone">טלפון</Label>
+                      <Label htmlFor="signup-phone">טלפון (אופציונלי)</Label>
                       <Input
                         id="signup-phone"
                         inputMode="tel"
@@ -452,11 +458,12 @@ export default function Home() {
                         type="email"
                         value={signupForm.email}
                         onChange={(event) => updateSignupForm("email", event.target.value)}
+                        required
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="signup-note">הערה</Label>
+                    <Label htmlFor="signup-note">הערה (אופציונלי)</Label>
                     <Textarea
                       id="signup-note"
                       value={signupForm.note}
