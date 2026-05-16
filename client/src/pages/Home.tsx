@@ -1,13 +1,28 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3 } from "lucide-react";
+import { useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const [isSignupOpen, setSignupOpen] = useState(false);
+  const [isSignupSubmitting, setSignupSubmitting] = useState(false);
+  const [signupMessage, setSignupMessage] = useState("");
+  const [signupForm, setSignupForm] = useState({
+    fullName: "",
+    nationalId: "",
+    phone: "",
+    email: "",
+    note: "",
+  });
   const goToMK121Top = () => {
     setLocation("/mk121");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -18,6 +33,34 @@ export default function Home() {
   };
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const updateSignupForm = (field: keyof typeof signupForm, value: string) => {
+    setSignupForm((current) => ({ ...current, [field]: value }));
+  };
+  const handleSignupSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSignupSubmitting(true);
+    setSignupMessage("");
+
+    try {
+      const response = await fetch("/api/member-signups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(signupForm),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "השליחה נכשלה");
+      }
+
+      setSignupMessage(`נשמר בהצלחה. מספר הנרשמים כעת: ${data.count}.`);
+      setSignupForm({ fullName: "", nationalId: "", phone: "", email: "", note: "" });
+    } catch (error) {
+      setSignupMessage(error instanceof Error ? error.message : "השליחה נכשלה");
+    } finally {
+      setSignupSubmitting(false);
+    }
   };
 
   return (
@@ -359,6 +402,80 @@ export default function Home() {
                 כאשר המד יגיע ל-180,000 נרשמים, נראה בכך בסיס ציבורי מספיק לפתיחת תהליך הקמת קול משותף כמפלגה רשמית.
               </p>
             </div>
+            <Dialog open={isSignupOpen} onOpenChange={setSignupOpen}>
+              <DialogTrigger asChild>
+                <Button className="mt-6 bg-white px-8 text-blue-800 hover:bg-blue-50">
+                  הצטרפות לגרעין המייסד
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="text-right sm:max-w-xl" dir="rtl">
+                <DialogHeader className="text-right">
+                  <DialogTitle className="text-2xl text-blue-900">טופס הצטרפות לגרעין המייסד</DialogTitle>
+                  <DialogDescription>
+                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. אותה תעודת זהות נספרת פעם אחת בלבד.
+                  </DialogDescription>
+                </DialogHeader>
+                <form className="space-y-4" onSubmit={handleSignupSubmit}>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-full-name">שם מלא</Label>
+                      <Input
+                        id="signup-full-name"
+                        value={signupForm.fullName}
+                        onChange={(event) => updateSignupForm("fullName", event.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-national-id">תעודת זהות</Label>
+                      <Input
+                        id="signup-national-id"
+                        inputMode="numeric"
+                        value={signupForm.nationalId}
+                        onChange={(event) => updateSignupForm("nationalId", event.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-phone">טלפון</Label>
+                      <Input
+                        id="signup-phone"
+                        inputMode="tel"
+                        value={signupForm.phone}
+                        onChange={(event) => updateSignupForm("phone", event.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">אימייל</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        value={signupForm.email}
+                        onChange={(event) => updateSignupForm("email", event.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-note">הערה</Label>
+                    <Textarea
+                      id="signup-note"
+                      value={signupForm.note}
+                      onChange={(event) => updateSignupForm("note", event.target.value)}
+                      placeholder="אפשר להשאיר ריק"
+                    />
+                  </div>
+                  <p className="text-xs leading-5 text-slate-500">
+                    שליחת הטופס אינה מהווה הצבעה, סקר או התחייבות פוליטית. היא נספרת כהבעת עניין להצטרפות לגרעין המייסד.
+                  </p>
+                  {signupMessage && (
+                    <p className="rounded-md bg-blue-50 p-3 text-sm font-medium text-blue-900">{signupMessage}</p>
+                  )}
+                  <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800" disabled={isSignupSubmitting}>
+                    {isSignupSubmitting ? "שולח..." : "שליחה"}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>
