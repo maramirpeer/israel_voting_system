@@ -167,6 +167,28 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Vision Section */}
+      <section id="vision" className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(238,246,255,0.88)_0%,rgba(251,247,237,0.82)_48%,rgba(238,246,239,0.88)_100%)]">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-right">
+            <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
+            <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
+              <span className="font-bold">קול משותף</span> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
+            </p>
+            <p className="mt-4 text-xl text-[#4a3722] leading-relaxed font-semibold">
+              בתמיכה מספקת, התנועה תהפוך למפלגה מאחדת עם נוכחות בכנסת.
+            </p>
+            <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
+              למעלה מזה, תנועת קול משותף מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
+              ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
+            </p>
+            <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
+              "לא מחליפים את הממשל אלא מחברים אותו."
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Two Channels Section */}
       <section id="channels" className="relative z-10 py-20 bg-[linear-gradient(180deg,rgba(251,247,237,0.9)_0%,rgba(255,255,255,0.82)_48%,rgba(238,246,239,0.9)_100%)]">
         <div className="container">
@@ -248,28 +270,6 @@ export default function Home() {
                 כנס לממשלה משתפת
               </Button>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Vision Section */}
-      <section id="vision" className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(238,246,255,0.88)_0%,rgba(251,247,237,0.82)_48%,rgba(238,246,239,0.88)_100%)]">
-        <div className="container">
-          <div className="max-w-3xl mx-auto text-right">
-            <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
-            <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
-              <span className="font-bold">קול משותף</span> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
-            </p>
-            <p className="mt-4 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              בתמיכה מספקת, התנועה תהפוך למפלגה מאחדת עם נוכחות בכנסת.
-            </p>
-            <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
-              למעלה מזה, תנועת קול משותף מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
-              ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
-            </p>
-            <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
-              "לא מחליפים את הממשל אלא מחברים אותו."
-            </p>
           </div>
         </div>
       </section>
