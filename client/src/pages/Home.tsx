@@ -258,13 +258,14 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
-              <span className="font-bold">קול משותף</span> - מערכת שמכוונת להיות תוסף מהפכני למערכת הפוליטית הקיימת.
+              <span className="font-bold">קול משותף</span> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
             </p>
             <p className="mt-4 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              תוסף זה רוצה לקבל תמיכה גורפת מכלל הציבור ונבחריו.
+              בתמיכה מספקת, התנועה תהפוך למפלגה מאחדת עם נוכחות בכנסת.
             </p>
             <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
-              זהו תוסף שכל מי שטובת המדינה בראש מעייניו ירצה לתמוך בו.
+              למעלה מזה, תנועת קול משותף מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
+              ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
             </p>
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
               "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול משותף חי, דינמי ומבוזר."
