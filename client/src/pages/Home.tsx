@@ -246,72 +246,37 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-blue-100 p-6 text-right shadow-sm">
-              <p className="mb-3 text-sm font-bold text-blue-700">אמון</p>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Lock className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">קול מוגן</h3>
-              <p className="text-gray-600">
-                כל קול צריך להישמר בצורה מאובטחת, מזוהה למערכת אך מוגן מפני שימוש לרעה.
-              </p>
-            </Card>
-
-            <Card className="border-blue-100 p-6 text-right shadow-sm">
-              <p className="mb-3 text-sm font-bold text-blue-700">אמון</p>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Eye className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">שקיפות ניתנת לבדיקה</h3>
-              <p className="text-gray-600">
-                החלטות, הצבעות ותוצאות מוצגות לציבור כך שאפשר להבין מה קרה, מתי ולמה.
-              </p>
-            </Card>
-
-            <Card className="border-purple-100 p-6 text-right shadow-sm">
-              <p className="mb-3 text-sm font-bold text-purple-700">השפעה</p>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Users className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">כוח אזרחי רציף</h3>
-              <p className="text-gray-600">
-                האזרח אינו מחכה רק לבחירות. הוא יכול להשפיע לאורך הדרך, בנושאים שעל סדר היום.
-              </p>
-            </Card>
-
-            <Card className="border-purple-100 p-6 text-right shadow-sm">
-              <p className="mb-3 text-sm font-bold text-purple-700">השפעה</p>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Shield className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">האצלה מודעת</h3>
-              <p className="text-gray-600">
-                אפשר להצביע לבד או להפקיד את הקול אצל אדם שסומכים עליו, ולמשוך אותו חזרה בכל עת.
-              </p>
-            </Card>
-
-            <Card className="border-cyan-100 p-6 text-right shadow-sm">
-              <p className="mb-3 text-sm font-bold text-cyan-700">התפתחות</p>
-              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <Zap className="w-6 h-6 text-cyan-600" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">דינמיקה חיה</h3>
-              <p className="text-gray-600">
-                <span className="font-bold">קול משותף</span> מאפשר למערכת להגיב לציבור באופן מתמשך, לא רק ברגעי בחירה נדירים.
-              </p>
-            </Card>
-
-            <Card className="border-cyan-100 p-6 text-right shadow-sm">
-              <p className="mb-3 text-sm font-bold text-cyan-700">התפתחות</p>
-              <div className="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 ml-auto">
-                <ArrowRight className="w-6 h-6 text-cyan-600" />
-              </div>
-              <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגתית</h3>
-              <p className="text-gray-600">
-                החיבור בין הציבור לממשל נבנה בשלבים, מתוך שמירה על יציבות ועל אחריות ציבורית.
-              </p>
-            </Card>
+          <div className="mx-auto grid max-w-5xl divide-y divide-slate-200 border-y border-slate-200 md:grid-cols-3 md:divide-x md:divide-y">
+            <div className="p-4 text-right">
+              <p className="text-xs font-bold text-blue-700">אמון</p>
+              <h3 className="mt-1 text-lg font-bold text-blue-900">קול מוגן</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">שמירה מאובטחת על הקול ומניעת שימוש לרעה.</p>
+            </div>
+            <div className="p-4 text-right">
+              <p className="text-xs font-bold text-blue-700">אמון</p>
+              <h3 className="mt-1 text-lg font-bold text-blue-900">שקיפות ניתנת לבדיקה</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">מה הוחלט, מתי, ולפי איזה קול ציבורי.</p>
+            </div>
+            <div className="p-4 text-right">
+              <p className="text-xs font-bold text-purple-700">השפעה</p>
+              <h3 className="mt-1 text-lg font-bold text-blue-900">כוח אזרחי רציף</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">השפעה גם בין בחירות, בנושאים שעל סדר היום.</p>
+            </div>
+            <div className="p-4 text-right">
+              <p className="text-xs font-bold text-purple-700">השפעה</p>
+              <h3 className="mt-1 text-lg font-bold text-blue-900">האצלה מודעת</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">להפקיד את הקול, ולהחזיר אותו בכל עת.</p>
+            </div>
+            <div className="p-4 text-right">
+              <p className="text-xs font-bold text-cyan-700">התפתחות</p>
+              <h3 className="mt-1 text-lg font-bold text-blue-900">דינמיקה חיה</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">תגובה מתמשכת לציבור, לא רק ברגעי בחירה.</p>
+            </div>
+            <div className="p-4 text-right">
+              <p className="text-xs font-bold text-cyan-700">התפתחות</p>
+              <h3 className="mt-1 text-lg font-bold text-blue-900">התקדמות הדרגתית</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">חיבור בשלבים, תוך שמירה על יציבות ואחריות.</p>
+            </div>
           </div>
         </div>
       </section>
