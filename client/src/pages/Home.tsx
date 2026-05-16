@@ -17,6 +17,7 @@ export default function Home() {
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
   const [isContractOpen, setContractOpen] = useState(false);
+  const [isPartyContractOpen, setPartyContractOpen] = useState(false);
   const [memberCount, setMemberCount] = useState(0);
   const [signupForm, setSignupForm] = useState({
     fullName: "",
@@ -526,6 +527,35 @@ export default function Home() {
             <p>
               מתוך היוזמה הזאת עולה ההצעה לייסד את <span className="font-bold text-white">קול משותף</span> כישות פוליטית וכמפלגה מאחדת: מפלגה שאינה נבנית סביב מחנה אחד, אדם אחד או אידיאולוגיה מפלגת, אלא סביב מנגנון חדש של אחריות משותפת, השתתפות אזרחית והחזרת הכוח הציבורי אל הציבור עצמו.
             </p>
+            <p>
+              אם וכאשר <span className="font-bold text-white">קול משותף</span> אכן תהיה מפלגה, זו תהיה מפלגה הפועלת בדמוקרטיה ישירה בלבד - כאשר מצביעיה הם למעשה חבריה. חברי הכנסת מטעמה יהיו נציגי המפלגה, ימלאו את תפקידם בשם המפלגה ויפעלו לפי ההוראות שיתקבלו ממערכת ההצבעות המפלגתית.
+            </p>
+            <Dialog open={isPartyContractOpen} onOpenChange={setPartyContractOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="border-white/35 bg-white/10 px-6 text-white hover:bg-white hover:text-[#17324d]">
+                  חוזה מפלגת קול משותף
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="text-right sm:max-w-2xl" dir="rtl">
+                <DialogHeader className="text-right">
+                  <DialogTitle className="text-2xl text-[#17324d]">חוזה מפלגת קול משותף</DialogTitle>
+                  <DialogDescription>
+                    טיוטת עקרון פעולה למפלגה שתפעל כמנגנון דמוקרטי ישיר ומחייב.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 leading-8 text-slate-700">
+                  <p>
+                    קול משותף, אם וכאשר תוקם כמפלגה, תפעל בדמוקרטיה ישירה בלבד. מצביעי המפלגה הם חבריה, והחלטותיה יתקבלו באמצעות מערכת הצבעות מפלגתית שקופה, רציפה ומחייבת.
+                  </p>
+                  <p>
+                    חברי הכנסת מטעם המפלגה יהיו נציגי המפלגה בכנסת. תפקידם יהיה לממש את הכרעות החברים, לפעול בשם המפלגה, ולמלא את ההוראות שיתקבלו במערכת ההצבעות המפלגתית.
+                  </p>
+                  <p className="font-bold text-[#17324d]">
+                    הכוח הפוליטי אינו עובר לנציגים; הוא נשאר בידי הציבור המאורגן כחברי המפלגה.
+                  </p>
+                </div>
+              </DialogContent>
+            </Dialog>
             <div className="mt-10 rounded-lg border border-[#d8c79f] bg-[#fbf7ed]/95 p-6 text-right text-[#17324d] shadow-xl">
               <div className="flex flex-col gap-5 md:flex-row-reverse md:items-center md:justify-between">
                 <div>
