@@ -67,6 +67,9 @@ async function sendWelcomeEmail(to: string, fullName: string, count: number) {
   }
 
   const message = buildWelcomeEmail(fullName, count);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -80,7 +83,8 @@ async function sendWelcomeEmail(to: string, fullName: string, count: number) {
       html: message.html,
       text: message.text,
     }),
-  });
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeout));
 
   if (!response.ok) {
     const detail = await response.text().catch(() => "");
@@ -92,6 +96,11 @@ async function sendWelcomeEmail(to: string, fullName: string, count: number) {
 }
 
 export function registerMemberSignupRoutes(app: Express) {
+  app.get("/api/member-signups/count", async (_req: Request, res: Response) => {
+    const store = await readStore();
+    res.json({ ok: true, count: store.submissions.length, target: memberTarget });
+  });
+
   app.post("/api/member-signups", async (req: Request, res: Response) => {
     const fullName = normalize(req.body.fullName);
     const nationalId = normalize(req.body.nationalId).replace(/\D/g, "");
@@ -148,10 +157,11 @@ export function registerMemberSignupRoutes(app: Express) {
     }
 
     await writeStore(store);
-    const emailSent = await sendWelcomeEmail(email, fullName, store.submissions.length).catch((error) => {
-      console.warn("[MemberSignups] Welcome email error:", error);
-      return false;
-    });
+    const emailSent = await sendWelcomeEmail(email, fullName, store.submissions.length)
+      .catch((error) => {
+        console.warn("[MemberSignups] Welcome email error:", error);
+        return false;
+      });
 
     res.json({ ok: true, count: store.submissions.length, isNewSignup, emailSent });
   });

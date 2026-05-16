@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3 } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
 export default function Home() {
@@ -25,6 +25,27 @@ export default function Home() {
     email: "",
     note: "",
   });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch("/api/member-signups/count")
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (isMounted && typeof data?.count === "number") {
+          setMemberCount(data.count);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setMemberCount(0);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   const goToMK121Top = () => {
     setLocation("/mk121");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -43,12 +64,15 @@ export default function Home() {
     event.preventDefault();
     setSignupSubmitting(true);
     setSignupMessage("");
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
 
     try {
       const response = await fetch("/api/member-signups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signupForm),
+        signal: controller.signal,
       });
       const data = await response.json();
 
@@ -69,8 +93,12 @@ export default function Home() {
       setSignupMessage(`${countText} ${emailText}`);
       setSignupForm({ fullName: "", nationalId: "", phone: "", email: "", note: "" });
     } catch (error) {
-      setSignupMessage(error instanceof Error ? error.message : "השליחה נכשלה");
+      const timeoutMessage = error instanceof DOMException && error.name === "AbortError"
+        ? "ההרשמה נשמרת לאט מדי כרגע. נסה שוב בעוד רגע, או רענן את הדף ובדוק אם המד עלה."
+        : "השליחה נכשלה";
+      setSignupMessage(error instanceof Error && error.name !== "AbortError" ? error.message : timeoutMessage);
     } finally {
+      window.clearTimeout(timeout);
       setSignupSubmitting(false);
     }
   };
