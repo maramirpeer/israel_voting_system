@@ -182,7 +182,7 @@ export default function Home() {
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-gray-700">הצבעה יומית על החלטות</span>
+                  <span className="text-gray-700">הצבעה על החלטות חשובות</span>
                   <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
