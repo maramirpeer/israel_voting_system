@@ -224,7 +224,7 @@ export default function Home() {
               תוסף זה רוצה לקבל תמיכה גורפת מכלל הציבור ונבחריו.
             </p>
             <p className="mt-3 text-lg text-gray-700 leading-relaxed">
-              זהו תוסף שכל מי שטובת המדינה בראש מעייניו אמור להיות מסוגל לתמוך בו.
+              זהו תוסף שכל מי שטובת המדינה בראש מעייניו ירצה לתמוך בו.
             </p>
             <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
               "לא מחליפים את הממשל ביום אחד — מחברים אותו בהדרגה לקול משותף חי, דינמי ומבוזר."
