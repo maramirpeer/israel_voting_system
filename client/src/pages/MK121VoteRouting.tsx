@@ -12,9 +12,11 @@ const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 
 const demoBills = [
-  { id: 201, title: "הגבלת כהונת ראש ממשלה ל-8 שנים" },
-  { id: 202, title: "חובת הצבעה של כל חברי הכנסת בהצבעות מליאה" },
-  { id: 203, title: "שקיפות מלאה בדיוני ועדות הכנסת" },
+  { id: 201, title: "חובת פרסום יומן פגישות של רגולטורים" },
+  { id: 202, title: "החזר אוטומטי על איחור חמור בתחבורה ציבורית" },
+  { id: 204, title: "הגבלת כהונת ראש ממשלה ל-8 שנים" },
+  { id: 205, title: "חובת הצבעה של כל חברי הכנסת בהצבעות מליאה" },
+  { id: 206, title: "זירת מידע ממוקדת: שאלה בשנה לכל חבר כנסת" },
 ];
 
 const ministries = [

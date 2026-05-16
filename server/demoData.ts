@@ -528,6 +528,23 @@ export const demoMK121Bills = [
     createdAt: daysFromNow(-1),
     updatedAt: now,
   },
+  {
+    id: 206,
+    cycleId: 1,
+    title: "זירת מידע ממוקדת: שאלה בשנה לכל חבר כנסת",
+    description: "הצעת חוק שתיצור זירת מידע ממוקדת שבה כל אזרח יוכל להפנות שאלה אחת בשנה לכל חבר כנסת, ותחייב את הח\"כ לענות בתשובה מצולמת, עניינית וברורה שתהיה זמינה לציבור.",
+    proposedBy: 1,
+    category: "פיקוח פרלמנטרי",
+    votes: 9870,
+    isWinner: false,
+    status: "voting" as const,
+    supporters: 128,
+    quorumMet: false,
+    createdCycleNumber: 121,
+    archivedAt: null,
+    createdAt: daysFromNow(-1),
+    updatedAt: now,
+  },
 ];
 
 export const demoMK121Questions = [

@@ -56,6 +56,16 @@ const demoBills = [
     supporters: 100,
     isWinner: false,
   },
+  {
+    id: 204,
+    title: "זירת מידע ממוקדת: שאלה בשנה לכל חבר כנסת",
+    description: "הצעת חוק שתיצור זירת מידע ממוקדת שבה כל אזרח יוכל להפנות שאלה אחת בשנה לכל חבר כנסת, ותחייב את הח\"כ לענות בתשובה מצולמת, עניינית וברורה שתהיה זמינה לציבור.",
+    category: "פיקוח פרלמנטרי",
+    status: "voting",
+    votes: 9870,
+    supporters: 100,
+    isWinner: false,
+  },
 ];
 
 const demoQuestions = [
