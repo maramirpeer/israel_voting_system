@@ -207,7 +207,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* MK 121 Channel */}
             <Card className="p-8 border-2 border-[#c8a96a] bg-[#fbf7ed]/88 hover:border-[#2f7d5c] transition text-right shadow-md">
-              <div className="flex items-center gap-3 mb-6 justify-end">
+              <div className="flex items-center gap-3 mb-6 justify-center">
                 <div className="w-12 h-12 bg-[#eef6ef] rounded-lg flex items-center justify-center">
                   <Megaphone className="w-6 h-6 text-[#2f7d5c]" />
                 </div>
@@ -240,7 +240,7 @@ export default function Home() {
 
             {/* Dynamic Civic Voice Channel */}
             <Card className="p-8 border-2 border-[#c7d8df] bg-[#f7fbff]/88 hover:border-[#1d4f91] transition text-right shadow-md">
-              <div className="flex items-center gap-3 mb-6 justify-end">
+              <div className="flex items-center gap-3 mb-6 justify-center">
                 <div className="w-12 h-12 bg-[#eef6ff] rounded-lg flex items-center justify-center">
                   <BarChart3 className="w-6 h-6 text-[#1d4f91]" />
                 </div>
