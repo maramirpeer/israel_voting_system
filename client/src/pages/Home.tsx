@@ -218,7 +218,7 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center text-right">
             <h2 className="text-4xl font-bold text-blue-900 mb-8">הקדמת המפתח</h2>
             <p className="text-2xl text-gray-700 leading-relaxed font-semibold">
-              <span className="text-blue-900 font-extrabold">קול הציבור</span> - מערכת שמכוונת להיות תוסף מהפכני למערכת הפוליטית הקיימת.
+              <span className="font-bold">קול משותף</span> - מערכת שמכוונת להיות תוסף מהפכני למערכת הפוליטית הקיימת.
             </p>
             <p className="mt-4 text-xl text-gray-700 leading-relaxed font-semibold">
               תוסף זה רוצה לקבל תמיכה גורפת מכלל הציבור ונבחריו.
@@ -288,7 +288,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">דינמיקה חיה</h3>
               <p className="text-gray-600">
-                המערכת מתגיבה בזמן אמת לקול הציבור - לא מדי פעם, אלא כל הזמן
+                המערכת מתגיבה בזמן אמת ל<span className="font-bold">קול משותף</span> - לא מדי פעם, אלא כל הזמן
               </p>
             </Card>
 
@@ -298,7 +298,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-blue-900 mb-3">התקדמות הדרגתית</h3>
               <p className="text-gray-600">
-                מערכת זו מחברת את הממשל לקול הציבור בהדרגה, ללא שינוי דרמטי
+                מערכת זו מחברת את הממשל ל<span className="font-bold">קול משותף</span> בהדרגה, ללא שינוי דרמטי
               </p>
             </Card>
           </div>
@@ -574,7 +574,7 @@ export default function Home() {
                   <h4 className="mb-2 text-xl font-bold text-slate-900">הצהרה ציבורית</h4>
                   <p>אני מבין/ה כי חתימתי על חוזה זה היא התחייבות ציבורית גלויה כלפי הבוחרים.</p>
                   <p className="mt-3 font-bold text-slate-900">
-                    מי שמבקש את קול הציבור - מתחייב לפעול להשבת קולו של הציבור אל תהליך קבלת ההחלטות.
+                    מי שמבקש את <span className="font-bold">קול משותף</span> - מתחייב לפעול להשבת קולו של הציבור אל תהליך קבלת ההחלטות.
                   </p>
                 </div>
 
