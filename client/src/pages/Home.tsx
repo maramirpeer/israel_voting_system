@@ -376,9 +376,12 @@ export default function Home() {
       <section className="py-12 bg-white">
         <div className="container max-w-4xl text-right" dir="rtl">
           <div className="border-r-4 border-blue-600 pr-5 text-lg leading-9 text-slate-700">
-            <p className="font-bold text-blue-900">קול משותף נולדה מתוך חבורת הזוהר.</p>
+            <p className="font-bold text-blue-900">
+              קול משותף היא יוזמה שנולדה ככלי תיקון שמקורו בעולמות התיקון החברתי של חבורת הזוהר.
+            </p>
             <p>
-              אני אינני בעל היוזמה, אלא נושא דבריה - מתרגם את הקריאה הפנימית לתיקון, חיבור ואחריות ציבורית לשפה אזרחית ופוליטית.
+              זהו ניסיון שמגיש פתרון מיידי ואפשרי לבעיה חברתית עתיקה - כינון הנהגה ראויה,
+              ביסוס תקשורת וזרימת מידע מתוקנים.
             </p>
           </div>
         </div>
