@@ -133,10 +133,13 @@ export default function Home() {
           <div className="text-center mb-16 text-right">
             <h2 className="text-4xl font-bold text-blue-900 mb-4">שני ערוצי שיתוף מעשיים</h2>
             <p className="text-lg text-gray-600">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל לאזרח אחר</p>
-            <p className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-gray-600">
-              האצלת קול אינה ויתור על קולי בהצבעה. אלא היא דרך להפקיד את קולי בצורה מודעת,
-              תוך הבנה מי מחזיק בקולי ובשם אילו ערכים הוא פועל. אם וכאשר ארצה - הקול יוחזר אלי.
-            </p>
+            <div className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-gray-600">
+              <p>
+                האצלת קול אינה ויתור על קולי בהצבעה. אלא היא דרך להפקיד את קולי בצורה מודעת,
+                תוך הבנה מי מחזיק בקולי ובשם אילו ערכים הוא פועל.
+              </p>
+              <p className="mt-2 font-bold text-blue-900">אם וכאשר ארצה - הקול יוחזר אלי.</p>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
