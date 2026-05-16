@@ -213,20 +213,20 @@ export default function Home() {
                   <Megaphone className="w-6 h-6 text-[#2f7d5c]" />
                 </div>
               </div>
-              <p className="text-[#5f513e] mb-6">
-                ערוץ אזרחי לכנסת - הציבור בוחר כל 3 חודשים את הצעת החוק והשאילתא הדחופה ביותר לקידום ציבורי
+              <p className="text-[#5f513e] mb-6 leading-8">
+                ערוץ אזרחי לכנסת שמחבר את המצביעים להצעות חוק ולשאילתות ציבוריות.
               </p>
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">הצבעה כל 3 חודשים</span>
+                  <span className="text-[#4a3722]">כל 3 חודשים נבחרי הציבור יצביעו ישירות בקריאה ראשונה על הצעת החוק הנבחרת.</span>
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">בחירת הצעת חוק + שאילתא</span>
+                  <span className="text-[#4a3722]">השר הנשאל בשאילתא הציבורית ישיב עליה בתשובה ישירה ומצולמת.</span>
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                 </div>
                 <div className="flex items-start gap-3 justify-end">
-                  <span className="text-[#4a3722]">האצלת קול גמישה</span>
+                  <span className="text-[#4a3722]">המצביעים יוכלו לבחור ישירות או להאציל את קולם באופן גמיש.</span>
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                 </div>
               </div>
