@@ -2,8 +2,11 @@ import type { Express, Request, Response } from "express";
 import { randomUUID } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import { eq, or } from "drizzle-orm";
+import { getDb } from "./db";
+import { memberSignups } from "../drizzle/schema";
 
-type MemberSignup = {
+type LocalMemberSignup = {
   id: string;
   fullName: string;
   nationalId: string;
@@ -14,8 +17,14 @@ type MemberSignup = {
   updatedAt: string;
 };
 
+type PublicMemberSignup = {
+  fullName: string;
+  nationalId: string;
+  email: string;
+};
+
 type SignupStore = {
-  submissions: MemberSignup[];
+  submissions: LocalMemberSignup[];
 };
 
 const dataDir = path.join(process.cwd(), "data");
@@ -27,7 +36,7 @@ function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-async function readStore(): Promise<SignupStore> {
+async function readLocalStore(): Promise<SignupStore> {
   try {
     const raw = await readFile(dataFile, "utf8");
     const parsed = JSON.parse(raw) as SignupStore;
@@ -37,12 +46,12 @@ async function readStore(): Promise<SignupStore> {
   }
 }
 
-async function writeStore(store: SignupStore) {
+async function writeLocalStore(store: SignupStore) {
   await mkdir(dataDir, { recursive: true });
   await writeFile(dataFile, `${JSON.stringify(store, null, 2)}\n`, "utf8");
 }
 
-function getPublicMemberName(signup: MemberSignup) {
+function getPublicMemberName(signup: PublicMemberSignup) {
   if (signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com") {
     return foundingMemberName;
   }
@@ -50,16 +59,109 @@ function getPublicMemberName(signup: MemberSignup) {
   return signup.fullName;
 }
 
-function getPublicMemberNames(store: SignupStore) {
-  const names = store.submissions
-    .map(getPublicMemberName)
-    .filter(Boolean);
+function getPublicMemberNamesFromRows(rows: PublicMemberSignup[]) {
+  const names = rows.map(getPublicMemberName).filter(Boolean);
 
   if (!names.includes(foundingMemberName)) {
     names.unshift(foundingMemberName);
   }
 
   return Array.from(new Set(names));
+}
+
+async function getPublicMemberNames() {
+  const db = await getDb();
+
+  if (db) {
+    const rows = await db
+      .select({
+        fullName: memberSignups.fullName,
+        nationalId: memberSignups.nationalId,
+        email: memberSignups.email,
+      })
+      .from(memberSignups)
+      .orderBy(memberSignups.id);
+
+    return getPublicMemberNamesFromRows(rows);
+  }
+
+  const store = await readLocalStore();
+  return getPublicMemberNamesFromRows(store.submissions);
+}
+
+async function saveSignup(input: {
+  fullName: string;
+  nationalId: string;
+  email: string;
+  phone: string;
+  note: string;
+}) {
+  const db = await getDb();
+
+  if (db) {
+    const samePerson = input.phone
+      ? or(
+          eq(memberSignups.nationalId, input.nationalId),
+          eq(memberSignups.email, input.email),
+          eq(memberSignups.phone, input.phone),
+        )
+      : or(eq(memberSignups.nationalId, input.nationalId), eq(memberSignups.email, input.email));
+
+    const existing = await db.select().from(memberSignups).where(samePerson).limit(1);
+    const isNewSignup = existing.length === 0;
+
+    if (isNewSignup) {
+      await db.insert(memberSignups).values({
+        fullName: input.fullName,
+        nationalId: input.nationalId,
+        email: input.email,
+        phone: input.phone || null,
+        note: input.note || null,
+      });
+    } else {
+      await db
+        .update(memberSignups)
+        .set({
+          fullName: input.fullName,
+          nationalId: input.nationalId,
+          email: input.email,
+          phone: input.phone || null,
+          note: input.note || null,
+          updatedAt: new Date(),
+        })
+        .where(eq(memberSignups.id, existing[0].id));
+    }
+
+    return { isNewSignup };
+  }
+
+  const now = new Date().toISOString();
+  const store = await readLocalStore();
+  const existingIndex = store.submissions.findIndex((signup) => {
+    const sameNationalId = signup.nationalId === input.nationalId;
+    const sameEmail = signup.email.toLowerCase() === input.email;
+    const samePhone = input.phone && signup.phone === input.phone;
+    return sameNationalId || sameEmail || samePhone;
+  });
+  const isNewSignup = existingIndex < 0;
+
+  if (!isNewSignup) {
+    store.submissions[existingIndex] = {
+      ...store.submissions[existingIndex],
+      ...input,
+      updatedAt: now,
+    };
+  } else {
+    store.submissions.push({
+      id: randomUUID(),
+      ...input,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  await writeLocalStore(store);
+  return { isNewSignup };
 }
 
 function buildWelcomeEmail(fullName: string, count: number) {
@@ -118,13 +220,13 @@ async function sendWelcomeEmail(to: string, fullName: string, count: number) {
 
 export function registerMemberSignupRoutes(app: Express) {
   app.get("/api/member-signups/count", async (_req: Request, res: Response) => {
-    const store = await readStore();
-    res.json({ ok: true, count: getPublicMemberNames(store).length, target: memberTarget });
+    const names = await getPublicMemberNames();
+    res.json({ ok: true, count: names.length, target: memberTarget });
   });
 
   app.get("/api/member-signups/names", async (_req: Request, res: Response) => {
-    const store = await readStore();
-    res.json({ ok: true, names: getPublicMemberNames(store) });
+    const names = await getPublicMemberNames();
+    res.json({ ok: true, names });
   });
 
   app.post("/api/member-signups", async (req: Request, res: Response) => {
@@ -149,46 +251,13 @@ export function registerMemberSignupRoutes(app: Express) {
       return;
     }
 
-    const now = new Date().toISOString();
-    const store = await readStore();
-    const existingIndex = store.submissions.findIndex((signup) => {
-      const sameNationalId = signup.nationalId === nationalId;
-      const sameEmail = signup.email.toLowerCase() === email;
-      const samePhone = phone && signup.phone === phone;
-      return sameNationalId || sameEmail || samePhone;
+    const { isNewSignup } = await saveSignup({ fullName, nationalId, email, phone, note });
+    const publicMemberNames = await getPublicMemberNames();
+    const publicMemberCount = publicMemberNames.length;
+    const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount).catch((error) => {
+      console.warn("[MemberSignups] Welcome email error:", error);
+      return false;
     });
-    const isNewSignup = existingIndex < 0;
-
-    if (!isNewSignup) {
-      store.submissions[existingIndex] = {
-        ...store.submissions[existingIndex],
-        fullName,
-        nationalId,
-        email,
-        phone,
-        note,
-        updatedAt: now,
-      };
-    } else {
-      store.submissions.push({
-        id: randomUUID(),
-        fullName,
-        nationalId,
-        email,
-        phone,
-        note,
-        createdAt: now,
-        updatedAt: now,
-      });
-    }
-
-    await writeStore(store);
-    const publicMemberCount = getPublicMemberNames(store).length;
-    const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount)
-      .catch((error) => {
-        console.warn("[MemberSignups] Welcome email error:", error);
-        return false;
-      });
 
     res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent });
   });

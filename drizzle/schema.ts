@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json, decimal } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json, decimal, uniqueIndex } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,6 +25,25 @@ export const users = mysqlTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+// Founding member signups collected from the public homepage.
+export const memberSignups = mysqlTable("memberSignups", {
+  id: int("id").autoincrement().primaryKey(),
+  fullName: varchar("fullName", { length: 255 }).notNull(),
+  nationalId: varchar("nationalId", { length: 32 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 64 }),
+  note: text("note"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+  uniqueIndex("memberSignups_nationalId_unique").on(table.nationalId),
+  uniqueIndex("memberSignups_email_unique").on(table.email),
+  uniqueIndex("memberSignups_phone_unique").on(table.phone),
+]);
+
+export type MemberSignup = typeof memberSignups.$inferSelect;
+export type InsertMemberSignup = typeof memberSignups.$inferInsert;
 
 // Ministries table
 export const ministries = mysqlTable("ministries", {

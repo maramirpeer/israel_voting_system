@@ -57,6 +57,13 @@
       "when": 1778342533252,
       "tag": "0007_motionless_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1778990400000,
+      "tag": "0008_member_signups",
+      "breakpoints": true
     }
   ]
 }
