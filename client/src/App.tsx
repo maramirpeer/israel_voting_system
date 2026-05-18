@@ -14,6 +14,7 @@ import MK121 from "./pages/MK121";
 import MK121Threshold from "./pages/MK121Threshold";
 import MK121VoteRouting from "./pages/MK121VoteRouting";
 import GovernanceVoteRouting from "./pages/GovernanceVoteRouting";
+import AdminSignups from "./pages/AdminSignups";
 import { Analytics } from "./pages/Analytics";
 
 function Router() {
@@ -32,6 +33,7 @@ function Router() {
       <Route path={"/mk121/threshold"} component={MK121Threshold} />
       <Route path={"/mk121"} component={MK121} />
       <Route path={"/analytics"} component={Analytics} />
+      <Route path={"/admin/signups"} component={AdminSignups} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

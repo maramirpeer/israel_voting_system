@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { randomUUID } from "crypto";
+import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { eq, or } from "drizzle-orm";
@@ -27,6 +28,17 @@ type SignupStore = {
   submissions: LocalMemberSignup[];
 };
 
+type AdminMemberSignup = {
+  id: string | number;
+  fullName: string;
+  nationalId: string;
+  email: string;
+  phone: string | null;
+  note: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
@@ -35,6 +47,20 @@ let memberSignupTableReady = false;
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function isValidAdminToken(req: Request) {
+  const expected = process.env.ADMIN_SIGNUPS_TOKEN;
+  const provided = normalize(req.header("x-admin-token") || req.header("authorization")?.replace(/^Bearer\s+/i, ""));
+
+  if (!expected || !provided) {
+    return false;
+  }
+
+  const expectedBuffer = Buffer.from(expected);
+  const providedBuffer = Buffer.from(provided);
+
+  return expectedBuffer.length === providedBuffer.length && timingSafeEqual(expectedBuffer, providedBuffer);
 }
 
 async function readLocalStore(): Promise<SignupStore> {
@@ -207,6 +233,25 @@ async function saveSignup(input: {
   return { isNewSignup };
 }
 
+async function getAdminSignups() {
+  const db = await ensureMemberSignupTable().catch((error) => {
+    console.warn("[MemberSignups] Admin database setup failed, using local fallback:", error);
+    return null;
+  });
+
+  if (db) {
+    try {
+      const rows = await db.select().from(memberSignups).orderBy(memberSignups.id);
+      return { source: "database", submissions: rows as AdminMemberSignup[] };
+    } catch (error) {
+      console.warn("[MemberSignups] Admin database read failed, using local fallback:", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  return { source: "local", submissions: store.submissions as AdminMemberSignup[] };
+}
+
 function buildWelcomeEmail(fullName: string, count: number) {
   return {
     subject: "ברוכים הבאים לגרעין המייסד של קול משותף",
@@ -262,6 +307,21 @@ async function sendWelcomeEmail(to: string, fullName: string, count: number) {
 }
 
 export function registerMemberSignupRoutes(app: Express) {
+  app.get("/api/admin/member-signups", async (req: Request, res: Response) => {
+    if (!isValidAdminToken(req)) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    const result = await getAdminSignups();
+    res.json({
+      ok: true,
+      source: result.source,
+      count: result.submissions.length,
+      submissions: result.submissions,
+    });
+  });
+
   app.get("/api/member-signups/count", async (_req: Request, res: Response) => {
     const names = await getPublicMemberNames();
     res.json({ ok: true, count: names.length, target: memberTarget });
