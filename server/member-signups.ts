@@ -73,16 +73,20 @@ async function getPublicMemberNames() {
   const db = await getDb();
 
   if (db) {
-    const rows = await db
-      .select({
-        fullName: memberSignups.fullName,
-        nationalId: memberSignups.nationalId,
-        email: memberSignups.email,
-      })
-      .from(memberSignups)
-      .orderBy(memberSignups.id);
+    try {
+      const rows = await db
+        .select({
+          fullName: memberSignups.fullName,
+          nationalId: memberSignups.nationalId,
+          email: memberSignups.email,
+        })
+        .from(memberSignups)
+        .orderBy(memberSignups.id);
 
-    return getPublicMemberNamesFromRows(rows);
+      return getPublicMemberNamesFromRows(rows);
+    } catch (error) {
+      console.warn("[MemberSignups] Database read failed, using local fallback:", error);
+    }
   }
 
   const store = await readLocalStore();
@@ -99,40 +103,44 @@ async function saveSignup(input: {
   const db = await getDb();
 
   if (db) {
-    const samePerson = input.phone
-      ? or(
-          eq(memberSignups.nationalId, input.nationalId),
-          eq(memberSignups.email, input.email),
-          eq(memberSignups.phone, input.phone),
-        )
-      : or(eq(memberSignups.nationalId, input.nationalId), eq(memberSignups.email, input.email));
+    try {
+      const samePerson = input.phone
+        ? or(
+            eq(memberSignups.nationalId, input.nationalId),
+            eq(memberSignups.email, input.email),
+            eq(memberSignups.phone, input.phone),
+          )
+        : or(eq(memberSignups.nationalId, input.nationalId), eq(memberSignups.email, input.email));
 
-    const existing = await db.select().from(memberSignups).where(samePerson).limit(1);
-    const isNewSignup = existing.length === 0;
+      const existing = await db.select().from(memberSignups).where(samePerson).limit(1);
+      const isNewSignup = existing.length === 0;
 
-    if (isNewSignup) {
-      await db.insert(memberSignups).values({
-        fullName: input.fullName,
-        nationalId: input.nationalId,
-        email: input.email,
-        phone: input.phone || null,
-        note: input.note || null,
-      });
-    } else {
-      await db
-        .update(memberSignups)
-        .set({
+      if (isNewSignup) {
+        await db.insert(memberSignups).values({
           fullName: input.fullName,
           nationalId: input.nationalId,
           email: input.email,
           phone: input.phone || null,
           note: input.note || null,
-          updatedAt: new Date(),
-        })
-        .where(eq(memberSignups.id, existing[0].id));
-    }
+        });
+      } else {
+        await db
+          .update(memberSignups)
+          .set({
+            fullName: input.fullName,
+            nationalId: input.nationalId,
+            email: input.email,
+            phone: input.phone || null,
+            note: input.note || null,
+            updatedAt: new Date(),
+          })
+          .where(eq(memberSignups.id, existing[0].id));
+      }
 
-    return { isNewSignup };
+      return { isNewSignup };
+    } catch (error) {
+      console.warn("[MemberSignups] Database write failed, using local fallback:", error);
+    }
   }
 
   const now = new Date().toISOString();
