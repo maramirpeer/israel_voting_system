@@ -333,8 +333,8 @@ export default function Home() {
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#1d4f91]">התפתחות</p>
-              <h3 className="mt-1 text-lg font-bold text-[#17324d]">האופי הישראלי</h3>
-              <p className="mt-1 text-sm leading-6 text-[#5f513e]">הישראלים לא אדישים; הם מעורבים, בעלי דעה, יוזמים, ערכיים ואכפתיים.</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">ישראליות</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">אומת הסטארטאפ, רוח יזמות, בעלי דעה, אחריות וערכים - עם יכולת אמיתית להתפתח למקום חדש.</p>
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#1d4f91]">התפתחות</p>
