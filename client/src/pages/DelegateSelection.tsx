@@ -13,7 +13,6 @@ import { toast } from "sonner";
 type MK121Assignment = { type: "direct" | "expert" | "citizen"; name?: string };
 const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
 const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
-type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 type GovernanceAssignment = {
   userId: number;
@@ -74,11 +73,6 @@ export default function DelegateSelection() {
     if (typeof window === "undefined") return { type: "direct" };
     const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
     return saved ? JSON.parse(saved) : { type: "direct" };
-  });
-  const [mk121QuestionAssignments, setMK121QuestionAssignments] = useState<Record<number, MK121QuestionAssignment>>(() => {
-    if (typeof window === "undefined") return {};
-    const saved = window.localStorage.getItem(MK121_QUESTION_ASSIGNMENTS_KEY);
-    return saved ? JSON.parse(saved) : {};
   });
 
   // Queries
@@ -197,33 +191,12 @@ export default function DelegateSelection() {
   const resetMK121AllDelegations = () => {
     const directAssignment: MK121Assignment = { type: "direct" };
     setMk121Assignment(directAssignment);
-    setMK121QuestionAssignments({});
     if (typeof window !== "undefined") {
       window.localStorage.setItem(MK121_ASSIGNMENT_KEY, JSON.stringify(directAssignment));
       window.localStorage.removeItem(MK121_BILL_DIRECT_OVERRIDES_KEY);
       window.localStorage.removeItem(MK121_QUESTION_ASSIGNMENTS_KEY);
     }
     toast.success("כל ההאצלות בח\"כ 121 אופסו לבחירה ישירה");
-  };
-
-  const updateMK121QuestionAssignment = (delegateId: number) => {
-    if (!selectedMinistryId) return;
-    const delegate = delegates.find((item) => item.id === delegateId);
-    const assignment: MK121QuestionAssignment = {
-      ministryId: selectedMinistryId,
-      ministryName: selectedMinistry?.name,
-      delegateId,
-      delegateName: delegate?.name,
-    };
-    const next = {
-      ...mk121QuestionAssignments,
-      [selectedMinistryId]: assignment,
-    };
-    setMK121QuestionAssignments(next);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(MK121_QUESTION_ASSIGNMENTS_KEY, JSON.stringify(next));
-    }
-    toast.success("מומחה השאילתות עודכן");
   };
 
   const persistGovernanceAssignment = (assignment: GovernanceAssignment) => {
@@ -356,7 +329,7 @@ export default function DelegateSelection() {
               <div>
                 <h2 className="text-2xl font-bold text-slate-900">מצב הקול בח"כ 121</h2>
                 <p className="text-sm text-slate-600">
-                  בחירה ישירה מאפסת את כל ההאצלות. מומחה משפטי משפיע רק על הצעות חוק, והאצלה לפי משרד משפיעה רק על שאילתות.
+                  בחירה ישירה מאפסת את האצלת ח"כ 121. מומחה משפטי משפיע רק על הצעות חוק. האצלה לפי משרד נעשית בממשלה משתפת.
                 </p>
               </div>
               <Badge className={mk121Assignment.type === "direct" ? "bg-green-100 text-green-700 hover:bg-green-100" : "bg-purple-100 text-purple-700 hover:bg-purple-100"}>
@@ -378,10 +351,10 @@ export default function DelegateSelection() {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-slate-900 mb-2">בחירה ישירה</h3>
                 <p className="text-slate-700 mb-4">
-                  הקול שלך נשאר אצלך גם בהצעות חוק וגם בשאילתות. לחיצה כאן מאפסת את כל ההאצלות הקיימות ומחזירה את ח"כ 121 לבחירה ישירה.
+                  הקול שלך נשאר אצלך בהצעות החוק. לחיצה כאן מאפסת את האצלת ח"כ 121 ומחזירה את הצעות החוק לבחירה ישירה.
                 </p>
                     <Button onClick={resetMK121AllDelegations} className="bg-green-600 hover:bg-green-700">
-                      אשר בחירה ישירה ואפס את כל ההאצלות
+                      אשר בחירה ישירה לח"כ 121
                     </Button>
                   </div>
                 </div>
@@ -421,96 +394,6 @@ export default function DelegateSelection() {
 
           </Tabs>
 
-          <Card className="mt-8 p-6 bg-white border-purple-200">
-            <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">האצלת קול לשאילתות</h2>
-                <p className="text-sm text-slate-600">
-                  האזור הזה שייך לשאילתות בלבד: הקול מנותב לפי המשרד שאליו השאילתא מופנית ומתבסס על רשימת המומחים המשרדית הקיימת.
-                </p>
-              </div>
-              <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100">
-                {selectedMinistry ? selectedMinistry.name : "בחר משרד"}
-              </Badge>
-            </div>
-
-            <div className="space-y-3 rounded-lg bg-slate-100 p-2">
-              {ministries.map((ministry) => {
-                const assignment = mk121QuestionAssignments[ministry.id];
-                const isActive = selectedMinistryId === ministry.id;
-                return (
-                  <div
-                    key={ministry.id}
-                    className={`rounded-md border transition ${
-                      isActive ? "border-purple-500 bg-white shadow-sm" : "border-slate-200 bg-white"
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setSelectedMinistryId(isActive ? null : ministry.id)}
-                      className={`min-h-16 w-full px-3 py-2 text-right transition ${
-                        isActive ? "bg-purple-50" : "hover:bg-purple-50"
-                      }`}
-                    >
-                      <span className="flex w-full items-start justify-between gap-3">
-                        <span>
-                          <span className="block text-sm font-bold text-slate-900">{ministry.name}</span>
-                          <span className="mt-1 block text-xs leading-5 text-slate-600">
-                            {assignment?.delegateName ? `מואצל אל: ${assignment.delegateName}` : "בחירה ישירה"}
-                          </span>
-                        </span>
-                        <span className={`rounded-full px-2 py-1 text-xs font-medium ${assignment ? "bg-purple-100 text-purple-700" : "bg-green-100 text-green-700"}`}>
-                          {isActive ? "פתוח" : assignment ? "מואצל" : "ישיר"}
-                        </span>
-                      </span>
-                    </button>
-
-                    {isActive && (
-                      <div className="space-y-3 border-t border-purple-100 bg-white p-3">
-                        {delegates.length === 0 ? (
-                          <p className="py-4 text-center text-slate-600">אין מומחים זמינים למשרד הזה עדיין</p>
-                        ) : (
-                          delegates.map((delegate) => {
-                            const isSelected = mk121QuestionAssignments[ministry.id]?.delegateId === delegate.id;
-                            return (
-                              <Card key={`mk121-question-${delegate.id}`} className={`p-4 border-2 ${isSelected ? "border-purple-500 bg-purple-50" : "border-slate-200"}`}>
-                                <div className="flex items-start justify-between gap-4">
-                                  <div>
-                                    <h3 className="text-lg font-bold text-slate-900">{delegate.name}</h3>
-                                    <p className="mt-1 text-sm text-slate-600">{delegate.bio}</p>
-                                    {delegate.expertise && delegate.expertise.length > 0 && (
-                                      <div className="mt-3 flex flex-wrap gap-2">
-                                        {delegate.expertise.map((item, index) => (
-                                          <Badge key={index} variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                            {item}
-                                          </Badge>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="text-left">
-                                    <p className="text-2xl font-bold text-purple-700">{delegate.endorsements}</p>
-                                    <p className="text-xs text-slate-600">מאצילים</p>
-                                  </div>
-                                </div>
-                                <Button
-                                  onClick={() => updateMK121QuestionAssignment(delegate.id)}
-                                  className="mt-4 w-full"
-                                  variant={isSelected ? "default" : "outline"}
-                                >
-                                  {isSelected ? "✓ מומחה שאילתות נבחר" : "האצל שאילתות למומחה זה"}
-                                </Button>
-                              </Card>
-                            );
-                          })
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
         </main>
       </div>
     );

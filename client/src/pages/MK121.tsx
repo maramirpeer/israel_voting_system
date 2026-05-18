@@ -554,21 +554,15 @@ export default function MK121() {
               <p className="text-slate-700 mb-4">
                 כל 3 חודשים ינסה ח"כ 121 ליצור את הקול העונתי, במידה ויצביעו מינימום של 37,500 אזרחים לכל הפחות{" "}
                 <Button variant="link" onClick={() => setLocation("/mk121/threshold")} className="h-auto p-0 text-blue-700">(קרא עוד)</Button>.
-                הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. בנוסף, האזרחים יצביעו על השאילתא הנבחרת שתישלח למשרד מסוים או לראש הממשלה לטובת קבלת תשובה מהשר הנשאל, בצורת תשאול ישיר ומצולם.
+                הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. ערוץ זה מיועד להצעות חוק אזרחיות בלבד; שאילתות ציבוריות מנוהלות במסגרת ממשלה משתפת.
               </p>
               <div className="mb-4 rounded-lg border border-blue-200 bg-white p-4">
                 <h3 className="mb-3 text-lg font-bold text-slate-900">איך הקול מנותב?</h3>
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="grid gap-3">
                   <div className="rounded-md border border-blue-200 bg-blue-50 p-4">
                     <p className="mb-2 text-base font-extrabold text-blue-800">הצעות חוק</p>
                     <p className="text-sm leading-6 text-slate-700">
                       אפשר להצביע ישירות או להאציל למומחה משפטי.
-                    </p>
-                  </div>
-                  <div className="rounded-md border border-purple-200 bg-purple-50 p-4">
-                    <p className="mb-2 text-base font-extrabold text-purple-800">שאילתות</p>
-                    <p className="text-sm leading-6 text-slate-700">
-                      אם בחרת להאציל, הקול מנותב למומחה מהרשימה המשרדית של המשרד שאליו השאילתא מופנית.
                     </p>
                   </div>
                 </div>
@@ -578,7 +572,7 @@ export default function MK121() {
             <Card className="p-6 mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-right">
               <h2 className="text-2xl font-bold text-purple-900 mb-4">דף מקדים - שלב צבירת תמיכה</h2>
               <p className="text-slate-700 mb-6 leading-7">
-                כל הצעה חדשה בח"כ 121, הצעת חוק או שאילתא, מתחילה כ<span className="font-bold">"דף מקדים"</span>.
+                כל הצעת חוק חדשה בח"כ 121 מתחילה כ<span className="font-bold">"דף מקדים"</span>.
                 זהו השלב הראשוני שבו אזרחים מביעים תמיכה לפני שההצעה עוברת להצבעה הרשמית של המחזור.
               </p>
 
@@ -626,7 +620,7 @@ export default function MK121() {
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 font-bold">4</div>
                   </li>
                   <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">5.</span> בשלב ההצבעה, אזרחים מצביעים על ההצעה או השאילתא</span>
+                    <span><span className="font-bold">5.</span> בשלב ההצבעה, אזרחים מצביעים על הצעת החוק</span>
                     <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 text-blue-600 font-bold">5</div>
                   </li>
                   <li className="flex items-start gap-3 justify-end">
@@ -642,9 +636,8 @@ export default function MK121() {
             </Card>
 
             {/* Voting Tabs */}
-            <Tabs defaultValue="questions" className="w-full mt-8">
-              <TabsList className="grid w-full grid-cols-2 mb-8 mt-8">
-                <TabsTrigger value="questions">❓ שאילתות ({questions.length})</TabsTrigger>
+            <Tabs defaultValue="bills" className="w-full mt-8">
+              <TabsList className="grid w-full grid-cols-1 mb-8 mt-8">
                 <TabsTrigger value="bills">📋 הצעות חוק ({bills.length})</TabsTrigger>
               </TabsList>
 
@@ -806,127 +799,6 @@ export default function MK121() {
                 )}
               </TabsContent>
 
-              {/* Questions Tab */}
-              <TabsContent value="questions" className="space-y-4">
-                <div className="rounded-lg border border-purple-200 bg-purple-50 p-4 text-right text-purple-900">
-                  <h3 className="text-lg font-extrabold">אילו שאלות הציבור היה שואל את הכנסת — אם היה לו ערוץ קבוע?</h3>
-                  <p className="mt-2 text-sm leading-6">
-                    שאילתות הדמה מציגות נושאים חזקים לפתיחה: יוקר המחיה והמזון, זמני המתנה במערכת הבריאות,
-                    מילואימניקים ומשפחותיהם, שקיפות תקציבית והקמת ערוץ אזרחי קבוע מול הכנסת.
-                  </p>
-                </div>
-                {questions.length === 0 ? (
-                  <Card className="p-8 text-center bg-slate-50">
-                    <p className="text-slate-600">אין שאילתות במחזור זה עדיין</p>
-                  </Card>
-                ) : (
-                  questions.map((question) => {
-                    const hasVoted = userQuestionVotes.includes(question.id);
-                    const isWinner = question.isWinner;
-                    const displayedVotes = (question.votes || 0) + (localQuestionVoteIncrements[question.id] || 0);
-                    return (
-                      <Card
-                        key={question.id}
-                        className={`p-6 transition border-2 text-right ${
-                          hasVoted ? "border-green-500 bg-green-50" : "border-slate-200"
-                        } ${isWinner ? "ring-2 ring-yellow-400" : ""}`}
-                      >
-                        <div className="flex items-start justify-between mb-3 flex-row-reverse">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-slate-900">{question.title}</h3>
-                            <div className="mt-2 flex gap-2 flex-row-reverse">
-                              {question.targetMinistry && (
-                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                                  📢 {question.targetMinistry}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <div className="mr-4">
-                            <div className="text-3xl font-bold text-purple-600">{displayedVotes}</div>
-                            <p className="text-xs text-slate-600">קולות</p>
-                            {isWinner && (
-                              <Badge className="mt-2 bg-yellow-500">🏆 נבחר</Badge>
-                            )}
-                          </div>
-                        </div>
-
-                        <p className="text-slate-700 mb-4">{question.description}</p>
-
-                        <div className="mb-4 flex flex-col gap-2 rounded-lg border border-purple-200 bg-purple-50 p-3 sm:flex-row sm:items-center sm:justify-between">
-                          <span className="text-sm font-bold text-slate-800">סטטוס הקול שלך בשאילתא זו</span>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge className={getQuestionAssignmentBadgeClass(question.ministryId)}>{getQuestionAssignmentLabel(question.ministryId)}</Badge>
-                            {question.ministryId && mk121QuestionAssignments[question.ministryId] && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setQuestionDirect(question.ministryId)}
-                                className="border-green-300 text-green-700 hover:bg-green-50"
-                              >
-                                בחירה ישירה לשאילתא זו
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Support Section (Preliminary Stage) - Only show for preliminary proposals */}
-                        {question.status === 'preliminary' && (
-                          <div className="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-sm font-bold text-purple-700">דף מקדים - צבירת תמיכה</span>
-                              <span className="text-lg font-bold text-purple-600">{question.supporters || 0}/100</span>
-                            </div>
-                            <div className="w-full bg-purple-200 rounded-full h-2 mb-3">
-                              <div
-                                className="bg-purple-600 h-2 rounded-full transition-all"
-                                style={{ width: `${Math.min(((question.supporters || 0) / 100) * 100, 100)}%` }}
-                              />
-                            </div>
-                            <Button
-                              onClick={() => handleSupportQuestion(question.id)}
-                              disabled={supportQuestionMutation.isPending || removeQuestionSupportMutation.isPending}
-                              variant={userQuestionSupports.includes(question.id) ? "default" : "outline"}
-                              size="sm"
-                              className={`w-full ${
-                                userQuestionSupports.includes(question.id)
-                                  ? "bg-purple-600 hover:bg-purple-700"
-                                  : "border-purple-300 text-purple-600 hover:bg-purple-50"
-                              }`}
-                            >
-                              {userQuestionSupports.includes(question.id) ? "✓ תומך" : "+ תמוך בשאילתא"}
-                            </Button>
-                          </div>
-                        )}
-
-                        <Button
-                          onClick={() => handleVoteQuestion(question.id)}
-                          disabled={voteQuestionMutation.isPending}
-                          variant={hasVoted ? "default" : "outline"}
-                          className={`w-full flex justify-center ${
-                            hasVoted
-                              ? "bg-green-600 hover:bg-green-700"
-                              : "border-purple-300 text-purple-600 hover:bg-purple-50"
-                          }`}
-                        >
-                          {hasVoted ? (
-                            <>
-                              ✓ הצבעת
-                              <CheckCircle className="w-4 h-4 ml-2" />
-                            </>
-                          ) : (
-                            <>
-                              <ThumbsUp className="w-4 h-4 mr-2" />
-                              הצבע בעד שאילתא זו
-                            </>
-                          )}
-                        </Button>
-                      </Card>
-                    );
-                  })
-                )}
-              </TabsContent>
             </Tabs>
           </>
         )}

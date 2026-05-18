@@ -131,9 +131,8 @@ export function ProposalSubmissionForms({
 
         <div className="p-6">
           <Tabs defaultValue="bill" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-1 mb-6">
               <TabsTrigger value="bill">📋 הצעת חוק</TabsTrigger>
-              <TabsTrigger value="question">❓ שאילתא</TabsTrigger>
             </TabsList>
 
             {/* Bill Proposal Form */}

@@ -220,13 +220,22 @@ export default function Home() {
         <div className="container">
           <div className="mb-16 text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
-            <p className="text-lg text-[#5f513e]">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל קולו לאזרח אחר</p>
-            <div className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-[#5f513e]">
-              <p>
-                האצלת קול אינה ויתור על קולי בהצבעה. אלא היא דרך להפקיד את קולי בצורה מודעת,
-                תוך הבנה מי מחזיק בקולי ובשם אילו ערכים הוא פועל.
+            <div className="mx-auto mt-4 max-w-4xl space-y-4 text-lg leading-8 text-[#5f513e]">
+              <p className="font-bold text-[#17324d]">
+                קול משותף מקדמת שני ערוצי מעורבות משלימים לחיבור הציבור לעבודת השלטון:
               </p>
-              <p className="mt-2 font-bold text-[#1d4f91]">אם וכאשר ארצה - הקול יוחזר אלי.</p>
+              <p>
+                <span className="font-bold text-[#17324d]">ערוץ מעורבות בכנסת</span> - מנגנון ציבורי להעלאה, דירוג וקידום של הצעות חוק אזרחיות מול חברי הכנסת.
+              </p>
+              <p>
+                <span className="font-bold text-[#17324d]">ממשלה משתפת</span> - מנגנון שיחבר את הציבור למשרדי הממשלה, באמצעות שאילתות ציבוריות לשרים ולעובדי המשרדים, ועירוב אזרחים בהחלטות עקרוניות בכל משרד ממשלתי.
+              </p>
+              <p>
+                כך ניתן להפוך את האכפתיות, החדשנות וריבוי הדעות של החברה הישראלית לכוח דמוקרטי מסודר: לא רק הצבעה אחת לכמה שנים, אלא מעורבות שוטפת, שקופה ואחראית בין בחירות.
+              </p>
+              <p>
+                כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל קולו לאזרח אחר.
+              </p>
             </div>
           </div>
 
@@ -246,10 +255,6 @@ export default function Home() {
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                   <span className="flex-1 text-right text-[#4a3722]">כל 3 חודשים נבחרי הציבור יצביעו ישירות בקריאה ראשונה על הצעת החוק הנבחרת.</span>
-                </div>
-                <div className="flex items-start gap-3 justify-end">
-                  <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
-                  <span className="flex-1 text-right text-[#4a3722]">הציבור יבחר שאילתא ציבורית, והשר הנשאל ישיב עליה בתשובה ישירה ומצולמת.</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
@@ -278,11 +283,11 @@ export default function Home() {
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
-                  <span className="flex-1 text-right text-[#4a3722]">הצבעה על החלטות חשובות</span>
+                  <span className="flex-1 text-right text-[#4a3722]">שאילתות ציבוריות לשרים ולעובדי המשרדים</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
-                  <span className="flex-1 text-right text-[#4a3722]">כוח מחייב אזרחי</span>
+                  <span className="flex-1 text-right text-[#4a3722]">הצבעה על החלטות עקרוניות במשרדי הממשלה</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
@@ -361,9 +366,9 @@ export default function Home() {
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה ההבדל בין ח"כ 121 לממשלה משתפת?</h3>
                   <p className="text-gray-600 leading-7">
-                    <span className="font-bold text-purple-800">ח"כ 121</span> הוא ערוץ לכנסת: הצעות חוק ושאילתות.
+                    <span className="font-bold text-purple-800">ח"כ 121</span> הוא ערוץ לכנסת: הצעות חוק אזרחיות.
                     <br />
-                    <span className="font-bold text-blue-800">ממשלה משתפת</span> היא ערוץ למשרדי הממשלה: הצבעות על החלטות שרים.
+                    <span className="font-bold text-blue-800">ממשלה משתפת</span> היא ערוץ למשרדי הממשלה: שאילתות ציבוריות והצבעות על החלטות עקרוניות.
                   </p>
                 </Card>
 
