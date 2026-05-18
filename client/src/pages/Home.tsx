@@ -16,6 +16,8 @@ export default function Home() {
   const [isSignupOpen, setSignupOpen] = useState(false);
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
+  const [isWelcomeOpen, setWelcomeOpen] = useState(false);
+  const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isContractOpen, setContractOpen] = useState(false);
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
   const [isMembersOpen, setMembersOpen] = useState(false);
@@ -111,7 +113,11 @@ export default function Home() {
         ? "מייל ברכה נשלח אליך."
         : "ההרשמה נשמרה, אך מייל הברכה יישלח לאחר חיבור שירות המייל בשרת.";
       setSignupMessage(`${countText} ${emailText}`);
+      setWelcomeMessage(`${data.isNewSignup ? "ברוכים הבאים לגרעין המייסד של קול משותף." : "הרשומה שלך עודכנה בהצלחה."} ${countText}`);
       setSignupForm({ fullName: "", nationalId: "", phone: "", email: "", note: "" });
+      setSignupOpen(false);
+      setWelcomeOpen(true);
+      window.setTimeout(() => setWelcomeOpen(false), 4500);
     } catch (error) {
       const timeoutMessage = error instanceof DOMException && error.name === "AbortError"
         ? "ההרשמה נשמרת לאט מדי כרגע. נסה שוב בעוד רגע, או רענן את הדף ובדוק אם המד עלה."
@@ -713,6 +719,22 @@ export default function Home() {
                     {isSignupSubmitting ? "שולח..." : "שליחה"}
                   </Button>
                 </form>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={isWelcomeOpen} onOpenChange={setWelcomeOpen}>
+              <DialogContent className="text-right sm:max-w-md" dir="rtl">
+                <div className="flex flex-col items-center gap-4 py-4 text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                    <CheckCircle2 className="h-9 w-9" />
+                  </div>
+                  <DialogHeader className="text-center">
+                    <DialogTitle className="text-2xl text-blue-900">ברוכים הבאים</DialogTitle>
+                    <DialogDescription className="text-base leading-7 text-slate-700">
+                      {welcomeMessage}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <p className="text-sm text-slate-500">החלון ייסגר בעוד רגע.</p>
+                </div>
               </DialogContent>
             </Dialog>
           </div>
