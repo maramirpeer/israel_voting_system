@@ -438,7 +438,7 @@ export default function Home() {
             <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
             <h2 className="mb-4 text-3xl font-bold text-[#17324d]">חוזה בין המועמדים לכנסת הבאה לבין הציבור</h2>
             <p className="mb-5 text-lg leading-8 text-slate-700">
-              מועמד שחותם על החוזה מתחייב כי אם ייבחר לכנסת, יצביע בעד הצעת החוק שתסדיר את הקמת מנגנון קול משותף - לא יאוחר משנה ממועד הבחירות.
+              מועמד שחותם על החוזה מתחייב כי אם ייבחר לכנסת, יצביע בעד הצעת החוק שתסדיר את הקמת מנגנון קול משותף בכנסת הבאה.
             </p>
             <p className="mb-6 rounded-lg border-r-4 border-[#2f7d5c] bg-[#eef6ef] p-4 text-xl font-bold leading-8 text-[#17324d]">
               נבחרת בזכות הציבור - תתחייב להצביע בעד שיתופו.
@@ -468,7 +468,7 @@ export default function Home() {
                     אם אבחר לכנסת, אני מתחייב/ת להצביע בעד הצעת חוק שתסדיר את הקמת מנגנון <span className="font-bold">קול משותף</span> - מנגנון ציבורי, שקוף, ישיר, דינמי ומואצל, שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
                   </p>
                   <p className="mt-3">
-                    התחייבות זו תחול על הצעת חוק שתונח בפני הכנסת <span className="font-bold">לא יאוחר משנה אחת ממועד הבחירות</span>.
+                    התחייבות זו תחול על הצעת חוק שתונח בפני <span className="font-bold">הכנסת הבאה</span>.
                   </p>
                 </div>
 

@@ -71,73 +71,61 @@ const demoBills = [
 const demoQuestions = [
   {
     id: 301,
-    title: "מהו לוח הזמנים לצמצום תורים ברפואה הציבורית?",
-    description: "שאילתא למשרד הבריאות לגבי יעדים מדידים לקיצור זמני המתנה בפריפריה ובמרכז.",
-    targetMinistry: "משרד הבריאות",
-    ministryId: 1,
+    title: "כיצד הממשלה נערכת להורדת יוקר המחיה במוצרי יסוד?",
+    description: "שאילתא למשרד הכלכלה לגבי צעדים מדידים להפחתת מחירי המזון, מוצרי יסוד ושירותים בסיסיים למשקי בית.",
+    targetMinistry: "משרד הכלכלה והתעשייה",
+    ministryId: 2,
     urgency: "high",
     status: "voting",
-    votes: 18440,
+    votes: 28440,
     supporters: 100,
     isWinner: true,
   },
   {
     id: 302,
-    title: "כיצד מתקדמת תוכנית האנרגיה הירוקה?",
-    description: "שאילתא למשרד החדשנות ואיכות הסביבה לגבי עמידה ביעדי אנרגיה מתחדשת לשנת 2030.",
-    targetMinistry: "משרד החדשנות ואיכות הסביבה",
-    ministryId: 4,
-    urgency: "medium",
+    title: "מהו לוח הזמנים לצמצום זמני המתנה במערכת הבריאות?",
+    description: "שאילתא למשרד הבריאות לגבי יעדים מדידים לקיצור זמני המתנה לרופאים מומחים, בדיקות וניתוחים בפריפריה ובמרכז.",
+    targetMinistry: "משרד הבריאות",
+    ministryId: 1,
+    urgency: "high",
     status: "voting",
-    votes: 12670,
+    votes: 24680,
     supporters: 100,
     isWinner: false,
   },
   {
     id: 303,
-    title: "מה עמדת ראש הממשלה לגבי חיזוק השתתפות הציבור?",
-    description: "שאילתא לראש הממשלה על שילוב מנגנוני הצבעה, שיתוף והאצלת קול בקבלת החלטות ציבורית.",
-    targetMinistry: "ראש הממשלה",
-    ministryId: null,
-    urgency: "medium",
+    title: "איזה מענה קבוע מקבלים מילואימניקים ומשפחותיהם?",
+    description: "שאילתא למשרד הביטחון ולמשרד האוצר לגבי תמיכה כלכלית, תעסוקתית, משפחתית ונפשית במילואימניקים ובבני משפחותיהם.",
+    targetMinistry: "משרד הביטחון",
+    ministryId: 6,
+    urgency: "high",
     status: "voting",
-    votes: 11290,
+    votes: 22190,
     supporters: 100,
     isWinner: false,
   },
   {
     id: 304,
-    title: "כיצד הממשלה נערכת להורדת יוקר המחיה במוצרי יסוד?",
-    description: "שאילתא למשרד הכלכלה לגבי צעדים מדידים להפחתת מחירי מזון, דיור ושירותים בסיסיים למשקי בית.",
-    targetMinistry: "משרד הכלכלה והתעשייה",
-    ministryId: 2,
-    urgency: "high",
+    title: "כיצד תוגבר השקיפות התקציבית לציבור?",
+    description: "שאילתא למשרד האוצר לגבי פרסום ברור, נגיש ומתעדכן של תקציבים, העברות, חריגות וביצוע בפועל של כספי ציבור.",
+    targetMinistry: "משרד האוצר",
+    ministryId: 7,
+    urgency: "medium",
     status: "voting",
-    votes: 9840,
+    votes: 19870,
     supporters: 100,
     isWinner: false,
   },
   {
     id: 305,
-    title: "מה התוכנית לצמצום עומסים בכיתות הלימוד?",
-    description: "שאילתא למשרד החינוך לגבי יעדים שנתיים להקטנת מספר התלמידים בכיתה, שיפור תנאי המורים וחיזוק בתי ספר בפריפריה.",
-    targetMinistry: "משרד החינוך",
-    ministryId: 3,
+    title: "מתי יוקם ערוץ אזרחי קבוע מול הכנסת?",
+    description: "שאילתא ליו״ר הכנסת ולוועדת הכנסת לגבי הקמת ערוץ קבוע שבו הציבור יוכל לבחור שאלות, הצעות חוק ונושאי פיקוח פרלמנטרי.",
+    targetMinistry: "הכנסת",
+    ministryId: null,
     urgency: "medium",
     status: "voting",
-    votes: 8730,
-    supporters: 100,
-    isWinner: false,
-  },
-  {
-    id: 306,
-    title: "כיצד יובטח פיקוח ציבורי על פרויקטי תשתית גדולים?",
-    description: "שאילתא למשרד התחבורה לגבי פרסום לוחות זמנים, תקציבים, חריגות ועלויות בפרויקטים לאומיים באופן פתוח לציבור.",
-    targetMinistry: "משרד התחבורה",
-    ministryId: 5,
-    urgency: "low",
-    status: "voting",
-    votes: 6410,
+    votes: 17630,
     supporters: 100,
     isWinner: false,
   },
@@ -654,7 +642,7 @@ export default function MK121() {
             </Card>
 
             {/* Voting Tabs */}
-            <Tabs defaultValue="bills" className="w-full mt-8">
+            <Tabs defaultValue="questions" className="w-full mt-8">
               <TabsList className="grid w-full grid-cols-2 mb-8 mt-8">
                 <TabsTrigger value="questions">❓ שאילתות ({questions.length})</TabsTrigger>
                 <TabsTrigger value="bills">📋 הצעות חוק ({bills.length})</TabsTrigger>
@@ -820,6 +808,13 @@ export default function MK121() {
 
               {/* Questions Tab */}
               <TabsContent value="questions" className="space-y-4">
+                <div className="rounded-lg border border-purple-200 bg-purple-50 p-4 text-right text-purple-900">
+                  <h3 className="text-lg font-extrabold">אילו שאלות הציבור היה שואל את הכנסת — אם היה לו ערוץ קבוע?</h3>
+                  <p className="mt-2 text-sm leading-6">
+                    שאילתות הדמה מציגות נושאים חזקים לפתיחה: יוקר המחיה והמזון, זמני המתנה במערכת הבריאות,
+                    מילואימניקים ומשפחותיהם, שקיפות תקציבית והקמת ערוץ אזרחי קבוע מול הכנסת.
+                  </p>
+                </div>
                 {questions.length === 0 ? (
                   <Card className="p-8 text-center bg-slate-50">
                     <p className="text-slate-600">אין שאילתות במחזור זה עדיין</p>
