@@ -220,7 +220,7 @@ export default function Home() {
         <div className="container">
           <div className="mb-16 text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
-            <p className="text-lg text-[#5f513e]">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל לאזרח אחר</p>
+            <p className="text-lg text-[#5f513e]">כל אזרח מחזיק בקול אחד בכל ערוץ - להצביע בעצמו או להאציל קולו לאזרח אחר</p>
             <div className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-[#5f513e]">
               <p>
                 האצלת קול אינה ויתור על קולי בהצבעה. אלא היא דרך להפקיד את קולי בצורה מודעת,
