@@ -313,8 +313,8 @@ export default function Home() {
           <div className="mx-auto grid max-w-5xl divide-y divide-[#c8a96a] border-y border-[#c8a96a] bg-[#fbf7ed]/78 shadow-sm md:grid-cols-3 md:divide-x md:divide-y">
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#2f7d5c]">אמון</p>
-              <h3 className="mt-1 text-lg font-bold text-[#17324d]">קול מוגן</h3>
-              <p className="mt-1 text-sm leading-6 text-[#5f513e]">שמירה מאובטחת על הקול ומניעת שימוש לרעה.</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">אבטחת מידע</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">המערכת תיבנה כמערכת מוצפנת על בסיס טכנולוגיית הבלוקצ׳יין.</p>
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#2f7d5c]">אמון</p>
