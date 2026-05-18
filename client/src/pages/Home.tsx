@@ -323,8 +323,8 @@ export default function Home() {
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
-              <h3 className="mt-1 text-lg font-bold text-[#17324d]">כוח אזרחי רציף</h3>
-              <p className="mt-1 text-sm leading-6 text-[#5f513e]">השפעה גם בין זמני הבחירות לכנסת.</p>
+              <h3 className="mt-1 text-lg font-bold text-[#17324d]">חיבור רציף</h3>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">חיבור רציף בין הציבור לנבחריו למי שרוצים להתקדם משיטת הבחירות המאכזבת.</p>
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
