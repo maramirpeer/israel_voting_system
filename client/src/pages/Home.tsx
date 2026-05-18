@@ -249,7 +249,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
-                  <span className="flex-1 text-right text-[#4a3722]">השר הנשאל בשאילתא הציבורית ישיב עליה בתשובה ישירה ומצולמת.</span>
+                  <span className="flex-1 text-right text-[#4a3722]">הציבור יבחר שאילתא ציבורית, והשר הנשאל ישיב עליה בתשובה ישירה ומצולמת.</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
@@ -408,24 +408,6 @@ export default function Home() {
                 </Card>
               </TabsContent>
             </Tabs>
-          </div>
-        </div>
-      </section>
-
-      {/* Origin Note Section */}
-      <section className="relative z-10 py-12 bg-white/82 backdrop-blur-[1px]">
-        <div className="container max-w-4xl text-right" dir="rtl">
-          <div className="border-r-4 border-[#2f7d5c] pr-5 text-lg leading-9 text-[#4a3722]">
-            <p className="font-bold text-[#17324d]">
-              קול משותף היא יוזמה שנולדה ככלי תיקון שמקורו בעולמות התיקון החברתי של חבורת הזוהר.
-            </p>
-            <p>
-              זהו ניסיון שמגיש פתרון מיידי ואפשרי לבעיה חברתית עתיקה - כינון הנהגה ראויה,
-              ביסוס תקשורת וזרימת מידע מתוקנים.
-            </p>
-            <p>
-              זהו כלי שנוצר מחיבור של אנשי רוח, שבאמצעות לימוד חוכמה עתיקה יכלו ליצוק השפעה לתוך כלי פוליטי.
-            </p>
           </div>
         </div>
       </section>
