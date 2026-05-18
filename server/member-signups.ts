@@ -31,6 +31,7 @@ const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
 const foundingMemberName = "אמיר פאר";
+let memberSignupTableReady = false;
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -69,8 +70,39 @@ function getPublicMemberNamesFromRows(rows: PublicMemberSignup[]) {
   return Array.from(new Set(names));
 }
 
-async function getPublicMemberNames() {
+async function ensureMemberSignupTable() {
   const db = await getDb();
+
+  if (!db || memberSignupTableReady) {
+    return db;
+  }
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`memberSignups\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`fullName\` varchar(255) NOT NULL,
+      \`nationalId\` varchar(32) NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`phone\` varchar(64),
+      \`note\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`memberSignups_id\` PRIMARY KEY(\`id\`),
+      CONSTRAINT \`memberSignups_nationalId_unique\` UNIQUE(\`nationalId\`),
+      CONSTRAINT \`memberSignups_email_unique\` UNIQUE(\`email\`),
+      CONSTRAINT \`memberSignups_phone_unique\` UNIQUE(\`phone\`)
+    )
+  `);
+
+  memberSignupTableReady = true;
+  return db;
+}
+
+async function getPublicMemberNames() {
+  const db = await ensureMemberSignupTable().catch((error) => {
+    console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
+    return null;
+  });
 
   if (db) {
     try {
@@ -100,7 +132,10 @@ async function saveSignup(input: {
   phone: string;
   note: string;
 }) {
-  const db = await getDb();
+  const db = await ensureMemberSignupTable().catch((error) => {
+    console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
+    return null;
+  });
 
   if (db) {
     try {
