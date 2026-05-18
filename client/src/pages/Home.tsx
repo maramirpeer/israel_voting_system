@@ -339,7 +339,7 @@ export default function Home() {
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#1d4f91]">התפתחות</p>
               <h3 className="mt-1 text-lg font-bold text-[#17324d]">התקדמות הדרגתית</h3>
-              <p className="mt-1 text-sm leading-6 text-[#5f513e]">חיבור בשלבים, תוך שמירה על יציבות ואחריות.</p>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">קצב בריא של למידה והטמעה של מעורבות אזרחית בהתנהלות הממשל בישראל.</p>
             </div>
           </div>
         </div>
