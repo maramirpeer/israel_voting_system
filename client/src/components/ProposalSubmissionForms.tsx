@@ -266,7 +266,7 @@ export function ProposalSubmissionForms({
                     }}
                   >
                     <SelectTrigger className="border-slate-300">
-                      <SelectValue placeholder="בחר משרד או ראש ממשלה" />
+                      <SelectValue placeholder="בחר שר/ה לפי משרד או ראש ממשלה" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ראש הממשלה">ראש הממשלה</SelectItem>

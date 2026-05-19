@@ -248,7 +248,7 @@ export default function Home() {
                 <span className="font-bold text-[#17324d]">ערוץ מעורבות בכנסת</span> - מנגנון ציבורי להעלאה, דירוג וקידום של הצעות חוק אזרחיות מול חברי הכנסת.
               </p>
               <p>
-                <span className="font-bold text-[#17324d]">ממשלה משתפת</span> - מנגנון שיחבר את הציבור למשרדי הממשלה, באמצעות שאילתות ציבוריות לשרים ולעובדי המשרדים, ועירוב אזרחים בהחלטות עקרוניות בכל משרד ממשלתי.
+                <span className="font-bold text-[#17324d]">ממשלה משתפת</span> - מנגנון שיחבר את הציבור למשרדי הממשלה, באמצעות שאילתות ציבוריות לשרים, ועירוב אזרחים בהחלטות עקרוניות בכל משרד ממשלתי.
               </p>
               <p>
                 כך ניתן להפוך את האכפתיות, החדשנות וריבוי הדעות של החברה הישראלית לכוח דמוקרטי מסודר: לא רק הצבעה אחת לכמה שנים, אלא מעורבות שוטפת, שקופה ואחראית בין בחירות.
@@ -303,7 +303,7 @@ export default function Home() {
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />
-                  <span className="flex-1 text-right text-[#4a3722]">שאילתות ציבוריות לשרים ולעובדי המשרדים</span>
+                  <span className="flex-1 text-right text-[#4a3722]">שאילתות ציבוריות לשרים</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#1d4f91] flex-shrink-0 mt-0.5" />

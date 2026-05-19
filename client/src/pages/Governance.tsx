@@ -598,7 +598,7 @@ export default function Governance() {
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">1</div>
                   <p className="text-sm font-medium text-slate-900">השר מציע הצעה</p>
-                  <p className="text-xs text-slate-600">הצעות השר עולות להצבעה לפי רמת חשיבות ההחלטה, בסיוע עובדי המשרד בבחינת החשיבות</p>
+                  <p className="text-xs text-slate-600">הצעות השר עולות להצבעה לפי רמת חשיבות ההחלטה, כשהאחריות להצגת ההחלטה והנימוקים נשארת מול השר עצמו</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-blue-600 mb-2">2</div>
@@ -633,7 +633,7 @@ export default function Governance() {
                 <div>
                   <h4 className="font-bold text-blue-900 mb-2">איך נקבעת חשיבות ההחלטה?</h4>
                   <p>
-                    רמת החשיבות נבחנת לפי היקף ההשפעה על הציבור, שינוי במדיניות קיימת, תקציב, דחיפות ומספר האזרחים שיושפעו מההחלטה. עובדי המשרד מסייעים לשר לסווג את ההצעה, אך שינוי מדיניות מהותי לא נסגר בתוך המשרד בלבד.
+                    רמת החשיבות נבחנת לפי היקף ההשפעה על הציבור, שינוי במדיניות קיימת, תקציב, דחיפות ומספר האזרחים שיושפעו מההחלטה. האחריות לסיווג ההצעה, להצגתה ולנימוקיה נשארת מול השר עצמו, ושינוי מדיניות מהותי לא נסגר בתוך המשרד בלבד.
                   </p>
                 </div>
                 <div>
