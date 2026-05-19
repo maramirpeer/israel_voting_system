@@ -18,7 +18,6 @@ export default function Home() {
   const [signupMessage, setSignupMessage] = useState("");
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
-  const [isContractOpen, setContractOpen] = useState(false);
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
   const [isMembersOpen, setMembersOpen] = useState(false);
   const [memberNames, setMemberNames] = useState<string[]>([]);
@@ -455,105 +454,42 @@ export default function Home() {
                 ולחבר אותה לצורתה העתידית - שקופה ומשתפת.
               </p>
               <p>
-                לכן הצעד המעשי הבא הוא חוזה ציבורי ברור: מועמדים לכנסת שיבקשו את אמון הציבור
-                יוזמנו להתחייב מראש לפעול להקמת מנגנון קול משותף ולהצביע בעד שיתופו.
+                לכן הצעד המעשי הבא הוא הצטרפות לשדולה עכשווית: חברי הכנסת המכהנים יוזמנו לבחור תמיכה גלויה
+                בקידום קול משותף ככלי אזרחי להשתתפות ציבורית בתהליך קבלת ההחלטות.
               </p>
             </div>
           </Card>
         </div>
       </section>
 
-      {/* Public Candidate Contract Section */}
+      {/* Current Knesset Lobby Section */}
       <section className="relative z-10 py-20 bg-[#fbf7ed]/90 backdrop-blur-[1px]">
         <div className="container max-w-5xl text-right" dir="rtl">
           <Card className="border-[#d8c79f] bg-white p-8 shadow-sm">
-            <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
-            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">חוזה בין המועמדים לכנסת הבאה לבין הציבור</h2>
+            <p className="mb-3 text-sm font-bold text-[#2f7d5c]">שדולה עכשווית</p>
+            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">הצטרפות לשדולת קול משותף בכנסת הנוכחית</h2>
             <p className="mb-5 text-lg leading-8 text-slate-700">
-              מועמד שחותם על החוזה מתחייב כי אם ייבחר לכנסת, יצביע בעד הצעת החוק שתסדיר את הקמת מנגנון קול משותף בכנסת הבאה.
+              במקום להמתין לחוזה לפעילות עתידית, ח״כים מכהנים יכולים לבחור כבר עכשיו לתמוך בייסוד הכלי האזרחי.
             </p>
             <p className="mb-6 rounded-lg border-r-4 border-[#2f7d5c] bg-[#eef6ef] p-4 text-xl font-bold leading-8 text-[#17324d]">
-              ח"כ עתידי יקר - נבחרת בזכות אמון הציבור, האם תתחייב להצביע בעד שיתופו?
+              ח״כ יקר/ה - נבחרת בזכות אמון הציבור, האם תצטרף/י לשדולה עכשווית לקידום קול משותף?
             </p>
 
-            <details
-              className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5"
-              onToggle={(event) => setContractOpen(event.currentTarget.open)}
-            >
-              <summary className="cursor-pointer text-lg font-bold text-slate-900">
-                {isContractOpen ? "הסתר את הנוסח המלא של החוזה" : "הצג את נוסח החוזה המלא"}
-              </summary>
-              <div className="mt-6 space-y-6 leading-8 text-slate-700">
-                <div>
-                  <h3 className="mb-3 text-2xl font-bold text-slate-900">חוזה ציבורי בין מועמד/ת לכנסת לבין ציבור הבוחרים</h3>
-                  <p>
-                    אני, החתום/ה מטה, כמועמד/ת לבחירות לכנסת ישראל, מצהיר/ה בזאת כי אני מכיר/ה בכך שהמנדט הציבורי אינו רכוש אישי, מפלגתי או סיעתי בלבד, אלא שליחות הניתנת לי מאת ציבור הבוחרים.
-                  </p>
-                  <p className="mt-3">
-                    מתוך הכרה זו, אני מתחייב/ת לפעול לקידום עקרונות של דמוקרטיה מתקדמת, שקיפות, אחריות ציבורית, שיתוף אזרחי והחזרת כוח ההשפעה אל הציבור.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">התחייבות מרכזית</h4>
-                  <p>
-                    אם אבחר לכנסת, אני מתחייב/ת להצביע בעד הצעת חוק שתסדיר את הקמת מנגנון <span className="font-bold">קול משותף</span> - מנגנון ציבורי, שקוף, ישיר, דינמי ומואצל, שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
-                  </p>
-                  <p className="mt-3">
-                    התחייבות זו תחול על הצעת חוק שתונח בפני <span className="font-bold">הכנסת הבאה</span>.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">מהות ההתחייבות</h4>
-                  <p>
-                    אני מתחייב/ת כי לא אתייחס להצעת החוק כאל עניין טכני או הצהרתי בלבד, אלא כאל התחייבות ציבורית מהותית שניתנה מראש לבוחרים.
-                  </p>
-                  <p className="mt-3">
-                    במסגרת זו, אפעל בתום לב, בשקיפות ובאחריות כדי לאפשר את קידום ההצעה, דיון ציבורי בה, והצבעה עליה במסגרת הכנסת.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">התחייבויות משלימות</h4>
-                  <ol className="list-decimal space-y-2 pr-6">
-                    <li>לפרסם לציבור את עמדתי בנושאים מהותיים לפני הצבעות מרכזיות.</li>
-                    <li>לנמק החלטות והצבעות בעלות חשיבות ציבורית.</li>
-                    <li>לאפשר התייעצות ציבורית באמצעות מנגנונים פתוחים, ישירים או מואצלים.</li>
-                    <li>לפעול לחיזוק אמון הציבור בנבחריו באמצעות שקיפות, אחריות והקשבה רציפה.</li>
-                  </ol>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">גבולות ההתחייבות</h4>
-                  <p>
-                    ידוע לי כי כהונתי כחבר/ת כנסת כפופה לדין, לחוקי מדינת ישראל, לכללי האתיקה של הכנסת, ולחובותיי כנבחר/ת ציבור.
-                  </p>
-                  <p className="mt-3">
-                    אין בהתחייבות זו כדי לחייב פעולה בלתי חוקית, פגיעה בזכויות יסוד, או פעולה הסותרת במובהק את טובת הציבור ואת עקרונות היסוד של מדינת ישראל כמדינה יהודית ודמוקרטית.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">הצהרה ציבורית</h4>
-                  <p>אני מבין/ה כי חתימתי על חוזה זה היא התחייבות ציבורית גלויה כלפי הבוחרים.</p>
-                  <p className="mt-3 font-bold text-slate-900">
-                    מי שמבקש את <span className="font-bold">קול משותף</span> - מתחייב לפעול להשבת קולו של הציבור אל תהליך קבלת ההחלטות.
-                  </p>
-                </div>
-
-                <div className="grid gap-3 rounded-lg bg-white p-4 text-sm text-slate-700 md:grid-cols-2">
-                  <p>שם המועמד/ת: ____________</p>
-                  <p>מספר זהות: ____________</p>
-                  <p>מפלגה / רשימה: ____________</p>
-                  <p>תאריך: ____________</p>
-                  <p>חתימה: ____________</p>
-                </div>
+            <div className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
+              <h3 className="mb-3 text-2xl font-bold text-slate-900">קופסת השדולה</h3>
+              <p className="text-lg leading-8 text-slate-700">
+                אני, חבר/ת הכנסת, מביע/ה תמיכה בהקמת שדולה לקידום <span className="font-bold text-[#17324d]">קול משותף</span> ככלי אזרחי להשתתפות ציבורית רציפה, שקופה ואחראית בתהליך קבלת ההחלטות בישראל.
+              </p>
+              <div className="mt-5 grid gap-3 rounded-lg bg-white p-4 text-sm text-slate-700 md:grid-cols-2">
+                <p>שם חבר/ת הכנסת: ____________</p>
+                <p>סיעה: ____________</p>
+                <p>תפקיד בשדולה: תומך/ת / מצטרף/ת / מוביל/ה</p>
+                <p>תאריך: ____________</p>
               </div>
-            </details>
+            </div>
 
             <p className="mt-4 text-sm leading-6 text-slate-500">
-              נוסח זה הוא בסיס רעיוני-ציבורי, ויעבור התאמה משפטית לפני שימוש רשמי מול מועמדים.
+              מסגרת זו מיועדת לחברי הכנסת הנוכחיים, כדי לאפשר הצטרפות ציבורית לשדולה כבר בכנסת המכהנת.
             </p>
           </Card>
         </div>
