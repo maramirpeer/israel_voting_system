@@ -80,6 +80,19 @@ export default function Home() {
     setLocation("/governance");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   };
+  const goToGateFiftyTop = () => {
+    setLocation("/gate-50");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
+  const GateFiftyLink = () => (
+    <button
+      type="button"
+      onClick={goToGateFiftyTop}
+      className="inline font-bold text-[#17324d] underline decoration-[#c8a96a] decoration-2 underline-offset-4 transition hover:text-[#1d4f91]"
+    >
+      שער ה-50
+    </button>
+  );
   const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -242,7 +255,7 @@ export default function Home() {
               <KolMeshutafLink /> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
             </p>
             <p className="mt-5 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              <KolMeshutafLink /> מבקש להיות שער חמישים אזרחי: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לתורה משותפת של אחריות, שקיפות ומשילות.
+              <KolMeshutafLink /> מבקש להיות ביטוי אזרחי של <GateFiftyLink />: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לתורה משותפת של אחריות, שקיפות ומשילות.
             </p>
             <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
               למעלה מזה, תנועת <KolMeshutafLink /> מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
@@ -644,16 +657,16 @@ export default function Home() {
                       <button
                         type="button"
                         className="text-5xl font-black leading-none text-[#1d4f91] underline-offset-4 transition hover:text-[#2f7d5c] hover:underline"
-                        aria-label="הצג את שמות המצטרפים"
+                        aria-label="הצג את ראשי התיבות של המצטרפים"
                       >
                         {memberCount.toLocaleString("he-IL")}
                       </button>
                     </DialogTrigger>
                     <DialogContent className="text-right sm:max-w-lg" dir="rtl">
                       <DialogHeader className="text-right">
-                        <DialogTitle className="text-2xl text-[#17324d]">שמות המצטרפים</DialogTitle>
+                        <DialogTitle className="text-2xl text-[#17324d]">ראשי התיבות של המצטרפים</DialogTitle>
                         <DialogDescription>
-                          מוצגים שמות בלבד, ללא פרטי קשר או תעודת זהות.
+                          מטעמי פרטיות נשמרים ומוצגים כאן ראשי תיבות בלבד, ללא שם מלא, פרטי קשר או תעודת זהות.
                         </DialogDescription>
                       </DialogHeader>
                       {memberNamesMessage ? (
@@ -672,7 +685,7 @@ export default function Home() {
                           </ul>
                         </div>
                       ) : (
-                        <p className="text-slate-600">עדיין אין שמות להצגה.</p>
+                        <p className="text-slate-600">עדיין אין ראשי תיבות להצגה.</p>
                       )}
                     </DialogContent>
                   </Dialog>
@@ -707,7 +720,7 @@ export default function Home() {
                 <DialogHeader className="text-right">
                   <DialogTitle className="text-2xl text-blue-900">טופס הצטרפות לגרעין המייסד</DialogTitle>
                   <DialogDescription>
-                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. אותה תעודת זהות נספרת פעם אחת בלבד, ולאחר השליחה יישלח מייל ברכה.
+                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אותה תעודת זהות נספרת פעם אחת בלבד, ולאחר השליחה יישלח מייל ברכה.
                   </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4" onSubmit={handleSignupSubmit}>

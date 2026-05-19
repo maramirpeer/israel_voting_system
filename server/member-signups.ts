@@ -42,11 +42,23 @@ type AdminMemberSignup = {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
-const foundingMemberName = "אמיר פאר";
+const foundingMemberName = "א. פ.";
 let memberSignupTableReady = false;
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function getNameInitials(fullName: string) {
+  const initials = fullName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .filter(Boolean)
+    .join(". ");
+
+  return initials ? `${initials}.` : "";
 }
 
 function isValidAdminToken(req: Request) {
@@ -83,7 +95,7 @@ function getPublicMemberName(signup: PublicMemberSignup) {
     return foundingMemberName;
   }
 
-  return signup.fullName;
+  return getNameInitials(signup.fullName);
 }
 
 function getPublicMemberNamesFromRows(rows: PublicMemberSignup[]) {
@@ -151,6 +163,38 @@ async function getPublicMemberNames() {
   return getPublicMemberNamesFromRows(store.submissions);
 }
 
+async function getPublicMemberCount() {
+  const db = await ensureMemberSignupTable().catch((error) => {
+    console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
+    return null;
+  });
+
+  if (db) {
+    try {
+      const rows = await db
+        .select({
+          nationalId: memberSignups.nationalId,
+          email: memberSignups.email,
+        })
+        .from(memberSignups);
+      const includesFoundingMember = rows.some(
+        (signup) => signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com",
+      );
+
+      return rows.length + (includesFoundingMember ? 0 : 1);
+    } catch (error) {
+      console.warn("[MemberSignups] Database count failed, using local fallback:", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  const includesFoundingMember = store.submissions.some(
+    (signup) => signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com",
+  );
+
+  return store.submissions.length + (includesFoundingMember ? 0 : 1);
+}
+
 async function saveSignup(input: {
   fullName: string;
   nationalId: string;
@@ -162,6 +206,7 @@ async function saveSignup(input: {
     console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
     return null;
   });
+  const storedFullName = getNameInitials(input.fullName);
 
   if (db) {
     try {
@@ -178,7 +223,7 @@ async function saveSignup(input: {
 
       if (isNewSignup) {
         await db.insert(memberSignups).values({
-          fullName: input.fullName,
+          fullName: storedFullName,
           nationalId: input.nationalId,
           email: input.email,
           phone: input.phone || null,
@@ -188,7 +233,7 @@ async function saveSignup(input: {
         await db
           .update(memberSignups)
           .set({
-            fullName: input.fullName,
+            fullName: storedFullName,
             nationalId: input.nationalId,
             email: input.email,
             phone: input.phone || null,
@@ -218,12 +263,14 @@ async function saveSignup(input: {
     store.submissions[existingIndex] = {
       ...store.submissions[existingIndex],
       ...input,
+      fullName: storedFullName,
       updatedAt: now,
     };
   } else {
     store.submissions.push({
       id: randomUUID(),
       ...input,
+      fullName: storedFullName,
       createdAt: now,
       updatedAt: now,
     });
@@ -323,8 +370,8 @@ export function registerMemberSignupRoutes(app: Express) {
   });
 
   app.get("/api/member-signups/count", async (_req: Request, res: Response) => {
-    const names = await getPublicMemberNames();
-    res.json({ ok: true, count: names.length, target: memberTarget });
+    const count = await getPublicMemberCount();
+    res.json({ ok: true, count, target: memberTarget });
   });
 
   app.get("/api/member-signups/names", async (_req: Request, res: Response) => {
@@ -355,8 +402,7 @@ export function registerMemberSignupRoutes(app: Express) {
     }
 
     const { isNewSignup } = await saveSignup({ fullName, nationalId, email, phone, note });
-    const publicMemberNames = await getPublicMemberNames();
-    const publicMemberCount = publicMemberNames.length;
+    const publicMemberCount = await getPublicMemberCount();
     const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount).catch((error) => {
       console.warn("[MemberSignups] Welcome email error:", error);
       return false;
