@@ -6,9 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3, FileText, BadgeCheck } from "lucide-react";
+import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3, FileText, BadgeCheck, Send, Copy } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
+
+type KnessetMember = {
+  id: number;
+  name: string;
+  faction: string;
+  email: string;
+};
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -19,10 +26,17 @@ export default function Home() {
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
+  const [isKnessetLetterOpen, setKnessetLetterOpen] = useState(false);
   const [isMembersOpen, setMembersOpen] = useState(false);
   const [memberNames, setMemberNames] = useState<string[]>([]);
   const [memberNamesMessage, setMemberNamesMessage] = useState("");
   const [memberCount, setMemberCount] = useState(0);
+  const [knessetMembers, setKnessetMembers] = useState<KnessetMember[]>([]);
+  const [knessetMembersMessage, setKnessetMembersMessage] = useState("");
+  const [knessetMemberQuery, setKnessetMemberQuery] = useState("");
+  const [citizenName, setCitizenName] = useState("");
+  const [citizenCity, setCitizenCity] = useState("");
+  const [letterMessage, setLetterMessage] = useState("");
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     nationalId: "",
@@ -114,6 +128,68 @@ export default function Home() {
     } catch (error) {
       setMemberNamesMessage(error instanceof Error ? error.message : "טעינת השמות נכשלה");
     }
+  };
+  const loadKnessetMembers = async (open: boolean) => {
+    setKnessetLetterOpen(open);
+    if (!open || knessetMembers.length > 0) return;
+
+    setKnessetMembersMessage("טוען רשימת ח״כים...");
+    try {
+      const response = await fetch("/api/knesset-members");
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "טעינת רשימת חברי הכנסת נכשלה");
+      }
+      setKnessetMembers(Array.isArray(data.members) ? data.members : []);
+      setKnessetMembersMessage("");
+    } catch (error) {
+      setKnessetMembersMessage(error instanceof Error ? error.message : "טעינת רשימת חברי הכנסת נכשלה");
+    }
+  };
+  const selectedKnessetMember = knessetMembers.find((member) => member.name === knessetMemberQuery.trim());
+  const filteredKnessetMembers = knessetMemberQuery.trim()
+    ? knessetMembers
+        .filter((member) => {
+          const query = knessetMemberQuery.trim().toLowerCase();
+          return (
+            member.name.toLowerCase().includes(query) ||
+            member.faction.toLowerCase().includes(query) ||
+            member.email.toLowerCase().includes(query)
+          );
+        })
+        .slice(0, 8)
+    : knessetMembers.slice(0, 8);
+  const knessetLetterBody = selectedKnessetMember
+    ? `שלום ${selectedKnessetMember.name},
+
+אני פונה אליך כאזרח/ית שמבקש/ת לקדם שדולה עכשווית בכנסת למען קול משותף.
+
+קול משותף מבקש להיות כלי אזרחי להשתתפות ציבורית רציפה, שקופה ואחראית בתהליך קבלת ההחלטות בישראל.
+
+אבקש ממך לשקול תמיכה גלויה בהקמת שדולה לקידום המהלך, כדי לאפשר לציבור להיות חלק פעיל יותר מהדמוקרטיה גם בין מערכות בחירות.
+
+בברכה,
+${citizenName.trim() || "אזרח/ית"}
+${citizenCity.trim() ? citizenCity.trim() : ""}`
+    : "";
+  const handleSendKnessetLetter = () => {
+    if (!selectedKnessetMember) {
+      setLetterMessage("בחר/י חבר/ת כנסת מתוך הרשימה לפני השליחה.");
+      return;
+    }
+
+    const subject = "בקשה להצטרפות לשדולה לקידום קול משותף";
+    window.location.href = `mailto:${selectedKnessetMember.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(knessetLetterBody)}`;
+    setLetterMessage("פתחנו עבורך הודעת מייל מוכנה. אפשר לערוך ולשלוח מתוכנת המייל שלך.");
+  };
+  const copyKnessetLetter = async () => {
+    if (!selectedKnessetMember) {
+      setLetterMessage("בחר/י חבר/ת כנסת מתוך הרשימה לפני העתקת הנוסח.");
+      return;
+    }
+
+    await navigator.clipboard.writeText(knessetLetterBody);
+    setLetterMessage("הנוסח הועתק.");
   };
   const handleSignupSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -521,6 +597,111 @@ export default function Home() {
                 <p>תאריך: ____________</p>
               </div>
             </div>
+
+            <Dialog open={isKnessetLetterOpen} onOpenChange={loadKnessetMembers}>
+              <DialogTrigger asChild>
+                <Button className="mt-6 bg-[#17324d] hover:bg-[#1d4f91]">
+                  <Send className="ml-2 h-4 w-4" />
+                  פנייה לחברי הכנסת
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[90vh] overflow-y-auto text-right sm:max-w-2xl" dir="rtl">
+                <DialogHeader className="text-right">
+                  <DialogTitle className="text-2xl text-[#17324d]">פנייה לחבר/ת כנסת</DialogTitle>
+                  <DialogDescription>
+                    התחילו לכתוב שם ח״כ או סיעה, בחרו מהרשימה, והמערכת תכין מייל אישי שאפשר לערוך לפני השליחה.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="mk-search">שם חבר/ת הכנסת</Label>
+                    <Input
+                      id="mk-search"
+                      list="knesset-members-list"
+                      value={knessetMemberQuery}
+                      onChange={(event) => {
+                        setKnessetMemberQuery(event.target.value);
+                        setLetterMessage("");
+                      }}
+                      placeholder="לדוגמה: מירב, גפני, ליכוד..."
+                    />
+                    <datalist id="knesset-members-list">
+                      {knessetMembers.map((member) => (
+                        <option key={member.id} value={member.name}>
+                          {member.faction}
+                        </option>
+                      ))}
+                    </datalist>
+                    {knessetMembersMessage && (
+                      <p className="text-sm text-slate-500">{knessetMembersMessage}</p>
+                    )}
+                    {filteredKnessetMembers.length > 0 && (
+                      <div className="grid gap-2">
+                        {filteredKnessetMembers.map((member) => (
+                          <button
+                            key={member.id}
+                            type="button"
+                            onClick={() => {
+                              setKnessetMemberQuery(member.name);
+                              setLetterMessage("");
+                            }}
+                            className="rounded-md border border-slate-200 bg-white p-3 text-right transition hover:border-[#2f7d5c] hover:bg-[#eef6ef]"
+                          >
+                            <span className="block font-bold text-[#17324d]">{member.name}</span>
+                            <span className="block text-sm text-slate-600">{member.faction} | {member.email}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="citizen-name">השם שיופיע בחתימה</Label>
+                      <Input
+                        id="citizen-name"
+                        value={citizenName}
+                        onChange={(event) => setCitizenName(event.target.value)}
+                        placeholder="אפשר גם ראשי תיבות"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="citizen-city">יישוב (אופציונלי)</Label>
+                      <Input
+                        id="citizen-city"
+                        value={citizenCity}
+                        onChange={(event) => setCitizenCity(event.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="knesset-letter">נוסח הפנייה</Label>
+                    <Textarea
+                      id="knesset-letter"
+                      value={knessetLetterBody}
+                      readOnly
+                      className="min-h-56"
+                      placeholder="בחר/י חבר/ת כנסת כדי לראות נוסח מוכן"
+                    />
+                  </div>
+                  <p className="text-xs leading-5 text-slate-500">
+                    המייל נשלח מתיבת הדואר של האזרח/ית ולא מהשרת שלנו. כך הפנייה נשארת אישית, שקופה ומכבדת.
+                  </p>
+                  {letterMessage && (
+                    <p className="rounded-md bg-blue-50 p-3 text-sm font-medium text-blue-900">{letterMessage}</p>
+                  )}
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <Button type="button" onClick={handleSendKnessetLetter} className="bg-[#17324d] hover:bg-[#1d4f91]">
+                      <Send className="ml-2 h-4 w-4" />
+                      פתיחת מייל מוכן
+                    </Button>
+                    <Button type="button" variant="outline" onClick={copyKnessetLetter}>
+                      <Copy className="ml-2 h-4 w-4" />
+                      העתקת הנוסח
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             <p className="mt-4 text-sm leading-6 text-slate-500">
               מסגרת זו מיועדת לחברי הכנסת הנוכחיים, כדי לאפשר הצטרפות ציבורית לשדולה כבר בכנסת המכהנת.
