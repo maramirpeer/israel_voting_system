@@ -16,6 +16,7 @@ import MK121VoteRouting from "./pages/MK121VoteRouting";
 import GovernanceVoteRouting from "./pages/GovernanceVoteRouting";
 import AdminSignups from "./pages/AdminSignups";
 import GateFifty from "./pages/GateFifty";
+import Contact from "./pages/Contact";
 import { Analytics } from "./pages/Analytics";
 
 function Router() {
@@ -26,6 +27,7 @@ function Router() {
       <Route path={"/governance/vote-routing"} component={GovernanceVoteRouting} />
       <Route path={"/governance"} component={Governance} />
       <Route path={"/gate-50"} component={GateFifty} />
+      <Route path={"/contact"} component={Contact} />
       <Route path={"/"} component={Home} />
       <Route path={"/ministry/:id"} component={MinistryDetails} />
       <Route path={"/ministry-dashboard"} component={MinistryDashboard} />

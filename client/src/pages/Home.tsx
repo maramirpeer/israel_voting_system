@@ -98,6 +98,10 @@ export default function Home() {
     setLocation("/gate-50");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   };
+  const goToContactTop = () => {
+    setLocation("/contact");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
   const GateFiftyLink = () => (
     <button
       type="button"
@@ -1011,7 +1015,7 @@ ${citizenCity.trim() ? citizenCity.trim() : ""}`
               <h4 className="font-bold text-white mb-4">עזרה</h4>
               <ul className="space-y-2 text-base leading-7">
                 <li><a href="#faq" onClick={(event) => { event.preventDefault(); scrollToSection("faq"); }} className="hover:text-white transition">שאלות נפוצות</a></li>
-                <li><a href="#contact" onClick={(event) => { event.preventDefault(); scrollToSection("contact"); }} className="hover:text-white transition">צור קשר</a></li>
+                <li><a href="/contact" onClick={(event) => { event.preventDefault(); goToContactTop(); }} className="hover:text-white transition">צור קשר</a></li>
               </ul>
             </div>
           </div>
