@@ -18,6 +18,14 @@ const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 type MK121QuestionAssignment = { ministryId: number; ministryName?: string; delegateId: number; delegateName?: string };
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 
+const getBillDisplayPriority = (title: string) => {
+  if (title.includes("הגבלת") && title.includes("ראש")) return 0;
+  if (title.includes("כל ח״כ חייב") || title.includes("חובת הצבעה")) return 1;
+  if (title.includes("זירת מידע")) return 2;
+  if (title.includes("שקיפות")) return 3;
+  return 10;
+};
+
 const demoCycle = {
   id: 1,
   seasonName: "אביב 2026",
@@ -28,7 +36,7 @@ const demoCycle = {
 const demoBills = [
   {
     id: 201,
-    title: "הגבלת כהונת ראש ממשלה ל-8 שנים",
+    title: "הגבלת זמן ראש הממשלה",
     description: "הצעת חוק לקביעת מגבלת כהונה מצטברת של עד 8 שנים לראש ממשלה, כדי לחזק רענון שלטוני, אחריות ציבורית ותחרות פוליטית.",
     category: "ממשל",
     status: "voting",
@@ -38,7 +46,7 @@ const demoBills = [
   },
   {
     id: 202,
-    title: "חובת הצבעה של כל חברי הכנסת בהצבעות מליאה",
+    title: "כל ח״כ חייב להצביע",
     description: "סוף עידן החוקים שעוברים ללא נוכחות מלאה. ניתן יהיה להצביע באופן דיגיטלי מאובטח, כולל אימות כפול למניעת זיופים.",
     category: "כנסת",
     status: "voting",
@@ -48,7 +56,7 @@ const demoBills = [
   },
   {
     id: 203,
-    title: "שקיפות מלאה בדיוני ועדות הכנסת",
+    title: "שקיפות",
     description: "חיוב פרסום סיכומים, חומרי רקע והצבעות ועדה בפורמט פתוח ונגיש לציבור.",
     category: "שקיפות",
     status: "voting",
@@ -58,7 +66,7 @@ const demoBills = [
   },
   {
     id: 204,
-    title: "זירת מידע ממוקדת: שאלה שנתית בין חברי הכנסת",
+    title: "זירת מידע חיה של שאלות ותשובות בין ח״כ",
     description: "הצעת חוק שתאפשר לכל חבר כנסת לשאול פעם בשנה חבר כנסת אחר שאלה אחת. הח\"כ הנשאל יצלם את עצמו בתשובה; אם התשובה תיערך, גם העריכה וגם התשובה המוקלטת יפורסמו בשקיפות מלאה לציבור.",
     category: "פיקוח פרלמנטרי",
     status: "voting",
@@ -262,7 +270,10 @@ export default function MK121() {
 
   const useDemoData = !currentCycleQuery.data || Boolean(currentCycleQuery.error);
   const cycle = currentCycleQuery.data || demoCycle;
-  const bills = useDemoData ? demoBills : billsQuery.data || [];
+  const bills = [...(useDemoData ? demoBills : billsQuery.data || [])].sort((a, b) => {
+    const priorityDiff = getBillDisplayPriority(a.title) - getBillDisplayPriority(b.title);
+    return priorityDiff || (b.votes || 0) - (a.votes || 0);
+  });
   const questions = [...(useDemoData ? demoQuestions : questionsQuery.data || [])].sort(
     (a, b) => (b.votes || 0) - (a.votes || 0)
   );

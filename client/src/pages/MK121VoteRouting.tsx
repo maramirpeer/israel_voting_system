@@ -10,11 +10,12 @@ const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
 const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 
 const demoBills = [
+  { id: 204, title: "הגבלת זמן ראש הממשלה" },
+  { id: 205, title: "כל ח״כ חייב להצביע" },
+  { id: 206, title: "זירת מידע חיה של שאלות ותשובות בין ח״כ" },
+  { id: 203, title: "שקיפות" },
   { id: 201, title: "חובת פרסום יומן פגישות של רגולטורים" },
   { id: 202, title: "החזר אוטומטי על איחור חמור בתחבורה ציבורית" },
-  { id: 204, title: "הגבלת כהונת ראש ממשלה ל-8 שנים" },
-  { id: 205, title: "חובת הצבעה של כל חברי הכנסת בהצבעות מליאה" },
-  { id: 206, title: "זירת מידע ממוקדת: שאלה שנתית בין חברי הכנסת" },
 ];
 
 const readJson = <T,>(key: string, fallback: T): T => {
