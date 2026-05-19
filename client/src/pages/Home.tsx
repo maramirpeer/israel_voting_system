@@ -410,7 +410,7 @@ export default function Home() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="tab2" className="space-y-4">
+              <TabsContent value="tab2" className="space-y-4 text-right" dir="rtl">
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">איך אני מצביע?</h3>
                   <p className="text-gray-600">
@@ -425,7 +425,7 @@ export default function Home() {
                   </p>
                 </Card>
 
-                <Card className="p-6">
+                <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">אני יכול לשנות את האצלתי?</h3>
                   <p className="text-gray-600">
                     כן, בכל רגע. אתה יכול להחליף את הנציג שלך או להצביע ישירות במקום להאציל.
