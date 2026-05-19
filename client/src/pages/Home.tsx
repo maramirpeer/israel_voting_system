@@ -772,29 +772,29 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="relative z-10 bg-[#17324d] text-[#d8c79f] py-12">
+      <footer id="contact" className="relative z-10 bg-[#17324d] py-12 text-right text-[#d8c79f]" dir="rtl">
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 className="font-bold text-white mb-4 whitespace-nowrap">קול משותף - מערכת דמוקרטית מתקדמת לישראל</h4>
+              <h4 className="mb-4 max-w-xs text-lg font-bold leading-8 text-white">קול משותף - מערכת דמוקרטית מתקדמת לישראל</h4>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">הערוצים</h4>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-2 text-base leading-7">
                 <li><a href="/mk121" onClick={(event) => { event.preventDefault(); goToMK121Top(); }} className="hover:text-white transition">ח"כ 121</a></li>
                 <li><a href="/governance" onClick={(event) => { event.preventDefault(); goToGovernanceTop(); }} className="hover:text-white transition">ממשלה משותפת</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">מידע</h4>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-2 text-base leading-7">
                 <li><a href="#vision" onClick={(event) => { event.preventDefault(); scrollToSection("vision"); }} className="hover:text-white transition">החזון</a></li>
                 <li><a href="#features" onClick={(event) => { event.preventDefault(); scrollToSection("features"); }} className="hover:text-white transition">תכונות</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">עזרה</h4>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-2 text-base leading-7">
                 <li><a href="#faq" onClick={(event) => { event.preventDefault(); scrollToSection("faq"); }} className="hover:text-white transition">שאלות נפוצות</a></li>
                 <li><a href="#contact" onClick={(event) => { event.preventDefault(); scrollToSection("contact"); }} className="hover:text-white transition">צור קשר</a></li>
               </ul>
