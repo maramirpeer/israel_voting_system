@@ -1,9 +1,0 @@
-{
-  "query": "UPDATE delegates SET ministryId = ministryId + 150000;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2TEpAERBP1fyn7r.root --database U6pRes7wCe3Tq4MFFrBU3d --execute UPDATE delegates SET ministryId = ministryId + 150000;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 278
-}
