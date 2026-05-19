@@ -30,6 +30,27 @@ export default function Home() {
     email: "",
     note: "",
   });
+  const KolMeshutafLink = ({ className = "" }: { className?: string }) => (
+    <span
+      role="button"
+      tabIndex={0}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setSignupOpen(true);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          event.stopPropagation();
+          setSignupOpen(true);
+        }
+      }}
+      className={`cursor-pointer font-bold underline-offset-4 transition hover:underline ${className}`}
+    >
+      קול משותף
+    </span>
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -112,7 +133,7 @@ export default function Home() {
         ? "מייל ברכה נשלח אליך."
         : "ההרשמה נשמרה, אך מייל הברכה יישלח לאחר חיבור שירות המייל בשרת.";
       setSignupMessage(`${countText} ${emailText}`);
-      setWelcomeMessage(`${data.isNewSignup ? "ברוכים הבאים לגרעין המייסד של קול משותף." : "הרשומה שלך עודכנה בהצלחה."} ${countText}`);
+      setWelcomeMessage(`${data.isNewSignup ? "ברוכים הבאים לגרעין המייסד." : "הרשומה שלך עודכנה בהצלחה."} ${countText}`);
       setSignupForm({ fullName: "", nationalId: "", phone: "", email: "", note: "" });
       setSignupOpen(false);
       setWelcomeOpen(true);
@@ -150,7 +171,7 @@ export default function Home() {
               <Lock className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-blue-900">קול משותף</h1>
+              <h1 className="text-lg text-blue-900"><KolMeshutafLink /></h1>
               <p className="text-xs text-[#2f7d5c] font-medium">מערכת דמוקרטית מתקדמת</p>
             </div>
           </div>
@@ -218,13 +239,13 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-8">הקדמת המפתח</h2>
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
-              <span className="font-bold">קול משותף</span> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
+              <KolMeshutafLink /> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
             </p>
             <p className="mt-5 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              קול משותף מבקש להיות שער חמישים אזרחי: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לתורה משותפת של אחריות, שקיפות ומשילות.
+              <KolMeshutafLink /> מבקש להיות שער חמישים אזרחי: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לתורה משותפת של אחריות, שקיפות ומשילות.
             </p>
             <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
-              למעלה מזה, תנועת קול משותף מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
+              למעלה מזה, תנועת <KolMeshutafLink /> מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
               ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
             </p>
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
@@ -241,7 +262,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
             <div className="mx-auto mt-4 max-w-4xl space-y-4 text-lg leading-8 text-[#5f513e]">
               <p className="font-bold text-[#17324d]">
-                קול משותף מקדמת שני ערוצי מעורבות משלימים לחיבור הציבור לעבודת השלטון:
+                <KolMeshutafLink /> מקדמת שני ערוצי מעורבות משלימים לחיבור הציבור לעבודת השלטון:
               </p>
               <p>
                 <span className="font-bold text-[#17324d]">ערוץ מעורבות בכנסת</span> - מנגנון ציבורי להעלאה, דירוג וקידום של הצעות חוק אזרחיות מול חברי הכנסת.
@@ -385,7 +406,7 @@ export default function Home() {
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">איך אפשר להפוך את החזון הזה למציאות, כשנדמה שהמערכת הפוליטית לא רוצה מעורבות אזרחית בתהליך עצמו?</h3>
                   <p className="text-gray-600">
-                    רק אם ניצור יחד נוכחות ממוקדת שדורשת את ייסוד הכלי האזרחי - <span className="font-bold text-blue-900">קול משותף</span>.
+                    רק אם ניצור יחד נוכחות ממוקדת שדורשת את ייסוד הכלי האזרחי - <KolMeshutafLink className="text-blue-900" />.
                   </p>
                 </Card>
 
@@ -401,7 +422,7 @@ export default function Home() {
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">האם זה מחליף את הממשל הקיים?</h3>
                   <p className="text-gray-600">
-                    לא. המערכת מחברת את הממשל הקיים לקול משותף בהדרגה. השרים נשארים בתפקידם, אך חייבים לשמוע את הציבור לפני החלטות משמעותיות.
+                    לא. המערכת מחברת את הממשל הקיים ל<KolMeshutafLink /> בהדרגה. השרים נשארים בתפקידם, אך חייבים לשמוע את הציבור לפני החלטות משמעותיות.
                   </p>
                 </Card>
 
@@ -450,12 +471,12 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-[#17324d] mb-6">אפילוג</h2>
             <div className="space-y-4 text-lg leading-9 text-[#4a3722]">
               <p>
-                קול משותף מבקשת לתקן את המערכת הפוליטית בצורתה הנוכחית,
+                <KolMeshutafLink /> מבקשת לתקן את המערכת הפוליטית בצורתה הנוכחית,
                 ולחבר אותה לצורתה העתידית - שקופה ומשתפת.
               </p>
               <p>
                 לכן הצעד המעשי הבא הוא הצטרפות לשדולה עכשווית: חברי הכנסת המכהנים יוזמנו לבחור תמיכה גלויה
-                בקידום קול משותף ככלי אזרחי להשתתפות ציבורית בתהליך קבלת ההחלטות.
+                בקידום <KolMeshutafLink /> ככלי אזרחי להשתתפות ציבורית בתהליך קבלת ההחלטות.
               </p>
             </div>
           </Card>
@@ -467,18 +488,18 @@ export default function Home() {
         <div className="container max-w-5xl text-right" dir="rtl">
           <Card className="border-[#d8c79f] bg-white p-8 shadow-sm">
             <p className="mb-3 text-sm font-bold text-[#2f7d5c]">שדולה עכשווית</p>
-            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">הצטרפות לשדולת קול משותף בכנסת הנוכחית</h2>
+            <h2 className="mb-4 text-3xl font-bold text-[#17324d]">הצטרפות לשדולת <KolMeshutafLink className="text-[#17324d]" /> בכנסת הנוכחית</h2>
             <p className="mb-5 text-lg leading-8 text-slate-700">
               במקום להמתין לחוזה לפעילות עתידית, ח״כים מכהנים יכולים לבחור כבר עכשיו לתמוך בייסוד הכלי האזרחי.
             </p>
             <p className="mb-6 rounded-lg border-r-4 border-[#2f7d5c] bg-[#eef6ef] p-4 text-xl font-bold leading-8 text-[#17324d]">
-              ח״כ יקר/ה - נבחרת בזכות אמון הציבור, האם תצטרף/י לשדולה עכשווית לקידום קול משותף?
+              ח״כ יקר/ה - נבחרת בזכות אמון הציבור, האם תצטרף/י לשדולה עכשווית לקידום <KolMeshutafLink className="text-[#17324d]" />?
             </p>
 
             <div className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
               <h3 className="mb-3 text-2xl font-bold text-slate-900">קופסת השדולה</h3>
               <p className="text-lg leading-8 text-slate-700">
-                אני, חבר/ת הכנסת, מביע/ה תמיכה בהקמת שדולה לקידום <span className="font-bold text-[#17324d]">קול משותף</span> ככלי אזרחי להשתתפות ציבורית רציפה, שקופה ואחראית בתהליך קבלת ההחלטות בישראל.
+                אני, חבר/ת הכנסת, מביע/ה תמיכה בהקמת שדולה לקידום <KolMeshutafLink className="text-[#17324d]" /> ככלי אזרחי להשתתפות ציבורית רציפה, שקופה ואחראית בתהליך קבלת ההחלטות בישראל.
               </p>
               <div className="mt-5 grid gap-3 rounded-lg bg-white p-4 text-sm text-slate-700 md:grid-cols-2">
                 <p>שם חבר/ת הכנסת: ____________</p>
@@ -501,23 +522,23 @@ export default function Home() {
           <h2 className="text-4xl font-bold text-white mb-6">מוכן להשתתף?</h2>
           <div className="mx-auto mb-8 space-y-4 text-lg leading-9 text-blue-50" dir="rtl">
             <p>
-              <span className="font-bold text-white">קול משותף</span> היא יוזמה לשדרוג המערכת הפוליטית בישראל למערכת מתקדמת, גמישה, שקופה ומשתפת יותר - כזו שמחברת את הציבור לתהליך קבלת ההחלטות באופן רציף, ישיר ודינמי.
+              <KolMeshutafLink className="text-white" /> היא יוזמה לשדרוג המערכת הפוליטית בישראל למערכת מתקדמת, גמישה, שקופה ומשתפת יותר - כזו שמחברת את הציבור לתהליך קבלת ההחלטות באופן רציף, ישיר ודינמי.
             </p>
             <p>
-              מתוך היוזמה הזאת עולה ההצעה לייסד את <span className="font-bold text-white">קול משותף</span> כישות פוליטית וכמפלגה מאחדת: מפלגה שאינה נבנית סביב מחנה אחד, אדם אחד או אידיאולוגיה מפלגת, אלא סביב מנגנון חדש של אחריות משותפת, השתתפות אזרחית והחזרת הכוח הציבורי אל הציבור עצמו.
+              מתוך היוזמה הזאת עולה ההצעה לייסד את <KolMeshutafLink className="text-white" /> כישות פוליטית וכמפלגה מאחדת: מפלגה שאינה נבנית סביב מחנה אחד, אדם אחד או אידיאולוגיה מפלגת, אלא סביב מנגנון חדש של אחריות משותפת, השתתפות אזרחית והחזרת הכוח הציבורי אל הציבור עצמו.
             </p>
             <p>
-              אם וכאשר <span className="font-bold text-white">קול משותף</span> אכן תהיה מפלגה, זו תהיה מפלגה הפועלת בדמוקרטיה ישירה בלבד - כאשר מצביעיה הם למעשה חבריה. חברי הכנסת מטעמה יהיו נציגי המפלגה, ימלאו את תפקידם בשם המפלגה ויפעלו לפי ההוראות שיתקבלו ממערכת ההצבעות המפלגתית.
+              אם וכאשר <KolMeshutafLink className="text-white" /> אכן תהיה מפלגה, זו תהיה מפלגה הפועלת בדמוקרטיה ישירה בלבד - כאשר מצביעיה הם למעשה חבריה. חברי הכנסת מטעמה יהיו נציגי המפלגה, ימלאו את תפקידם בשם המפלגה ויפעלו לפי ההוראות שיתקבלו ממערכת ההצבעות המפלגתית.
             </p>
             <Dialog open={isPartyContractOpen} onOpenChange={setPartyContractOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="border-white/35 bg-white/10 px-6 text-white hover:bg-white hover:text-[#17324d]">
-                  חוזה מפלגת קול משותף
+                  חוזה מפלגת <KolMeshutafLink />
                 </Button>
               </DialogTrigger>
               <DialogContent className="text-right sm:max-w-2xl" dir="rtl">
                 <DialogHeader className="text-right">
-                  <DialogTitle className="text-2xl text-[#17324d]">חוזה מפלגת קול משותף</DialogTitle>
+                  <DialogTitle className="text-2xl text-[#17324d]">חוזה מפלגת <KolMeshutafLink className="text-[#17324d]" /></DialogTitle>
                   <DialogDescription>
                     טיוטת עקרון פעולה למפלגה שתפעל באמצעות מערכת הצבעות דמוקרטית, שקופה ומחייבת.
                   </DialogDescription>
@@ -526,21 +547,21 @@ export default function Home() {
                   <section>
                     <h4 className="mb-2 text-lg font-bold text-[#17324d]">עיקרון יסוד</h4>
                     <p>
-                      קול משותף, אם וכאשר תוקם כמפלגה, תהיה מפלגה שמחויבת לפעול באמצעות מנגנון הצבעה דמוקרטי, שקוף, מתועד ומחייב. הכוח הפוליטי של המפלגה אינו נמסר לנבחריה באופן חופשי ובלתי מוגבל, אלא מופעל באמצעות רצון חברי המפלגה כפי שהוא מתבטא במערכת ההצבעות של קול משותף.
+                      <KolMeshutafLink />, אם וכאשר תוקם כמפלגה, תהיה מפלגה שמחויבת לפעול באמצעות מנגנון הצבעה דמוקרטי, שקוף, מתועד ומחייב. הכוח הפוליטי של המפלגה אינו נמסר לנבחריה באופן חופשי ובלתי מוגבל, אלא מופעל באמצעות רצון חברי המפלגה כפי שהוא מתבטא במערכת ההצבעות של <KolMeshutafLink />.
                     </p>
                   </section>
 
                   <section>
                     <h4 className="mb-2 text-lg font-bold text-[#17324d]">חברות והצבעה</h4>
                     <p>
-                      מצביעי קול משותף הם למעשה חברי המפלגה הפעילים. לכל חבר/ה קול אחד בכל הצבעה. ההשתתפות יכולה להיות ישירה או מואצלת, בהתאם לכללים שייקבעו במערכת: החבר רשאי להצביע בעצמו, להאציל את קולו לאדם אחר או למומחה, ולהחזיר אליו את קולו בכל עת.
+                      מצביעי <KolMeshutafLink /> הם למעשה חברי המפלגה הפעילים. לכל חבר/ה קול אחד בכל הצבעה. ההשתתפות יכולה להיות ישירה או מואצלת, בהתאם לכללים שייקבעו במערכת: החבר רשאי להצביע בעצמו, להאציל את קולו לאדם אחר או למומחה, ולהחזיר אליו את קולו בכל עת.
                     </p>
                   </section>
 
                   <section>
                     <h4 className="mb-2 text-lg font-bold text-[#17324d]">מחויבות נציגי המפלגה</h4>
                     <p>
-                      כל חבר/ת כנסת מטעם קול משותף מתחייב/ת מראש לפעול בכנסת לפי הכרעות מערכת ההצבעות המפלגתית. כאשר מתקיימת הצבעה תקפה במערכת, נציגי המפלגה בכנסת יצביעו בהתאם לתוצאה שהתקבלה.
+                      כל חבר/ת כנסת מטעם <KolMeshutafLink /> מתחייב/ת מראש לפעול בכנסת לפי הכרעות מערכת ההצבעות המפלגתית. כאשר מתקיימת הצבעה תקפה במערכת, נציגי המפלגה בכנסת יצביעו בהתאם לתוצאה שהתקבלה.
                     </p>
                   </section>
 
@@ -559,7 +580,7 @@ export default function Home() {
                   <section>
                     <h4 className="mb-2 text-lg font-bold text-[#17324d]">הצבעות בכנסת</h4>
                     <p>
-                      בכל הצבעה בכנסת שבה התקבלה הכרעה תקפה במערכת קול משותף, נציגי המפלגה מחויבים להצביע לפי אותה הכרעה. אם לא התקיימה הצבעה תקפה בזמן, או אם מדובר במקרה דחוף שאינו מאפשר הליך מלא, הנציג/ה יפעל/תפעל לפי עקרונות המפלגה, ויפרסם/תפרסם לציבור נימוק מלא בדיעבד.
+                      בכל הצבעה בכנסת שבה התקבלה הכרעה תקפה במערכת <KolMeshutafLink />, נציגי המפלגה מחויבים להצביע לפי אותה הכרעה. אם לא התקיימה הצבעה תקפה בזמן, או אם מדובר במקרה דחוף שאינו מאפשר הליך מלא, הנציג/ה יפעל/תפעל לפי עקרונות המפלגה, ויפרסם/תפרסם לציבור נימוק מלא בדיעבד.
                     </p>
                   </section>
 
@@ -594,19 +615,19 @@ export default function Home() {
                   <section>
                     <h4 className="mb-2 text-lg font-bold text-[#17324d]">הפרת החוזה</h4>
                     <p>
-                      נציג מפלגה שיצביע בניגוד להכרעה מחייבת של מערכת קול משותף יידרש לפרסם נימוק מלא לציבור ולמוסדות המפלגה. הפרה חוזרת או מהותית תיחשב הפרת אמון פוליטית כלפי חברי המפלגה, ותאפשר נקיטת צעדים פנימיים בהתאם לתקנון, לרבות דרישה ציבורית להתפטרות, שלילת תמיכה עתידית או אי-שיבוץ ברשימת המפלגה.
+                      נציג מפלגה שיצביע בניגוד להכרעה מחייבת של מערכת <KolMeshutafLink /> יידרש לפרסם נימוק מלא לציבור ולמוסדות המפלגה. הפרה חוזרת או מהותית תיחשב הפרת אמון פוליטית כלפי חברי המפלגה, ותאפשר נקיטת צעדים פנימיים בהתאם לתקנון, לרבות דרישה ציבורית להתפטרות, שלילת תמיכה עתידית או אי-שיבוץ ברשימת המפלגה.
                     </p>
                   </section>
 
                   <section>
                     <h4 className="mb-2 text-lg font-bold text-[#17324d]">שינוי החוזה</h4>
                     <p>
-                      לא ניתן לשנות את עקרון הפעולה המרכזי של קול משותף כמפלגה דמוקרטית ישירה אלא ברוב מיוחד של חברי המפלגה ובהליך שקוף, פומבי וממושך.
+                      לא ניתן לשנות את עקרון הפעולה המרכזי של <KolMeshutafLink /> כמפלגה דמוקרטית ישירה אלא ברוב מיוחד של חברי המפלגה ובהליך שקוף, פומבי וממושך.
                     </p>
                   </section>
 
                   <p className="rounded-lg bg-[#fbf7ed] p-4 font-bold text-[#17324d]">
-                    מי שנבחר מטעם קול משותף אינו מקבל כוח לפעול במקום הציבור, אלא אחריות להפעיל את כוח הציבור כפי שהציבור הכריע במערכת קול משותף.
+                    מי שנבחר מטעם <KolMeshutafLink className="text-[#17324d]" /> אינו מקבל כוח לפעול במקום הציבור, אלא אחריות להפעיל את כוח הציבור כפי שהציבור הכריע במערכת <KolMeshutafLink className="text-[#17324d]" />.
                   </p>
                 </div>
               </DialogContent>
@@ -615,7 +636,7 @@ export default function Home() {
               <div className="flex flex-col gap-5 md:flex-row-reverse md:items-center md:justify-between">
                 <div>
                   <p className="text-sm font-bold text-[#2f7d5c]">מד החברים</p>
-                  <h3 className="mt-1 text-3xl font-bold text-[#17324d]">הגרעין המייסד של קול משותף</h3>
+                  <h3 className="mt-1 text-3xl font-bold text-[#17324d]">הגרעין המייסד של <KolMeshutafLink className="text-[#17324d]" /></h3>
                 </div>
                 <div className="text-right md:text-left">
                   <Dialog open={isMembersOpen} onOpenChange={loadMemberNames}>
@@ -669,10 +690,10 @@ export default function Home() {
                   מד החברים סופר נרשמים - ומשמש מדד למצביעים פוטנציאליים.
                 </p>
                 <p>
-                  כל אדם שנרשם באתר נספר פעם אחת כחלק מהגרעין המייסד של קול משותף. מספר הנרשמים ישמש אותנו כאומדן לכוח הציבורי האפשרי של המפלגה, אך אינו מהווה סקר, תחזית או הבטחת הצבעה בפועל.
+                  כל אדם שנרשם באתר נספר פעם אחת כחלק מהגרעין המייסד של <KolMeshutafLink className="text-[#17324d]" />. מספר הנרשמים ישמש אותנו כאומדן לכוח הציבורי האפשרי של המפלגה, אך אינו מהווה סקר, תחזית או הבטחת הצבעה בפועל.
                 </p>
                 <p className="font-bold text-[#17324d]">
-                  כאשר המד יגיע ל-180,000 נרשמים, נראה בכך בסיס ציבורי מספיק לפתיחת תהליך הקמת קול משותף כמפלגה רשמית.
+                  כאשר המד יגיע ל-180,000 נרשמים, נראה בכך בסיס ציבורי מספיק לפתיחת תהליך הקמת <KolMeshutafLink className="text-[#17324d]" /> כמפלגה רשמית.
                 </p>
               </div>
             </div>
@@ -776,7 +797,7 @@ export default function Home() {
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 className="mb-4 max-w-xs text-lg font-bold leading-8 text-white">קול משותף - מערכת דמוקרטית מתקדמת לישראל</h4>
+              <h4 className="mb-4 max-w-xs text-lg font-bold leading-8 text-white"><KolMeshutafLink className="text-white" /> - מערכת דמוקרטית מתקדמת לישראל</h4>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">הערוצים</h4>
@@ -801,7 +822,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-white/15 pt-8 text-right text-sm">
-            <p>&copy; 2026 קול משותף. כל הזכויות שמורות.</p>
+            <p>&copy; 2026 <KolMeshutafLink className="text-[#d8c79f]" />. כל הזכויות שמורות.</p>
           </div>
         </div>
       </footer>
