@@ -78,6 +78,10 @@ function extractMemberIds(value: string): string[] {
   return Array.from(value.matchAll(/\d+/g)).map((match) => match[0]);
 }
 
+function isOfficialKnessetEmail(email: string) {
+  return /^[^\s@]+@knesset\.gov\.il$/i.test(email);
+}
+
 function getLatestFullFactionMap(factions: CsvRow[]) {
   const knesset25 = factions.filter((row) => row.knesset === "25");
   const finishDates = Array.from(new Set(knesset25.map((row) => row.finish_date).filter(Boolean))).sort().reverse();
@@ -122,7 +126,7 @@ async function getCurrentKnessetMembers(): Promise<KnessetMember[]> {
         email,
       };
     })
-    .filter((member) => member.name && member.email.includes("@"))
+    .filter((member) => member.name && isOfficialKnessetEmail(member.email))
     .sort((a, b) => a.name.localeCompare(b.name, "he"));
 
   cache = { members, updatedAt: Date.now() };
