@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3 } from "lucide-react";
+import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3, FileText, BadgeCheck } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
@@ -134,7 +134,7 @@ export default function Home() {
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center opacity-18"
-        style={{ backgroundImage: "url('/assets/decentralization-hero.png')" }}
+        style={{ backgroundImage: "url('/assets/decentralization-hero-clean.png')" }}
       />
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(180deg,rgba(251,247,237,0.86)_0%,rgba(255,255,255,0.78)_34%,rgba(238,246,239,0.78)_68%,rgba(238,246,255,0.82)_100%)]" />
       {/* Navigation Header */}
@@ -174,12 +174,32 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative z-10 min-h-[calc(100vh-73px)] overflow-hidden">
         <img
-          src="/assets/decentralization-hero.png"
+          src="/assets/decentralization-hero-clean.png"
           alt="חברה מודעת ומחוברת לוקחים חלק בממשלות ובתהליך קבלת ההחלטות בישראל"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#fbf7ed]/95 via-white/45 to-transparent" />
-        <div className="relative container min-h-[calc(100vh-73px)] py-10 flex items-end justify-center">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,247,237,0.78)_0%,rgba(255,255,255,0.32)_35%,rgba(251,247,237,0.12)_68%,rgba(251,247,237,0.92)_100%)]" />
+        <div className="relative container min-h-[calc(100vh-73px)] py-10 flex flex-col items-center justify-between">
+          <div className="mt-10 w-full max-w-4xl text-center">
+            <h2 className="text-4xl font-black text-[#17324d] sm:text-6xl">חברה מודעת ומחוברת</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-xl font-semibold leading-8 text-[#17324d] sm:text-2xl">
+              לוקחים חלק בממשל ובתהליך קבלת ההחלטות בישראל
+            </p>
+            <div className="mt-8 grid grid-cols-2 gap-3 rounded-lg bg-[#fbf7ed]/75 p-3 backdrop-blur-sm sm:grid-cols-5">
+              {[
+                { label: "שקיפות", icon: Eye },
+                { label: "שיתוף ציבור", icon: Users },
+                { label: "מידע פתוח", icon: FileText },
+                { label: "אחריות", icon: BadgeCheck },
+                { label: "השפעה אמיתית", icon: Zap },
+              ].map(({ label, icon: Icon }) => (
+                <div key={label} className="flex min-h-24 flex-col items-center justify-center border-l border-[#8a6a3f]/20 px-2 text-[#4b5130] last:border-l-0">
+                  <Icon className="mb-2 h-9 w-9 stroke-[1.8]" />
+                  <span className="text-sm font-bold sm:text-base">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="w-full max-w-3xl text-center">
             <div className="flex flex-col sm:flex-row-reverse gap-3 justify-center">
               <Button size="lg" className="bg-[#1d4f91] hover:bg-[#173f74] text-white" onClick={goToMK121Top}>
