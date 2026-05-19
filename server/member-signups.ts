@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import { eq, or } from "drizzle-orm";
+import { count, eq, or } from "drizzle-orm";
 import { getDb } from "./db";
 import { memberSignups } from "../drizzle/schema";
 
@@ -44,6 +44,10 @@ const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
 const foundingMemberName = "א. פ.";
 let memberSignupTableReady = false;
+const publicNamesLimit = 250;
+const signupRateLimitWindowMs = 60_000;
+const signupRateLimitMax = 10;
+const signupRateLimits = new Map<string, { count: number; resetAt: number }>();
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -73,6 +77,25 @@ function isValidAdminToken(req: Request) {
   const providedBuffer = Buffer.from(provided);
 
   return expectedBuffer.length === providedBuffer.length && timingSafeEqual(expectedBuffer, providedBuffer);
+}
+
+function getClientIp(req: Request) {
+  const forwardedFor = req.header("x-forwarded-for")?.split(",")[0]?.trim();
+  return forwardedFor || req.ip || req.socket.remoteAddress || "unknown";
+}
+
+function isSignupRateLimited(req: Request) {
+  const now = Date.now();
+  const key = getClientIp(req);
+  const current = signupRateLimits.get(key);
+
+  if (!current || current.resetAt <= now) {
+    signupRateLimits.set(key, { count: 1, resetAt: now + signupRateLimitWindowMs });
+    return false;
+  }
+
+  current.count += 1;
+  return current.count > signupRateLimitMax;
 }
 
 async function readLocalStore(): Promise<SignupStore> {
@@ -151,7 +174,8 @@ async function getPublicMemberNames() {
           email: memberSignups.email,
         })
         .from(memberSignups)
-        .orderBy(memberSignups.id);
+        .orderBy(memberSignups.id)
+        .limit(publicNamesLimit);
 
       return getPublicMemberNamesFromRows(rows);
     } catch (error) {
@@ -171,17 +195,15 @@ async function getPublicMemberCount() {
 
   if (db) {
     try {
-      const rows = await db
-        .select({
-          nationalId: memberSignups.nationalId,
-          email: memberSignups.email,
-        })
-        .from(memberSignups);
-      const includesFoundingMember = rows.some(
-        (signup) => signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com",
-      );
+      const [total] = await db.select({ value: count() }).from(memberSignups);
+      const foundingRows = await db
+        .select({ id: memberSignups.id })
+        .from(memberSignups)
+        .where(or(eq(memberSignups.nationalId, "033012535"), eq(memberSignups.email, "amir_peer@hotmail.com")))
+        .limit(1);
+      const includesFoundingMember = foundingRows.length > 0;
 
-      return rows.length + (includesFoundingMember ? 0 : 1);
+      return (total?.value || 0) + (includesFoundingMember ? 0 : 1);
     } catch (error) {
       console.warn("[MemberSignups] Database count failed, using local fallback:", error);
     }
@@ -380,6 +402,11 @@ export function registerMemberSignupRoutes(app: Express) {
   });
 
   app.post("/api/member-signups", async (req: Request, res: Response) => {
+    if (isSignupRateLimited(req)) {
+      res.status(429).json({ error: "יותר מדי ניסיונות הרשמה בזמן קצר. נסה שוב בעוד דקה." });
+      return;
+    }
+
     const fullName = normalize(req.body.fullName);
     const nationalId = normalize(req.body.nationalId).replace(/\D/g, "");
     const email = normalize(req.body.email).toLowerCase();
