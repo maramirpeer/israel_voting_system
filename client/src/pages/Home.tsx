@@ -484,7 +484,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-[#17324d] mb-6">אפילוג</h2>
             <div className="space-y-4 text-lg leading-9 text-[#4a3722]">
               <p>
-                <KolMeshutafLink /> מבקשת לתקן את המערכת הפוליטית בצורתה הנוכחית,
+                <KolMeshutafLink /> מבקשת לשדרג את המערכת הפוליטית בצורתה הנוכחית,
                 ולחבר אותה לצורתה העתידית - שקופה ומשתפת.
               </p>
               <p>
