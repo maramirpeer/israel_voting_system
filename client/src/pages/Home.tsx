@@ -382,7 +382,14 @@ export default function Home() {
                 <TabsTrigger value="tab1">על המערכת</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="tab1" className="space-y-4">
+              <TabsContent value="tab1" className="space-y-4 text-right" dir="rtl">
+                <Card className="p-6 text-right">
+                  <h3 className="font-bold text-blue-900 mb-2">איך אפשר להפוך את החזון הזה למציאות, כשנדמה שהמערכת הפוליטית לא רוצה מעורבות אזרחית בתהליך עצמו?</h3>
+                  <p className="text-gray-600">
+                    רק אם ניצור יחד נוכחות ממוקדת שדורשת את ייסוד הכלי האזרחי - <span className="font-bold text-blue-900">קול משותף</span>.
+                  </p>
+                </Card>
+
                 <Card className="p-6 text-right">
                   <h3 className="font-bold text-blue-900 mb-2">מה ההבדל בין ח"כ 121 לממשלה משתפת?</h3>
                   <p className="text-gray-600 leading-7">
