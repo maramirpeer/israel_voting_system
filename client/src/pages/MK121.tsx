@@ -33,7 +33,7 @@ const demoBills = [
     category: "ממשל",
     status: "voting",
     votes: 21980,
-    supporters: 100,
+    supporters: 1000,
     isWinner: true,
   },
   {
@@ -43,7 +43,7 @@ const demoBills = [
     category: "כנסת",
     status: "voting",
     votes: 17640,
-    supporters: 100,
+    supporters: 1000,
     isWinner: false,
   },
   {
@@ -53,7 +53,7 @@ const demoBills = [
     category: "שקיפות",
     status: "voting",
     votes: 14320,
-    supporters: 100,
+    supporters: 1000,
     isWinner: false,
   },
   {
@@ -63,7 +63,7 @@ const demoBills = [
     category: "פיקוח פרלמנטרי",
     status: "voting",
     votes: 9870,
-    supporters: 100,
+    supporters: 1000,
     isWinner: false,
   },
 ];
@@ -569,7 +569,7 @@ export default function MK121() {
               </div>
             </Card>
 
-            <Card className="p-6 mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-right">
+            <Card id="preliminary" className="scroll-mt-24 p-6 mb-8 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-right">
               <h2 className="text-2xl font-bold text-purple-900 mb-4">דף מקדים - שלב צבירת תמיכה</h2>
               <p className="text-slate-700 mb-6 leading-7">
                 כל הצעת חוק חדשה בח"כ 121 מתחילה כ<span className="font-bold">"דף מקדים"</span>.
@@ -578,10 +578,10 @@ export default function MK121() {
 
               <div className="grid gap-4 md:grid-cols-3 mb-6">
                 <div className="rounded-lg border-2 border-purple-200 bg-white p-5">
-                  <div className="text-3xl font-bold text-purple-600 mb-2">100</div>
+                  <div className="text-3xl font-bold text-purple-600 mb-2">1000</div>
                   <h3 className="text-lg font-bold text-purple-900 mb-2">תומכים מינימום</h3>
                   <p className="text-sm leading-6 text-slate-600">
-                    כדי שהצעה תעבור לשלב ההצבעה הרשמי, היא צריכה לקבל תמיכה של לפחות 100 אזרחים.
+                    כדי שהצעה תעבור לשלב ההצבעה הרשמי, היא צריכה לקבל תמיכה של לפחות 1000 אזרחים.
                   </p>
                 </div>
                 <div className="rounded-lg border-2 border-blue-200 bg-white p-5">
@@ -616,7 +616,7 @@ export default function MK121() {
                     <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">3</div>
                   </li>
                   <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">4.</span> כשמגיעים ל-100 תומכים, ההצעה עולה לסדר היום הרשמי</span>
+                    <span><span className="font-bold">4.</span> כשמגיעים ל-1000 תומכים, ההצעה עולה לסדר היום הרשמי</span>
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 font-bold">4</div>
                   </li>
                   <li className="flex items-start gap-3 justify-end">
@@ -731,12 +731,12 @@ export default function MK121() {
                           <div className="bg-purple-50 p-4 rounded-lg mb-4 border border-purple-200">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm font-bold text-purple-700">דף מקדים - צבירת תמיכה</span>
-                              <span className="text-lg font-bold text-purple-600">{bill.supporters || 0}/100</span>
+                              <span className="text-lg font-bold text-purple-600">{bill.supporters || 0}/1000</span>
                             </div>
                             <div className="w-full bg-purple-200 rounded-full h-2 mb-3">
                               <div
                                 className="bg-purple-600 h-2 rounded-full transition-all"
-                                style={{ width: `${Math.min(((bill.supporters || 0) / 100) * 100, 100)}%` }}
+                                style={{ width: `${Math.min(((bill.supporters || 0) / 1000) * 100, 100)}%` }}
                               />
                             </div>
                             <Button

@@ -403,7 +403,7 @@ export async function supportBill(billId: number, userId: number): Promise<boole
         .update(mk121Bills)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 100 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "voting" : "preliminary",
         })
         .where(eq(mk121Bills.id, billId));
     }
@@ -434,7 +434,7 @@ export async function removeBillSupport(billId: number, userId: number): Promise
         .update(mk121Bills)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 100 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "voting" : "preliminary",
         })
         .where(eq(mk121Bills.id, billId));
     }
@@ -481,7 +481,7 @@ export async function supportQuestion(questionId: number, userId: number): Promi
         .update(mk121Questions)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 100 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "voting" : "preliminary",
         })
         .where(eq(mk121Questions.id, questionId));
     }
@@ -516,7 +516,7 @@ export async function removeQuestionSupport(questionId: number, userId: number):
         .update(mk121Questions)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 100 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "voting" : "preliminary",
         })
         .where(eq(mk121Questions.id, questionId));
     }
@@ -702,7 +702,7 @@ export async function getUserQuestionSupports(userId: number, cycleId: number) {
 }
 
 
-// Get user's preliminary (draft) proposals - bills they created but haven't reached 100 supporters yet
+// Get user's preliminary (draft) proposals - bills they created but haven't reached 1000 supporters yet
 export async function getUserPreliminaryBills(userId: number, cycleId: number) {
   const db = await getDb();
   if (!db) {
@@ -731,7 +731,7 @@ export async function getUserPreliminaryBills(userId: number, cycleId: number) {
   }
 }
 
-// Get user's preliminary (draft) proposals - questions they created but haven't reached 100 supporters yet
+// Get user's preliminary (draft) proposals - questions they created but haven't reached 1000 supporters yet
 export async function getUserPreliminaryQuestions(userId: number, cycleId: number) {
   const db = await getDb();
   if (!db) {

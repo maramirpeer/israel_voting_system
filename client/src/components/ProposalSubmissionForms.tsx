@@ -179,15 +179,20 @@ export function ProposalSubmissionForms({
               </div>
 
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                <p className="text-sm text-purple-900 font-semibold mb-2">📝 דף מקדים (Preliminary Stage)</p>
+                <p className="text-sm text-purple-900 font-semibold mb-2">
+                  📝 דף מקדים{" "}
+                  <a href="/mk121#preliminary" className="text-blue-700 underline underline-offset-4">
+                    מה זה?
+                  </a>
+                </p>
                 <p className="text-sm text-purple-800 mb-2">
                   ההצעה שלך תתחיל כ<strong>"דף מקדים"</strong> - לא תופיע בעמוד ח"כ 121 עדיין.
                 </p>
                 <p className="text-sm text-purple-800 mb-2">
-                  כדי שההצעה תיפורסם, צריכה להגיע ל<strong>100 תומכים מינימום</strong>.
+                  כדי שההצעה תיפורסם, צריכה להגיע ל<strong>1000 תומכים מינימום</strong>.
                 </p>
                 <p className="text-sm text-purple-800">
-                  אחרי שתגיע ל-100 תומכים, ההצעה תופיע בעמוד ח"כ 121 לכל אזרח להצבעה.
+                  אחרי שתגיע ל-1000 תומכים, ההצעה תופיע בעמוד ח"כ 121 לכל אזרח להצבעה.
                 </p>
               </div>
 
@@ -301,15 +306,20 @@ export function ProposalSubmissionForms({
               </div>
 
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                <p className="text-sm text-purple-900 font-semibold mb-2">📝 דף מקדים (Preliminary Stage)</p>
+                <p className="text-sm text-purple-900 font-semibold mb-2">
+                  📝 דף מקדים{" "}
+                  <a href="/mk121#preliminary" className="text-blue-700 underline underline-offset-4">
+                    מה זה?
+                  </a>
+                </p>
                 <p className="text-sm text-purple-800 mb-2">
                   השאילתא שלך תתחיל כ<strong>"דף מקדים"</strong> - לא תופיע בעמוד ח"כ 121 עדיין.
                 </p>
                 <p className="text-sm text-purple-800 mb-2">
-                  כדי שהשאילתא תיפורסם, צריכה להגיע ל<strong>100 תומכים מינימום</strong>.
+                  כדי שהשאילתא תיפורסם, צריכה להגיע ל<strong>1000 תומכים מינימום</strong>.
                 </p>
                 <p className="text-sm text-purple-800">
-                  אחרי שתגיע ל-100 תומכים, השאילתא תופיע בעמוד ח"כ 121 לכל אזרח להצבעה.
+                  אחרי שתגיע ל-1000 תומכים, השאילתא תופיע בעמוד ח"כ 121 לכל אזרח להצבעה.
                 </p>
               </div>
 
