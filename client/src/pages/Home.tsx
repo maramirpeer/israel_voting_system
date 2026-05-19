@@ -221,9 +221,6 @@ export default function Home() {
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
               <span className="font-bold">קול משותף</span> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
             </p>
-            <p className="mt-4 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              בתמיכה מספקת, התנועה תהפוך למפלגה מאחדת עם נוכחות בכנסת.
-            </p>
             <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
               למעלה מזה, תנועת קול משותף מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
               ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
