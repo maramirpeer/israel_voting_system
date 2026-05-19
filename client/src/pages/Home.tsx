@@ -347,14 +347,14 @@ export default function Home() {
               <p className="mt-1 text-sm leading-6 text-[#5f513e]">מה הוחלט, מתי, ולפי איזה קול ציבורי.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
+              <p className="text-xs font-bold text-[#8a6a3f]">מעורבות</p>
               <h3 className="mt-1 text-lg font-bold text-[#17324d]">כוח אזרחי רציף</h3>
               <p className="mt-1 text-sm leading-6 text-[#5f513e]">דינמיקה חיה של חיבור רציף בין הציבור לנבחריו, למי שרוצים להתקדם משיטת הבחירות המאכזבת.</p>
             </div>
             <div className="p-4 text-right">
-              <p className="text-xs font-bold text-[#8a6a3f]">השפעה</p>
+              <p className="text-xs font-bold text-[#8a6a3f]">מעורבות</p>
               <h3 className="mt-1 text-lg font-bold text-[#17324d]">האצלה מודעת</h3>
-              <p className="mt-1 text-sm leading-6 text-[#5f513e]">להפקיד את הקול, ולהחזיר אותו בכל עת.</p>
+              <p className="mt-1 text-sm leading-6 text-[#5f513e]">במידה ואין לך הרצון או היכולת לנוכחות בהצבעות - האצל קולך, ותוכל להחזיר אותו בכל עת.</p>
             </div>
             <div className="p-4 text-right">
               <p className="text-xs font-bold text-[#1d4f91]">התפתחות</p>
