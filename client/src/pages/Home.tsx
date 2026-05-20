@@ -27,6 +27,7 @@ export default function Home() {
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
   const [isKnessetLetterOpen, setKnessetLetterOpen] = useState(false);
+  const [isCandidateLetterOpen, setCandidateLetterOpen] = useState(false);
   const [isMembersOpen, setMembersOpen] = useState(false);
   const [memberNames, setMemberNames] = useState<string[]>([]);
   const [memberNamesMessage, setMemberNamesMessage] = useState("");
@@ -37,6 +38,8 @@ export default function Home() {
   const [citizenName, setCitizenName] = useState("");
   const [citizenCity, setCitizenCity] = useState("");
   const [letterMessage, setLetterMessage] = useState("");
+  const [candidateSenderEmail, setCandidateSenderEmail] = useState("");
+  const [candidateLetterMessage, setCandidateLetterMessage] = useState("");
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     phone: "",
@@ -193,6 +196,45 @@ ${citizenCity.trim() ? citizenCity.trim() : ""}`
 
     await navigator.clipboard.writeText(knessetLetterBody);
     setLetterMessage("הנוסח הועתק.");
+  };
+  const candidateLetterBody = citizenName.trim() || candidateSenderEmail.trim()
+    ? `שלום,
+
+אני פונה אליך כאזרח/ית שמבקש/ת לקדם התחייבות ציבורית של מועמדים לכנסת הבאה למען קול משותף.
+
+קול משותף מבקש להיות כלי אזרחי להשתתפות ציבורית רציפה, שקופה ואחראית בתהליך קבלת ההחלטות בישראל.
+
+לקראת הכנסת הבאה, אבקש ממך לשקול חתימה גלויה על החוזה הציבורי למועמדים: התחייבות לפעול לקידום הצעת חוק שתסדיר מנגנון השתתפות ציבורית מחייב, שקוף ואחראי, כך שהציבור יוכל להיות חלק פעיל יותר מהדמוקרטיה גם בין מערכות בחירות.
+
+החוזה אינו מבקש להחליף את שיקול הדעת של נבחרי הציבור, אלא לעגן מחויבות בסיסית לשקיפות, אחריות, הקשבה והחזרת חלק ממשי מהקול לציבור.
+
+בברכה,
+${citizenName.trim() || "אזרח/ית"}
+${candidateSenderEmail.trim()}`
+    : "";
+  const handleSendCandidateLetter = () => {
+    if (!citizenName.trim()) {
+      setCandidateLetterMessage("יש למלא שם פונה לפני השליחה.");
+      return;
+    }
+
+    if (!candidateSenderEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidateSenderEmail.trim())) {
+      setCandidateLetterMessage("יש למלא מייל פונה תקין.");
+      return;
+    }
+
+    const subject = "בקשה לחתימה על חוזה ציבורי למועמדים לכנסת הבאה";
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(candidateLetterBody)}`;
+    setCandidateLetterMessage("פתחנו עבורך הודעת מייל מוכנה. צריך להוסיף את כתובת המועמד/ת ולשלוח מתוכנת המייל שלך.");
+  };
+  const copyCandidateLetter = async () => {
+    if (!citizenName.trim() || !candidateSenderEmail.trim()) {
+      setCandidateLetterMessage("יש למלא שם פונה ומייל לפני העתקת הנוסח.");
+      return;
+    }
+
+    await navigator.clipboard.writeText(candidateLetterBody);
+    setCandidateLetterMessage("נוסח הפנייה הועתק.");
   };
   const handleSignupSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -806,6 +848,85 @@ ${citizenCity.trim() ? citizenCity.trim() : ""}`
                   <p>תאריך: ____________</p>
                   <p>חתימה: ____________</p>
                 </div>
+              </div>
+            </div>
+
+            <Dialog open={isCandidateLetterOpen} onOpenChange={setCandidateLetterOpen}>
+              <DialogTrigger asChild>
+                <Button className="mt-6 bg-[#17324d] hover:bg-[#1d4f91]">
+                  <Send className="ml-2 h-4 w-4" />
+                  פנייה למועמדים לכנסת הבאה
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[90vh] overflow-y-auto text-right sm:max-w-2xl" dir="rtl">
+                <DialogHeader className="text-right">
+                  <DialogTitle className="text-2xl text-[#17324d]">פנייה למועמד/ת לכנסת הבאה</DialogTitle>
+                  <DialogDescription>
+                    מלאו שם פונה ומייל בלבד, והמערכת תכין נוסח פנייה לחתימה על החוזה הציבורי.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="candidate-citizen-name">שם הפונה</Label>
+                      <Input
+                        id="candidate-citizen-name"
+                        value={citizenName}
+                        onChange={(event) => {
+                          setCitizenName(event.target.value);
+                          setCandidateLetterMessage("");
+                        }}
+                        placeholder="שם מלא או ראשי תיבות"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="candidate-sender-email">מייל הפונה</Label>
+                      <Input
+                        id="candidate-sender-email"
+                        type="email"
+                        value={candidateSenderEmail}
+                        onChange={(event) => {
+                          setCandidateSenderEmail(event.target.value);
+                          setCandidateLetterMessage("");
+                        }}
+                        placeholder="name@example.com"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="candidate-letter">נוסח הפנייה</Label>
+                    <Textarea
+                      id="candidate-letter"
+                      value={candidateLetterBody}
+                      readOnly
+                      className="min-h-64"
+                      placeholder="מלאו שם פונה ומייל כדי לראות נוסח מוכן"
+                    />
+                  </div>
+                  <p className="text-xs leading-5 text-slate-500">
+                    המייל נפתח ללא נמען קבוע. יש להוסיף את כתובת המועמד/ת בתוכנת המייל לפני השליחה.
+                  </p>
+                  {candidateLetterMessage && (
+                    <p className="rounded-md bg-blue-50 p-3 text-sm font-medium text-blue-900">{candidateLetterMessage}</p>
+                  )}
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <Button type="button" onClick={handleSendCandidateLetter} className="bg-[#17324d] hover:bg-[#1d4f91]">
+                      <Send className="ml-2 h-4 w-4" />
+                      פתיחת מייל מוכן
+                    </Button>
+                    <Button type="button" variant="outline" onClick={copyCandidateLetter}>
+                      <Copy className="ml-2 h-4 w-4" />
+                      העתקת הנוסח
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <div className="mt-6 rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
+              <h3 className="mb-3 text-2xl font-bold text-slate-900">מועמדים שחתמו על החוזה</h3>
+              <div className="rounded-lg bg-white p-4 text-center text-slate-600">
+                עדיין לא חתמו מועמדים על החוזה.
               </div>
             </div>
 
