@@ -18,6 +18,7 @@ export default function Contact() {
     message: "",
   });
   const [notice, setNotice] = useState("");
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const goHome = () => {
     setLocation("/");
@@ -29,17 +30,30 @@ export default function Contact() {
     setNotice("");
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const body = [
-      `שם: ${form.name || "לא נמסר"}`,
-      `אימייל לחזרה: ${form.email || "לא נמסר"}`,
-      "",
-      form.message,
-    ].join("\n");
+    setSubmitting(true);
+    setNotice("");
 
-    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(form.subject || "פנייה דרך האתר")}&body=${encodeURIComponent(body)}`;
-    setNotice("פתחנו עבורך הודעת מייל מוכנה. אפשר לערוך ולשלוח מתיבת הדואר שלך.");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "שליחת הפנייה נכשלה כרגע");
+      }
+
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setNotice("הפנייה נשלחה. תודה, נחזור אליך בהקדם.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "שליחת הפנייה נכשלה כרגע");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -111,14 +125,14 @@ export default function Contact() {
                 />
               </div>
               <p className="text-xs leading-5 text-slate-500">
-                הפנייה נשלחת מתיבת הדואר שלך. האתר לא שומר את תוכן ההודעה.
+                הפנייה נשלחת אלינו ישירות במייל. נשמור רק את פרטי הפנייה הדרושים כדי לחזור אליך.
               </p>
               {notice && (
                 <p className="rounded-md bg-blue-50 p-3 text-sm font-medium text-blue-900">{notice}</p>
               )}
-              <Button type="submit" className="w-full bg-[#17324d] hover:bg-[#1d4f91]">
+              <Button type="submit" className="w-full bg-[#17324d] hover:bg-[#1d4f91]" disabled={isSubmitting}>
                 <Send className="ml-2 h-4 w-4" />
-                פתיחת מייל מוכן
+                {isSubmitting ? "שולח..." : "שליחת פנייה"}
               </Button>
             </form>
           </Card>

@@ -6,6 +6,7 @@ import path from "path";
 import { count, eq, or } from "drizzle-orm";
 import { getDb } from "./db";
 import { memberSignups } from "../drizzle/schema";
+import { getContactEmailTo, sendEmail } from "./email";
 
 type LocalMemberSignup = {
   id: string;
@@ -63,6 +64,15 @@ function getNameInitials(fullName: string) {
     .join(". ");
 
   return initials ? `${initials}.` : "";
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function isValidAdminToken(req: Request) {
@@ -338,41 +348,47 @@ function buildWelcomeEmail(fullName: string, count: number) {
 }
 
 async function sendWelcomeEmail(to: string, fullName: string, count: number) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.MEMBER_SIGNUP_EMAIL_FROM || process.env.EMAIL_FROM;
-
-  if (!apiKey || !from) {
-    console.warn("[MemberSignups] Email provider is not configured. Set RESEND_API_KEY and MEMBER_SIGNUP_EMAIL_FROM.");
-    return false;
-  }
-
   const message = buildWelcomeEmail(fullName, count);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+  return sendEmail({ to, subject: message.subject, html: message.html, text: message.text });
+}
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject: message.subject,
-      html: message.html,
-      text: message.text,
-    }),
-    signal: controller.signal,
-  }).finally(() => clearTimeout(timeout));
+async function sendSignupNotification(input: {
+  fullName: string;
+  email: string;
+  phone: string;
+  note: string;
+  count: number;
+  isNewSignup: boolean;
+}) {
+  const to = getContactEmailTo();
 
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-    console.warn(`[MemberSignups] Welcome email failed (${response.status}): ${detail}`);
+  if (!to) {
+    console.warn("[MemberSignups] Signup notification recipient is not configured. Set CONTACT_EMAIL_TO.");
     return false;
   }
 
-  return true;
+  const action = input.isNewSignup ? "הרשמה חדשה" : "עדכון הרשמה קיימת";
+  const safeFullName = escapeHtml(input.fullName);
+  const safeEmail = escapeHtml(input.email);
+  const safePhone = escapeHtml(input.phone || "לא נמסר");
+  const safeNote = escapeHtml(input.note).replace(/\n/g, "<br />");
+
+  return sendEmail({
+    to,
+    replyTo: input.email,
+    subject: `${action} לקול משותף`,
+    html: `
+      <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#0f172a">
+        <h1 style="color:#17324d">${action}</h1>
+        <p><strong>שם שנמסר בטופס:</strong> ${safeFullName}</p>
+        <p><strong>אימייל:</strong> ${safeEmail}</p>
+        <p><strong>טלפון:</strong> ${safePhone}</p>
+        <p><strong>מספר נרשמים מוצג:</strong> ${input.count.toLocaleString("he-IL")}</p>
+        ${input.note ? `<p><strong>הערה:</strong><br />${safeNote}</p>` : ""}
+      </div>
+    `,
+    text: `${action}\n\nשם שנמסר בטופס: ${input.fullName}\nאימייל: ${input.email}\nטלפון: ${input.phone || "לא נמסר"}\nמספר נרשמים מוצג: ${input.count.toLocaleString("he-IL")}\n\n${input.note ? `הערה:\n${input.note}` : ""}`,
+  });
 }
 
 export function registerMemberSignupRoutes(app: Express) {
@@ -434,7 +450,18 @@ export function registerMemberSignupRoutes(app: Express) {
       console.warn("[MemberSignups] Welcome email error:", error);
       return false;
     });
+    const notificationSent = await sendSignupNotification({
+      fullName,
+      email,
+      phone,
+      note,
+      count: publicMemberCount,
+      isNewSignup,
+    }).catch((error) => {
+      console.warn("[MemberSignups] Signup notification error:", error);
+      return false;
+    });
 
-    res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent });
+    res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent, notificationSent });
   });
 }
