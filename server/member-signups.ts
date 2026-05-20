@@ -48,6 +48,7 @@ const memberCountDisplayOffset = Number.isFinite(configuredMemberCountDisplayOff
   ? Math.max(0, configuredMemberCountDisplayOffset)
   : 1;
 const foundingMemberName = "אמיר פ";
+const legacyFoundingMemberNames = new Set(["א. פ", "א. פ."]);
 let memberSignupTableReady = false;
 const publicNamesLimit = 250;
 const signupRateLimitWindowMs = 60_000;
@@ -59,6 +60,12 @@ function normalize(value: unknown) {
 }
 
 function getPublicDisplayName(fullName: string) {
+  const normalizedName = fullName.trim();
+
+  if (legacyFoundingMemberNames.has(normalizedName)) {
+    return foundingMemberName;
+  }
+
   const nameParts = fullName
     .trim()
     .split(/\s+/)
