@@ -39,7 +39,6 @@ export default function Home() {
   const [letterMessage, setLetterMessage] = useState("");
   const [signupForm, setSignupForm] = useState({
     fullName: "",
-    nationalId: "",
     phone: "",
     email: "",
     note: "",
@@ -227,7 +226,7 @@ ${citizenCity.trim() ? citizenCity.trim() : ""}`
         : "ההרשמה נשמרה, אך מייל הברכה יישלח לאחר חיבור שירות המייל בשרת.";
       setSignupMessage(`${countText} ${emailText}`);
       setWelcomeMessage(`${data.isNewSignup ? "ברוכים הבאים לגרעין המייסד." : "הרשומה שלך עודכנה בהצלחה."} ${countText}`);
-      setSignupForm({ fullName: "", nationalId: "", phone: "", email: "", note: "" });
+      setSignupForm({ fullName: "", phone: "", email: "", note: "" });
       setSignupOpen(false);
       setWelcomeOpen(true);
       window.setTimeout(() => setWelcomeOpen(false), 4500);
@@ -905,7 +904,7 @@ ${citizenCity.trim() ? citizenCity.trim() : ""}`
                 <DialogHeader className="text-right">
                   <DialogTitle className="text-2xl text-blue-900">טופס הצטרפות לגרעין המייסד</DialogTitle>
                   <DialogDescription>
-                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אותה תעודת זהות נספרת פעם אחת בלבד, ולאחר השליחה יישלח מייל ברכה.
+                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אימייל תקין הוא שדה חובה, ולאחר השליחה יישלח מייל ברכה.
                   </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4" onSubmit={handleSignupSubmit}>
@@ -916,16 +915,6 @@ ${citizenCity.trim() ? citizenCity.trim() : ""}`
                         id="signup-full-name"
                         value={signupForm.fullName}
                         onChange={(event) => updateSignupForm("fullName", event.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-national-id">תעודת זהות</Label>
-                      <Input
-                        id="signup-national-id"
-                        inputMode="numeric"
-                        value={signupForm.nationalId}
-                        onChange={(event) => updateSignupForm("nationalId", event.target.value)}
                         required
                       />
                     </div>

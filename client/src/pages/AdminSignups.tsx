@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from "react";
 type Signup = {
   id: string | number;
   fullName: string;
-  nationalId: string;
   email: string;
   phone: string | null;
   note: string | null;
@@ -90,11 +89,10 @@ export default function AdminSignups() {
 
   const exportCsv = () => {
     const rows = [
-      ["מספר", "שם מלא", "תעודת זהות", "אימייל", "טלפון", "הערה", "נוצר", "עודכן"],
+      ["מספר", "שם מלא", "אימייל", "טלפון", "הערה", "נוצר", "עודכן"],
       ...sortedSubmissions.map((signup, index) => [
         index + 1,
         signup.fullName,
-        signup.nationalId,
         signup.email,
         signup.phone || "",
         signup.note || "",
@@ -182,7 +180,6 @@ export default function AdminSignups() {
                 <tr>
                   <th className="p-3">#</th>
                   <th className="p-3">שם מלא</th>
-                  <th className="p-3">תעודת זהות</th>
                   <th className="p-3">אימייל</th>
                   <th className="p-3">טלפון</th>
                   <th className="p-3">הערה</th>
@@ -195,7 +192,6 @@ export default function AdminSignups() {
                   <tr key={String(signup.id)} className="border-t border-[#eadfca] align-top">
                     <td className="p-3 font-bold">{index + 1}</td>
                     <td className="p-3">{signup.fullName}</td>
-                    <td className="p-3">{signup.nationalId}</td>
                     <td className="p-3" dir="ltr">{signup.email}</td>
                     <td className="p-3" dir="ltr">{signup.phone || "-"}</td>
                     <td className="p-3">
@@ -207,7 +203,7 @@ export default function AdminSignups() {
                 ))}
                 {!sortedSubmissions.length && (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-[#5a4b38]">
+                    <td colSpan={7} className="p-8 text-center text-[#5a4b38]">
                       אין נתונים להצגה כרגע.
                     </td>
                   </tr>

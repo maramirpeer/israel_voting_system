@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { randomUUID } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
@@ -11,7 +11,7 @@ import { getContactEmailTo, sendEmail } from "./email";
 type LocalMemberSignup = {
   id: string;
   fullName: string;
-  nationalId: string;
+  nationalId?: string;
   email: string;
   phone: string;
   note: string;
@@ -21,7 +21,7 @@ type LocalMemberSignup = {
 
 type PublicMemberSignup = {
   fullName: string;
-  nationalId: string;
+  nationalId?: string;
   email: string;
 };
 
@@ -124,7 +124,7 @@ async function writeLocalStore(store: SignupStore) {
 }
 
 function getPublicMemberName(signup: PublicMemberSignup) {
-  if (signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com") {
+  if (signup.email.toLowerCase() === "amir_peer@hotmail.com") {
     return foundingMemberName;
   }
 
@@ -221,7 +221,7 @@ async function getPublicMemberCount() {
 
   const store = await readLocalStore();
   const includesFoundingMember = store.submissions.some(
-    (signup) => signup.nationalId === "033012535" || signup.email.toLowerCase() === "amir_peer@hotmail.com",
+    (signup) => signup.email.toLowerCase() === "amir_peer@hotmail.com",
   );
 
   return store.submissions.length + (includesFoundingMember ? 0 : 1);
@@ -229,7 +229,6 @@ async function getPublicMemberCount() {
 
 async function saveSignup(input: {
   fullName: string;
-  nationalId: string;
   email: string;
   phone: string;
   note: string;
@@ -239,16 +238,13 @@ async function saveSignup(input: {
     return null;
   });
   const storedFullName = getNameInitials(input.fullName);
+  const signupKey = createHash("sha256").update(input.email).digest("hex").slice(0, 32);
 
   if (db) {
     try {
       const samePerson = input.phone
-        ? or(
-            eq(memberSignups.nationalId, input.nationalId),
-            eq(memberSignups.email, input.email),
-            eq(memberSignups.phone, input.phone),
-          )
-        : or(eq(memberSignups.nationalId, input.nationalId), eq(memberSignups.email, input.email));
+        ? or(eq(memberSignups.email, input.email), eq(memberSignups.phone, input.phone))
+        : eq(memberSignups.email, input.email);
 
       const existing = await db.select().from(memberSignups).where(samePerson).limit(1);
       const isNewSignup = existing.length === 0;
@@ -256,7 +252,7 @@ async function saveSignup(input: {
       if (isNewSignup) {
         await db.insert(memberSignups).values({
           fullName: storedFullName,
-          nationalId: input.nationalId,
+          nationalId: signupKey,
           email: input.email,
           phone: input.phone || null,
           note: input.note || null,
@@ -266,7 +262,7 @@ async function saveSignup(input: {
           .update(memberSignups)
           .set({
             fullName: storedFullName,
-            nationalId: input.nationalId,
+            nationalId: signupKey,
             email: input.email,
             phone: input.phone || null,
             note: input.note || null,
@@ -284,10 +280,9 @@ async function saveSignup(input: {
   const now = new Date().toISOString();
   const store = await readLocalStore();
   const existingIndex = store.submissions.findIndex((signup) => {
-    const sameNationalId = signup.nationalId === input.nationalId;
     const sameEmail = signup.email.toLowerCase() === input.email;
     const samePhone = input.phone && signup.phone === input.phone;
-    return sameNationalId || sameEmail || samePhone;
+    return sameEmail || samePhone;
   });
   const isNewSignup = existingIndex < 0;
 
@@ -296,6 +291,7 @@ async function saveSignup(input: {
       ...store.submissions[existingIndex],
       ...input,
       fullName: storedFullName,
+      nationalId: signupKey,
       updatedAt: now,
     };
   } else {
@@ -303,6 +299,7 @@ async function saveSignup(input: {
       id: randomUUID(),
       ...input,
       fullName: storedFullName,
+      nationalId: signupKey,
       createdAt: now,
       updatedAt: now,
     });
@@ -424,7 +421,6 @@ export function registerMemberSignupRoutes(app: Express) {
     }
 
     const fullName = normalize(req.body.fullName);
-    const nationalId = normalize(req.body.nationalId).replace(/\D/g, "");
     const email = normalize(req.body.email).toLowerCase();
     const phone = normalize(req.body.phone);
     const note = normalize(req.body.note);
@@ -434,17 +430,12 @@ export function registerMemberSignupRoutes(app: Express) {
       return;
     }
 
-    if (!nationalId) {
-      res.status(400).json({ error: "יש למלא תעודת זהות" });
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "יש למלא אימייל תקין כדי לקבל אישור הרשמה ועדכונים עתידיים" });
       return;
     }
 
-    if (!email) {
-      res.status(400).json({ error: "יש למלא אימייל כדי לקבל אישור הרשמה ועדכונים עתידיים" });
-      return;
-    }
-
-    const { isNewSignup } = await saveSignup({ fullName, nationalId, email, phone, note });
+    const { isNewSignup } = await saveSignup({ fullName, email, phone, note });
     const publicMemberCount = await getPublicMemberCount();
     const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount).catch((error) => {
       console.warn("[MemberSignups] Welcome email error:", error);
