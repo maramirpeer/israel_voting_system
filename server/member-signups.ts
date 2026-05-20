@@ -43,6 +43,10 @@ type AdminMemberSignup = {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
+const configuredMemberCountDisplayOffset = Number(process.env.MEMBER_SIGNUP_DISPLAY_OFFSET ?? "1");
+const memberCountDisplayOffset = Number.isFinite(configuredMemberCountDisplayOffset)
+  ? Math.max(0, configuredMemberCountDisplayOffset)
+  : 1;
 const foundingMemberName = "א. פ.";
 let memberSignupTableReady = false;
 const publicNamesLimit = 250;
@@ -141,6 +145,10 @@ function getPublicMemberNamesFromRows(rows: PublicMemberSignup[]) {
   return Array.from(new Set(names));
 }
 
+function getDisplayedMemberCount(rawCount: number) {
+  return Math.max(1, rawCount - memberCountDisplayOffset);
+}
+
 async function ensureMemberSignupTable() {
   const db = await getDb();
 
@@ -213,7 +221,8 @@ async function getPublicMemberCount() {
         .limit(1);
       const includesFoundingMember = foundingRows.length > 0;
 
-      return (total?.value || 0) + (includesFoundingMember ? 0 : 1);
+      const rawCount = (total?.value || 0) + (includesFoundingMember ? 0 : 1);
+      return getDisplayedMemberCount(rawCount);
     } catch (error) {
       console.warn("[MemberSignups] Database count failed, using local fallback:", error);
     }
@@ -224,7 +233,8 @@ async function getPublicMemberCount() {
     (signup) => signup.email.toLowerCase() === "amir_peer@hotmail.com",
   );
 
-  return store.submissions.length + (includesFoundingMember ? 0 : 1);
+  const rawCount = store.submissions.length + (includesFoundingMember ? 0 : 1);
+  return getDisplayedMemberCount(rawCount);
 }
 
 async function saveSignup(input: {
