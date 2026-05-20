@@ -47,7 +47,7 @@ const configuredMemberCountDisplayOffset = Number(process.env.MEMBER_SIGNUP_DISP
 const memberCountDisplayOffset = Number.isFinite(configuredMemberCountDisplayOffset)
   ? Math.max(0, configuredMemberCountDisplayOffset)
   : 1;
-const foundingMemberName = "א. פ.";
+const foundingMemberName = "אמיר פ";
 let memberSignupTableReady = false;
 const publicNamesLimit = 250;
 const signupRateLimitWindowMs = 60_000;
@@ -58,16 +58,16 @@ function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function getNameInitials(fullName: string) {
-  const initials = fullName
+function getPublicDisplayName(fullName: string) {
+  const nameParts = fullName
     .trim()
     .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part[0])
-    .filter(Boolean)
-    .join(". ");
+    .filter(Boolean);
 
-  return initials ? `${initials}.` : "";
+  const firstName = nameParts[0] || "";
+  const lastInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1][0] : "";
+
+  return [firstName, lastInitial].filter(Boolean).join(" ");
 }
 
 function escapeHtml(value: string) {
@@ -132,7 +132,7 @@ function getPublicMemberName(signup: PublicMemberSignup) {
     return foundingMemberName;
   }
 
-  return getNameInitials(signup.fullName);
+  return getPublicDisplayName(signup.fullName);
 }
 
 function getPublicMemberNamesFromRows(rows: PublicMemberSignup[]) {
@@ -247,7 +247,7 @@ async function saveSignup(input: {
     console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
     return null;
   });
-  const storedFullName = getNameInitials(input.fullName);
+  const storedFullName = getPublicDisplayName(input.fullName);
   const signupKey = createHash("sha256").update(input.email).digest("hex").slice(0, 32);
 
   if (db) {
