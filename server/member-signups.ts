@@ -254,7 +254,7 @@ async function saveSignup(input: {
     console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
     return null;
   });
-  const storedFullName = getPublicDisplayName(input.fullName);
+  const storedFullName = input.fullName;
   const signupKey = createHash("sha256").update(input.email).digest("hex").slice(0, 32);
 
   if (db) {
