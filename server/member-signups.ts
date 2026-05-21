@@ -43,8 +43,7 @@ type AdminMemberSignup = {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
-const allowLocalSignupStore =
-  process.env.NODE_ENV === "development" || process.env.ALLOW_LOCAL_SIGNUP_STORE === "true";
+const allowLocalSignupStore = process.env.ALLOW_LOCAL_SIGNUP_STORE === "true";
 const configuredMemberCountDisplayOffset = Number(process.env.MEMBER_SIGNUP_DISPLAY_OFFSET ?? "1");
 const memberCountDisplayOffset = Number.isFinite(configuredMemberCountDisplayOffset)
   ? Math.max(0, configuredMemberCountDisplayOffset)
