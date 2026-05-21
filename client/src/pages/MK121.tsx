@@ -76,6 +76,15 @@ const demoBills = [
   },
 ];
 
+const getDemoBillVoteSplit = (billId: number, totalVotes: number) => {
+  const forPercentage = 62 + ((billId * 7) % 19);
+  const votesFor = Math.floor(totalVotes * (forPercentage / 100));
+  return {
+    votesFor,
+    votesAgainst: totalVotes - votesFor,
+  };
+};
+
 const demoQuestions = [
   {
     id: 301,
@@ -432,7 +441,7 @@ export default function MK121() {
     setLocalBillVotes((current) => current.filter((id) => id !== billId));
     setLocalBillVoteIncrements((current) => ({
       ...current,
-      [billId]: Math.min((current[billId] || 0) - 1, 0),
+      [billId]: Math.max((current[billId] || 0) - 1, 0),
     }));
     setLocalBillAgainstVotes((current) => [...current, billId]);
     toast.success("הצבעת נגד נרשמה");
@@ -668,7 +677,13 @@ export default function MK121() {
                     const hasVoted = userBillVotes.includes(bill.id);
                     const hasVotedAgainst = localBillAgainstVotes.includes(bill.id);
                     const isWinner = bill.isWinner;
-                    const displayedVotes = (bill.votes || 0) + (localBillVoteIncrements[bill.id] || 0);
+                    const baseVotes = bill.votes || 0;
+                    const baseSplit = getDemoBillVoteSplit(bill.id, baseVotes);
+                    const votesFor = Math.max(0, baseSplit.votesFor + (localBillVoteIncrements[bill.id] || 0));
+                    const votesAgainst = baseSplit.votesAgainst + (hasVotedAgainst ? 1 : 0);
+                    const displayedVotes = votesFor + votesAgainst;
+                    const percentageFor = displayedVotes > 0 ? (votesFor / displayedVotes) * 100 : 0;
+                    const percentageAgainst = displayedVotes > 0 ? (votesAgainst / displayedVotes) * 100 : 0;
 
                     return (
                       <Card
@@ -703,6 +718,27 @@ export default function MK121() {
                         </div>
 
                         <p className="text-slate-700 mb-4">{bill.description}</p>
+
+                        <div className="mb-4 space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium text-red-600">
+                              נגד {votesAgainst.toLocaleString("he-IL")} ({percentageAgainst.toFixed(1)}%)
+                            </span>
+                            <span className="font-medium text-green-600">
+                              בעד {votesFor.toLocaleString("he-IL")} ({percentageFor.toFixed(1)}%)
+                            </span>
+                          </div>
+                          <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-200" aria-hidden="true">
+                            <div
+                              className="h-full bg-green-500 transition-all"
+                              style={{ width: `${percentageFor}%` }}
+                            />
+                            <div
+                              className="h-full bg-red-500 transition-all"
+                              style={{ width: `${percentageAgainst}%` }}
+                            />
+                          </div>
+                        </div>
 
                         <div className="mb-4 flex flex-col gap-2 rounded-md border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
                           <p className="text-sm text-slate-700">
