@@ -87,6 +87,10 @@ export default function Home() {
     setLocation("/gate-50");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   };
+  const goToCandidateContractTop = () => {
+    setLocation("/candidate-contract");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
   const goToContactTop = () => {
     setLocation("/contact");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -553,83 +557,20 @@ ${candidateSenderEmail.trim()}`
             </p>
 
             <div className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
-              <div className="space-y-6 leading-8 text-slate-700">
-                <div>
-                  <h3 className="mb-3 text-2xl font-bold text-slate-900">חוזה ציבורי בין מועמד/ת לכנסת לבין ציבור הבוחרים</h3>
-                  <p>
-                    אני, החתום/ה מטה, כמועמד/ת לבחירות לכנסת ישראל, מצהיר/ה בזאת כי אני מכיר/ה בכך
-                    שהמנדט הציבורי אינו רכוש אישי, מפלגתי או סיעתי בלבד, אלא שליחות הניתנת לי מאת ציבור הבוחרים.
-                  </p>
-                  <p className="mt-3">
-                    מתוך הכרה זו, אני מתחייב/ת לפעול לקידום עקרונות של דמוקרטיה מתקדמת, שקיפות,
-                    אחריות ציבורית, שיתוף אזרחי וביסוס קולו של הציבור בתהליך קבלת ההחלטות.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">התחייבות מרכזית</h4>
-                  <p>
-                    אם אבחר לכנסת, אני מתחייב/ת להצביע בעד הצעת חוק שתסדיר את הקמת מנגנון
-                    <KolMeshutafLink className="mx-1 text-[#17324d]" /> - מנגנון ציבורי, שקוף, ישיר,
-                    דינמי ומואצל, שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
-                  </p>
-                  <p className="mt-3">
-                    התחייבות זו תחול על הצעת חוק שתונח בפני הכנסת הבאה ותעסוק בהסדרת מנגנון השתתפות ציבורית
-                    מחייב, שקוף ואחראי.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">מהות ההתחייבות</h4>
-                  <p>
-                    אני מתחייב/ת כי לא אתייחס להצעת החוק כאל עניין טכני או הצהרתי בלבד, אלא כאל התחייבות
-                    ציבורית מהותית שניתנה מראש לבוחרים.
-                  </p>
-                  <p className="mt-3">
-                    במסגרת זו אפעל בתום לב, בשקיפות ובאחריות כדי לאפשר את קידום ההצעה, דיון ציבורי בה,
-                    והצבעה עליה במסגרת הכנסת.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">התחייבויות משלימות</h4>
-                  <ol className="list-decimal space-y-2 pr-6">
-                    <li>לפרסם לציבור את עמדתי בנושאים מהותיים לפני הצבעות מרכזיות.</li>
-                    <li>לנמק החלטות והצבעות בעלות חשיבות ציבורית.</li>
-                    <li>לאפשר התייעצות ציבורית באמצעות מנגנונים פתוחים, ישירים או מואצלים.</li>
-                    <li>לפעול לחיזוק אמון הציבור בנבחריו באמצעות שקיפות, אחריות והקשבה רציפה.</li>
-                  </ol>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">גבולות ההתחייבות</h4>
-                  <p>
-                    ידוע לי כי כהונתי כחבר/ת כנסת כפופה לדין, לחוקי מדינת ישראל, לכללי האתיקה של הכנסת
-                    ולחובותיי כנבחר/ת ציבור.
-                  </p>
-                  <p className="mt-3">
-                    אין בהתחייבות זו כדי לחייב פעולה בלתי חוקית, פגיעה בזכויות יסוד, או פעולה הסותרת באופן
-                    מובהק את טובת הציבור ואת עקרונות היסוד של מדינת ישראל כמדינה יהודית ודמוקרטית.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-xl font-bold text-slate-900">הצהרה ציבורית</h4>
-                  <p>
-                    אני מבין/ה כי חתימתי על חוזה זה היא התחייבות ציבורית גלויה כלפי הבוחרים.
-                  </p>
-                  <p className="mt-3 font-bold text-slate-900">
-                    מי שמבקש את קולם של האזרחים צריך לרצות בקולם כחלק מההתנהלות השוטפת.
-                  </p>
-                </div>
-
-                <div className="grid gap-3 rounded-lg bg-white p-4 text-sm text-slate-700 md:grid-cols-2">
-                  <p>שם המועמד/ת: ____________</p>
-                  <p>מספר זהות: ____________</p>
-                  <p>מפלגה / רשימה: ____________</p>
-                  <p>תאריך: ____________</p>
-                  <p>חתימה: ____________</p>
-                </div>
+              <div className="space-y-4 text-lg leading-8 text-slate-700">
+                <p>
+                  החוזה מציג התחייבות של מועמד/ת לכנסת לראות במנדט הציבורי שליחות מטעם הבוחרים, ולא רכוש אישי, מפלגתי או סיעתי.
+                </p>
+                <p>
+                  מועמד/ת שיחתום/תחתום עליו מתחייב/ת לקדם מנגנון ציבורי, שקוף ואחראי שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
+                </p>
+                <button
+                  type="button"
+                  onClick={goToCandidateContractTop}
+                  className="text-xl font-black text-[#17324d] underline decoration-[#c8a96a] decoration-2 underline-offset-4 transition hover:text-[#1d4f91]"
+                >
+                  קרא עוד
+                </button>
               </div>
             </div>
 
@@ -704,13 +645,6 @@ ${candidateSenderEmail.trim()}`
                 </div>
               </DialogContent>
             </Dialog>
-
-            <div className="mt-6 rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
-              <h3 className="mb-3 text-2xl font-bold text-slate-900">מועמדים שחתמו על החוזה</h3>
-              <div className="rounded-lg bg-white p-4 text-center text-slate-600">
-                עדיין לא חתמו מועמדים על החוזה.
-              </div>
-            </div>
 
             <p className="mt-4 text-sm leading-6 text-slate-500">
               נוסח זה הוא בסיס רעיוני-ציבורי, ויעבור התאמה משפטית לפני שימוש רשמי מול מועמדים.
