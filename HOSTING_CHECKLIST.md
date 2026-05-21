@@ -16,11 +16,12 @@
 
 ```env
 DATABASE_URL=mysql://USER:PASSWORD@HOST:3306/DATABASE_NAME
+ADMIN_SIGNUPS_TOKEN=מפתח ארוך וסודי למסך הניהול
 RESEND_API_KEY=המפתח של Resend
 MEMBER_SIGNUP_EMAIL_FROM=קול משותף <noreply@sharedemocracy.com>
 ```
 
-אם אין `DATABASE_URL`, האתר ישמור טפסים לקובץ מקומי בלבד. זה מתאים לפיתוח מקומי, לא להפעלה ציבורית.
+אם אין `DATABASE_URL` בפרודקשן, האתר לא יקבל טפסי הצטרפות ולא יציג רשומות בניהול. קובץ מקומי מתאים רק לפיתוח מקומי, או להפעלה מפורשת עם `ALLOW_LOCAL_SIGNUP_STORE=true`.
 
 ## טבלת טפסי ההצטרפות
 

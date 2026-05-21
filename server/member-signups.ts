@@ -43,6 +43,8 @@ type AdminMemberSignup = {
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
+const allowLocalSignupStore =
+  process.env.NODE_ENV !== "production" || process.env.ALLOW_LOCAL_SIGNUP_STORE === "true";
 const configuredMemberCountDisplayOffset = Number(process.env.MEMBER_SIGNUP_DISPLAY_OFFSET ?? "1");
 const memberCountDisplayOffset = Number.isFinite(configuredMemberCountDisplayOffset)
   ? Math.max(0, configuredMemberCountDisplayOffset)
@@ -54,6 +56,16 @@ const publicNamesLimit = 250;
 const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
 const signupRateLimits = new Map<string, { count: number; resetAt: number }>();
+
+class SignupStorageUnavailableError extends Error {
+  statusCode = 503;
+
+  constructor(operation: string) {
+    super(
+      `Signup storage is not connected for ${operation}. Set DATABASE_URL on the production server before collecting signups.`,
+    );
+  }
+}
 
 function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
@@ -130,8 +142,26 @@ async function readLocalStore(): Promise<SignupStore> {
 }
 
 async function writeLocalStore(store: SignupStore) {
+  if (!allowLocalSignupStore) {
+    throw new SignupStorageUnavailableError("local fallback write");
+  }
+
   await mkdir(dataDir, { recursive: true });
   await writeFile(dataFile, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+}
+
+function handleDbUnavailable(operation: string, error: unknown) {
+  console.warn(`[MemberSignups] Database ${operation} failed:`, error);
+
+  if (!allowLocalSignupStore) {
+    throw new SignupStorageUnavailableError(operation);
+  }
+}
+
+function requireSignupStorage(operation: string) {
+  if (!allowLocalSignupStore) {
+    throw new SignupStorageUnavailableError(operation);
+  }
 }
 
 function getPublicMemberName(signup: PublicMemberSignup) {
@@ -186,9 +216,13 @@ async function ensureMemberSignupTable() {
 
 async function getPublicMemberNames() {
   const db = await ensureMemberSignupTable().catch((error) => {
-    console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
+    handleDbUnavailable("setup", error);
     return null;
   });
+
+  if (!db) {
+    requireSignupStorage("public names read");
+  }
 
   if (db) {
     try {
@@ -204,7 +238,7 @@ async function getPublicMemberNames() {
 
       return getPublicMemberNamesFromRows(rows);
     } catch (error) {
-      console.warn("[MemberSignups] Database read failed, using local fallback:", error);
+      handleDbUnavailable("read", error);
     }
   }
 
@@ -214,9 +248,13 @@ async function getPublicMemberNames() {
 
 async function getPublicMemberCount() {
   const db = await ensureMemberSignupTable().catch((error) => {
-    console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
+    handleDbUnavailable("setup", error);
     return null;
   });
+
+  if (!db) {
+    requireSignupStorage("public count read");
+  }
 
   if (db) {
     try {
@@ -231,7 +269,7 @@ async function getPublicMemberCount() {
       const rawCount = (total?.value || 0) + (includesFoundingMember ? 0 : 1);
       return getDisplayedMemberCount(rawCount);
     } catch (error) {
-      console.warn("[MemberSignups] Database count failed, using local fallback:", error);
+      handleDbUnavailable("count", error);
     }
   }
 
@@ -251,11 +289,15 @@ async function saveSignup(input: {
   note: string;
 }) {
   const db = await ensureMemberSignupTable().catch((error) => {
-    console.warn("[MemberSignups] Database setup failed, using local fallback:", error);
+    handleDbUnavailable("setup", error);
     return null;
   });
   const storedFullName = input.fullName;
   const signupKey = createHash("sha256").update(input.email).digest("hex").slice(0, 32);
+
+  if (!db) {
+    requireSignupStorage("signup write");
+  }
 
   if (db) {
     try {
@@ -290,7 +332,7 @@ async function saveSignup(input: {
 
       return { isNewSignup };
     } catch (error) {
-      console.warn("[MemberSignups] Database write failed, using local fallback:", error);
+      handleDbUnavailable("write", error);
     }
   }
 
@@ -328,16 +370,20 @@ async function saveSignup(input: {
 
 async function getAdminSignups() {
   const db = await ensureMemberSignupTable().catch((error) => {
-    console.warn("[MemberSignups] Admin database setup failed, using local fallback:", error);
+    handleDbUnavailable("admin setup", error);
     return null;
   });
+
+  if (!db) {
+    requireSignupStorage("admin read");
+  }
 
   if (db) {
     try {
       const rows = await db.select().from(memberSignups).orderBy(memberSignups.id);
       return { source: "database", submissions: rows as AdminMemberSignup[] };
     } catch (error) {
-      console.warn("[MemberSignups] Admin database read failed, using local fallback:", error);
+      handleDbUnavailable("admin read", error);
     }
   }
 
@@ -405,6 +451,16 @@ async function sendSignupNotification(input: {
   });
 }
 
+function sendSignupRouteError(res: Response, error: unknown) {
+  if (error instanceof SignupStorageUnavailableError) {
+    res.status(error.statusCode).json({ error: error.message });
+    return;
+  }
+
+  console.error("[MemberSignups] Unexpected route error:", error);
+  res.status(500).json({ error: "Signup service is unavailable right now." });
+}
+
 export function registerMemberSignupRoutes(app: Express) {
   app.get("/api/admin/member-signups", async (req: Request, res: Response) => {
     if (!isValidAdminToken(req)) {
@@ -412,23 +468,35 @@ export function registerMemberSignupRoutes(app: Express) {
       return;
     }
 
-    const result = await getAdminSignups();
-    res.json({
-      ok: true,
-      source: result.source,
-      count: result.submissions.length,
-      submissions: result.submissions,
-    });
+    try {
+      const result = await getAdminSignups();
+      res.json({
+        ok: true,
+        source: result.source,
+        count: result.submissions.length,
+        submissions: result.submissions,
+      });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
   });
 
   app.get("/api/member-signups/count", async (_req: Request, res: Response) => {
-    const count = await getPublicMemberCount();
-    res.json({ ok: true, count, target: memberTarget });
+    try {
+      const count = await getPublicMemberCount();
+      res.json({ ok: true, count, target: memberTarget });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
   });
 
   app.get("/api/member-signups/names", async (_req: Request, res: Response) => {
-    const names = await getPublicMemberNames();
-    res.json({ ok: true, names });
+    try {
+      const names = await getPublicMemberNames();
+      res.json({ ok: true, names });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
   });
 
   app.post("/api/member-signups", async (req: Request, res: Response) => {
@@ -452,24 +520,28 @@ export function registerMemberSignupRoutes(app: Express) {
       return;
     }
 
-    const { isNewSignup } = await saveSignup({ fullName, email, phone, note });
-    const publicMemberCount = await getPublicMemberCount();
-    const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount).catch((error) => {
-      console.warn("[MemberSignups] Welcome email error:", error);
-      return false;
-    });
-    const notificationSent = await sendSignupNotification({
-      fullName,
-      email,
-      phone,
-      note,
-      count: publicMemberCount,
-      isNewSignup,
-    }).catch((error) => {
-      console.warn("[MemberSignups] Signup notification error:", error);
-      return false;
-    });
+    try {
+      const { isNewSignup } = await saveSignup({ fullName, email, phone, note });
+      const publicMemberCount = await getPublicMemberCount();
+      const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount).catch((error) => {
+        console.warn("[MemberSignups] Welcome email error:", error);
+        return false;
+      });
+      const notificationSent = await sendSignupNotification({
+        fullName,
+        email,
+        phone,
+        note,
+        count: publicMemberCount,
+        isNewSignup,
+      }).catch((error) => {
+        console.warn("[MemberSignups] Signup notification error:", error);
+        return false;
+      });
 
-    res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent, notificationSent });
+      res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent, notificationSent });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
   });
 }

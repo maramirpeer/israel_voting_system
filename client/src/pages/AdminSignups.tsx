@@ -59,7 +59,7 @@ export default function AdminSignups() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error("מפתח הגישה לא אושר או שהנתונים אינם זמינים כרגע.");
+        throw new Error(data.error || "מפתח הגישה לא אושר או שהנתונים אינם זמינים כרגע.");
       }
 
       setSubmissions(Array.isArray(data.submissions) ? data.submissions : []);
