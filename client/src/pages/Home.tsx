@@ -304,7 +304,7 @@ ${candidateSenderEmail.trim()}`
               <KolMeshutafLink /> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
             </p>
             <p className="mt-5 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              <KolMeshutafLink /> מבקש להיות ביטוי אזרחי של <GateFiftyLink />: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לתורה משותפת של אחריות, שקיפות ומשילות.
+              <KolMeshutafLink /> מבקש להיות ביטוי אזרחי של <GateFiftyLink />: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לקול משותף של אחריות, שקיפות ומשילות.
             </p>
             <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
               למעלה מזה, תנועת <KolMeshutafLink /> מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
