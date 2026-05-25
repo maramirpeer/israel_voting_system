@@ -1,21 +1,34 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { trpc } from "@/lib/trpc";
 import { ArrowLeft, FileText, Scale } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
 type MK121Assignment = { type: "direct" | "expert" | "citizen"; name?: string };
+type MK121Bill = {
+  id: number;
+  title: string;
+  votes?: number | null;
+};
 
 const MK121_ASSIGNMENT_KEY = "mk121-vote-assignment";
 const MK121_BILL_DIRECT_OVERRIDES_KEY = "mk121-bill-direct-overrides";
 
-const demoBills = [
-  { id: 204, title: "הגבלת זמן ראש הממשלה" },
-  { id: 205, title: "כל ח״כ חייב להצביע" },
-  { id: 206, title: "זירת מידע חיה של שאלות ותשובות בין ח״כ" },
-  { id: 203, title: "שקיפות" },
-  { id: 201, title: "חובת פרסום יומן פגישות של רגולטורים" },
-  { id: 202, title: "החזר אוטומטי על איחור חמור בתחבורה ציבורית" },
+const getBillDisplayPriority = (title: string) => {
+  if (title.includes("הגבלת") && title.includes("ראש")) return 0;
+  if (title.includes("כל ח״כ חייב") || title.includes("חובת הצבעה")) return 1;
+  if (title.includes("זירת מידע")) return 2;
+  if (title.includes("שקיפות")) return 3;
+  return 10;
+};
+
+const demoBills: MK121Bill[] = [
+  { id: 201, title: "הגבלת זמן ראש הממשלה", votes: 21980 },
+  { id: 202, title: "כל ח״כ חייב להצביע", votes: 17640 },
+  { id: 205, title: "הקשחת חוקי היסוד", votes: 16890 },
+  { id: 203, title: "שקיפות", votes: 14320 },
+  { id: 204, title: "זירת מידע חיה של שאלות ותשובות בין ח״כ", votes: 9870 },
 ];
 
 const readJson = <T,>(key: string, fallback: T): T => {
@@ -34,8 +47,20 @@ export default function MK121VoteRouting() {
   const [billDirectOverrides, setBillDirectOverrides] = useState<Record<string, boolean>>(() =>
     readJson<Record<string, boolean>>(MK121_BILL_DIRECT_OVERRIDES_KEY, {})
   );
+  const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery(undefined, {
+    retry: false,
+  });
+  const billsQuery = trpc.mk121.getBillsForCycle.useQuery(
+    { cycleId: currentCycleQuery.data?.id || 0 },
+    { enabled: !!currentCycleQuery.data?.id, refetchInterval: 30000 }
+  );
 
   const hasDelegate = billAssignment.type !== "direct" && Boolean(billAssignment.name);
+  const useDemoData = !currentCycleQuery.data || Boolean(currentCycleQuery.error);
+  const bills = [...(useDemoData ? demoBills : (billsQuery.data as MK121Bill[] | undefined) || [])].sort((a, b) => {
+    const priorityDiff = getBillDisplayPriority(a.title) - getBillDisplayPriority(b.title);
+    return priorityDiff || (b.votes || 0) - (a.votes || 0);
+  });
 
   const saveBillDirectOverrides = (next: Record<string, boolean>) => {
     setBillDirectOverrides(next);
@@ -93,7 +118,7 @@ export default function MK121VoteRouting() {
             כל הצעת חוק מציגה את מצב ההצבעה הנוכחי שלה, ואפשר להעביר אותה בין הצבעה ישירה לבין הצבעה מואצלת.
           </p>
           <div className="space-y-3">
-            {demoBills.map((bill) => {
+            {bills.map((bill) => {
               const isDirect = !hasDelegate || Boolean(billDirectOverrides[String(bill.id)]);
               const status = isDirect ? "בחירה ישירה" : `מואצל אל ${billAssignment.name}`;
 
@@ -125,6 +150,11 @@ export default function MK121VoteRouting() {
                 </div>
               );
             })}
+            {bills.length === 0 && (
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-slate-600">
+                אין הצעות חוק פעילות להצגה כרגע.
+              </div>
+            )}
           </div>
         </Card>
 
