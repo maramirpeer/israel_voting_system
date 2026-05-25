@@ -34,6 +34,11 @@ export const memberSignups = mysqlTable("memberSignups", {
   email: varchar("email", { length: 320 }).notNull(),
   phone: varchar("phone", { length: 64 }),
   note: text("note"),
+  emailConfirmedAt: timestamp("emailConfirmedAt"),
+  confirmationTokenHash: varchar("confirmationTokenHash", { length: 64 }),
+  confirmationSentAt: timestamp("confirmationSentAt"),
+  welcomeEmailSentAt: timestamp("welcomeEmailSentAt"),
+  notificationSentAt: timestamp("notificationSentAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => [
