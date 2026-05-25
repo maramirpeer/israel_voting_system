@@ -189,14 +189,13 @@ ${candidateSenderEmail.trim()}`
         setMemberCount(data.count);
       }
 
-      const countText = data.isNewSignup
-        ? `המד עלה ל-${data.count} נרשמים.`
-        : `הרשומה עודכנה. המד נשאר על ${data.count} נרשמים.`;
-      const emailText = data.emailSent
-        ? "מייל ברכה נשלח אליך."
-        : "ההרשמה נשמרה, אך מייל הברכה יישלח לאחר חיבור שירות המייל בשרת.";
-      setSignupMessage(`${countText} ${emailText}`);
-      setWelcomeMessage(`${data.isNewSignup ? "ברוכים הבאים לגרעין המייסד." : "הרשומה שלך עודכנה בהצלחה."} ${countText}`);
+      const message = data.isAlreadyConfirmed
+        ? `הרשומה שלך כבר מאושרת. המד עומד על ${data.count} נרשמים.`
+        : data.confirmationEmailSent
+          ? "שלחנו אליך מייל עם קישור לאישור ההצטרפות. ההצטרפות תיספר אחרי לחיצה על הקישור."
+          : "הפרטים נשמרו, אבל מייל האישור לא נשלח כרגע. ננסה שוב לאחר חיבור שירות המייל בשרת.";
+      setSignupMessage(message);
+      setWelcomeMessage(message);
       setSignupForm({ fullName: "", phone: "", email: "", note: "" });
       setSignupOpen(false);
       setWelcomeOpen(true);
@@ -850,7 +849,7 @@ ${candidateSenderEmail.trim()}`
                 <DialogHeader className="text-right">
                   <DialogTitle className="text-2xl text-blue-900">טופס הצטרפות לגרעין המייסד</DialogTitle>
                   <DialogDescription>
-                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אימייל תקין הוא שדה חובה, ולאחר השליחה יישלח מייל ברכה.
+                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אימייל תקין הוא שדה חובה, וההצטרפות תיספר אחרי אישור הקישור במייל.
                   </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4" onSubmit={handleSignupSubmit}>
@@ -894,7 +893,7 @@ ${candidateSenderEmail.trim()}`
                     />
                   </div>
                   <p className="text-xs leading-5 text-slate-500">
-                    שליחת הטופס אינה מהווה הצבעה, סקר או התחייבות פוליטית. היא נספרת כהבעת עניין להצטרפות לגרעין המייסד.
+                    שליחת הטופס אינה מהווה הצבעה, סקר או התחייבות פוליטית. ההצטרפות נספרת כהבעת עניין רק לאחר אישור במייל.
                   </p>
                   {signupMessage && (
                     <p className="rounded-md bg-blue-50 p-3 text-sm font-medium text-blue-900">{signupMessage}</p>
@@ -912,7 +911,7 @@ ${candidateSenderEmail.trim()}`
                     <CheckCircle2 className="h-9 w-9" />
                   </div>
                   <DialogHeader className="text-center">
-                    <DialogTitle className="text-2xl text-blue-900">ברוכים הבאים</DialogTitle>
+                    <DialogTitle className="text-2xl text-blue-900">כמעט סיימנו</DialogTitle>
                     <DialogDescription className="text-base leading-7 text-slate-700">
                       {welcomeMessage}
                     </DialogDescription>

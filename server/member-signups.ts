@@ -1,12 +1,12 @@
 import type { Express, Request, Response } from "express";
-import { createHash, randomUUID } from "crypto";
+import { createHash, randomBytes, randomUUID } from "crypto";
 import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import { count, eq, or } from "drizzle-orm";
+import { and, count, eq, isNotNull, isNull, or } from "drizzle-orm";
 import { getDb } from "./db";
 import { memberSignups } from "../drizzle/schema";
-import { getContactEmailTo, sendEmail } from "./email";
+import { getContactEmailTo, isEmailConfigured, sendEmail } from "./email";
 
 type LocalMemberSignup = {
   id: string;
@@ -15,6 +15,11 @@ type LocalMemberSignup = {
   email: string;
   phone: string;
   note: string;
+  emailConfirmedAt?: string | null;
+  confirmationTokenHash?: string | null;
+  confirmationSentAt?: string | null;
+  welcomeEmailSentAt?: string | null;
+  notificationSentAt?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -36,6 +41,10 @@ type AdminMemberSignup = {
   email: string;
   phone: string | null;
   note: string | null;
+  emailConfirmedAt: string | Date | null;
+  confirmationSentAt: string | Date | null;
+  welcomeEmailSentAt: string | Date | null;
+  notificationSentAt: string | Date | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 };
@@ -55,6 +64,7 @@ const publicNamesLimit = 250;
 const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
 const signupRateLimits = new Map<string, { count: number; resetAt: number }>();
+const confirmationTokenBytes = 32;
 
 class SignupStorageUnavailableError extends Error {
   statusCode = 503;
@@ -149,6 +159,39 @@ async function writeLocalStore(store: SignupStore) {
   await writeFile(dataFile, `${JSON.stringify(store, null, 2)}\n`, "utf8");
 }
 
+function hashToken(token: string) {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+function createConfirmationToken() {
+  return randomBytes(confirmationTokenBytes).toString("base64url");
+}
+
+function getRequestBaseUrl(req: Request) {
+  const configuredUrl = process.env.PUBLIC_SITE_URL || process.env.SITE_URL || process.env.APP_URL;
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/+$/, "");
+  }
+
+  const forwardedProto = req.header("x-forwarded-proto")?.split(",")[0]?.trim();
+  const protocol = forwardedProto || req.protocol || "https";
+  return `${protocol}://${req.get("host")}`;
+}
+
+function buildConfirmationUrl(req: Request, token: string) {
+  return `${getRequestBaseUrl(req)}/api/member-signups/confirm?token=${encodeURIComponent(token)}`;
+}
+
+function getEmailStatus() {
+  return {
+    configured: isEmailConfigured(),
+    hasApiKey: Boolean(process.env.RESEND_API_KEY),
+    hasFrom: Boolean(process.env.EMAIL_FROM || process.env.MEMBER_SIGNUP_EMAIL_FROM),
+    hasPublicSiteUrl: Boolean(process.env.PUBLIC_SITE_URL || process.env.SITE_URL || process.env.APP_URL),
+  };
+}
+
 function handleDbUnavailable(operation: string, error: unknown) {
   console.warn(`[MemberSignups] Database ${operation} failed:`, error);
 
@@ -200,6 +243,11 @@ async function ensureMemberSignupTable() {
       \`email\` varchar(320) NOT NULL,
       \`phone\` varchar(64),
       \`note\` text,
+      \`emailConfirmedAt\` timestamp,
+      \`confirmationTokenHash\` varchar(64),
+      \`confirmationSentAt\` timestamp,
+      \`welcomeEmailSentAt\` timestamp,
+      \`notificationSentAt\` timestamp,
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
       CONSTRAINT \`memberSignups_id\` PRIMARY KEY(\`id\`),
@@ -208,6 +256,22 @@ async function ensureMemberSignupTable() {
       CONSTRAINT \`memberSignups_phone_unique\` UNIQUE(\`phone\`)
     )
   `);
+
+  const alterStatements = [
+    "ALTER TABLE `memberSignups` ADD COLUMN `emailConfirmedAt` timestamp",
+    "ALTER TABLE `memberSignups` ADD COLUMN `confirmationTokenHash` varchar(64)",
+    "ALTER TABLE `memberSignups` ADD COLUMN `confirmationSentAt` timestamp",
+    "ALTER TABLE `memberSignups` ADD COLUMN `welcomeEmailSentAt` timestamp",
+    "ALTER TABLE `memberSignups` ADD COLUMN `notificationSentAt` timestamp",
+  ];
+
+  for (const statement of alterStatements) {
+    await db.execute(statement).catch((error: { code?: string; errno?: number }) => {
+      if (error?.code !== "ER_DUP_FIELDNAME" && error?.errno !== 1060) {
+        throw error;
+      }
+    });
+  }
 
   memberSignupTableReady = true;
   return db;
@@ -232,6 +296,7 @@ async function getPublicMemberNames() {
           email: memberSignups.email,
         })
         .from(memberSignups)
+        .where(isNotNull(memberSignups.emailConfirmedAt))
         .orderBy(memberSignups.id)
         .limit(publicNamesLimit);
 
@@ -242,7 +307,7 @@ async function getPublicMemberNames() {
   }
 
   const store = await readLocalStore();
-  return getPublicMemberNamesFromRows(store.submissions);
+  return getPublicMemberNamesFromRows(store.submissions.filter((signup) => signup.emailConfirmedAt));
 }
 
 async function getPublicMemberCount() {
@@ -257,11 +322,19 @@ async function getPublicMemberCount() {
 
   if (db) {
     try {
-      const [total] = await db.select({ value: count() }).from(memberSignups);
+      const [total] = await db
+        .select({ value: count() })
+        .from(memberSignups)
+        .where(isNotNull(memberSignups.emailConfirmedAt));
       const foundingRows = await db
         .select({ id: memberSignups.id })
         .from(memberSignups)
-        .where(or(eq(memberSignups.nationalId, "033012535"), eq(memberSignups.email, "amir_peer@hotmail.com")))
+        .where(
+          and(
+            or(eq(memberSignups.nationalId, "033012535"), eq(memberSignups.email, "amir_peer@hotmail.com")),
+            isNotNull(memberSignups.emailConfirmedAt),
+          ),
+        )
         .limit(1);
       const includesFoundingMember = foundingRows.length > 0;
 
@@ -274,10 +347,10 @@ async function getPublicMemberCount() {
 
   const store = await readLocalStore();
   const includesFoundingMember = store.submissions.some(
-    (signup) => signup.email.toLowerCase() === "amir_peer@hotmail.com",
+    (signup) => signup.email.toLowerCase() === "amir_peer@hotmail.com" && signup.emailConfirmedAt,
   );
 
-  const rawCount = store.submissions.length + (includesFoundingMember ? 0 : 1);
+  const rawCount = store.submissions.filter((signup) => signup.emailConfirmedAt).length + (includesFoundingMember ? 0 : 1);
   return getDisplayedMemberCount(rawCount);
 }
 
@@ -286,6 +359,7 @@ async function saveSignup(input: {
   email: string;
   phone: string;
   note: string;
+  confirmationToken: string;
 }) {
   const db = await ensureMemberSignupTable().catch((error) => {
     handleDbUnavailable("setup", error);
@@ -293,6 +367,8 @@ async function saveSignup(input: {
   });
   const storedFullName = input.fullName;
   const signupKey = createHash("sha256").update(input.email).digest("hex").slice(0, 32);
+  const nowDate = new Date();
+  const confirmationTokenHash = hashToken(input.confirmationToken);
 
   if (!db) {
     requireSignupStorage("signup write");
@@ -306,6 +382,8 @@ async function saveSignup(input: {
 
       const existing = await db.select().from(memberSignups).where(samePerson).limit(1);
       const isNewSignup = existing.length === 0;
+      const existingSignup = existing[0];
+      const isAlreadyConfirmed = Boolean(existingSignup?.emailConfirmedAt && existingSignup.email === input.email);
 
       if (isNewSignup) {
         await db.insert(memberSignups).values({
@@ -314,6 +392,8 @@ async function saveSignup(input: {
           email: input.email,
           phone: input.phone || null,
           note: input.note || null,
+          confirmationTokenHash,
+          confirmationSentAt: nowDate,
         });
       } else {
         await db
@@ -324,18 +404,22 @@ async function saveSignup(input: {
             email: input.email,
             phone: input.phone || null,
             note: input.note || null,
+            emailConfirmedAt: isAlreadyConfirmed ? existingSignup.emailConfirmedAt : null,
+            confirmationTokenHash: isAlreadyConfirmed ? null : confirmationTokenHash,
+            confirmationSentAt: isAlreadyConfirmed ? existingSignup.confirmationSentAt : nowDate,
             updatedAt: new Date(),
           })
-          .where(eq(memberSignups.id, existing[0].id));
+          .where(eq(memberSignups.id, existingSignup.id));
       }
 
-      return { isNewSignup };
+      return { isNewSignup, isAlreadyConfirmed };
     } catch (error) {
       handleDbUnavailable("write", error);
     }
   }
 
   const now = new Date().toISOString();
+  const { confirmationToken: _confirmationToken, ...storedInput } = input;
   const store = await readLocalStore();
   const existingIndex = store.submissions.findIndex((signup) => {
     const sameEmail = signup.email.toLowerCase() === input.email;
@@ -343,28 +427,167 @@ async function saveSignup(input: {
     return sameEmail || samePhone;
   });
   const isNewSignup = existingIndex < 0;
+  const existingSignup = existingIndex >= 0 ? store.submissions[existingIndex] : null;
+  const isAlreadyConfirmed = Boolean(existingSignup?.emailConfirmedAt && existingSignup.email === input.email);
 
   if (!isNewSignup) {
     store.submissions[existingIndex] = {
       ...store.submissions[existingIndex],
-      ...input,
+      ...storedInput,
       fullName: storedFullName,
       nationalId: signupKey,
+      emailConfirmedAt: isAlreadyConfirmed ? existingSignup?.emailConfirmedAt : null,
+      confirmationTokenHash: isAlreadyConfirmed ? null : confirmationTokenHash,
+      confirmationSentAt: isAlreadyConfirmed ? existingSignup?.confirmationSentAt || now : now,
       updatedAt: now,
     };
   } else {
     store.submissions.push({
       id: randomUUID(),
-      ...input,
+      ...storedInput,
       fullName: storedFullName,
       nationalId: signupKey,
+      emailConfirmedAt: null,
+      confirmationTokenHash,
+      confirmationSentAt: now,
       createdAt: now,
       updatedAt: now,
     });
   }
 
   await writeLocalStore(store);
-  return { isNewSignup };
+  return { isNewSignup, isAlreadyConfirmed };
+}
+
+async function markSignupConfirmed(token: string) {
+  const tokenHash = hashToken(token);
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("signup confirmation");
+  }
+
+  if (db) {
+    try {
+      const rows = await db.select().from(memberSignups).where(eq(memberSignups.confirmationTokenHash, tokenHash)).limit(1);
+      const signup = rows[0];
+
+      if (!signup) {
+        return null;
+      }
+
+      const wasAlreadyConfirmed = Boolean(signup.emailConfirmedAt);
+      await db
+        .update(memberSignups)
+        .set({
+          emailConfirmedAt: signup.emailConfirmedAt || new Date(),
+          confirmationTokenHash: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(memberSignups.id, signup.id));
+
+      return { signup, wasAlreadyConfirmed };
+    } catch (error) {
+      handleDbUnavailable("confirm", error);
+    }
+  }
+
+  const now = new Date().toISOString();
+  const store = await readLocalStore();
+  const signup = store.submissions.find((submission) => submission.confirmationTokenHash === tokenHash);
+
+  if (!signup) {
+    return null;
+  }
+
+  const wasAlreadyConfirmed = Boolean(signup.emailConfirmedAt);
+  signup.emailConfirmedAt = signup.emailConfirmedAt || now;
+  signup.confirmationTokenHash = null;
+  signup.updatedAt = now;
+  await writeLocalStore(store);
+
+  return { signup, wasAlreadyConfirmed };
+}
+
+async function sendPendingSignupConfirmations(req: Request) {
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("admin setup", error);
+    return null;
+  });
+  const nowDate = new Date();
+  const now = nowDate.toISOString();
+  let pending = 0;
+  let sent = 0;
+  let failed = 0;
+
+  if (!db) {
+    requireSignupStorage("admin confirmation send");
+  }
+
+  if (db) {
+    try {
+      const rows = await db.select().from(memberSignups).where(isNull(memberSignups.emailConfirmedAt));
+      pending = rows.length;
+
+      for (const signup of rows) {
+        const confirmationToken = createConfirmationToken();
+        const confirmationUrl = buildConfirmationUrl(req, confirmationToken);
+        const emailSent = await sendConfirmationEmail(signup.email, signup.fullName, confirmationUrl).catch((error) => {
+          console.warn("[MemberSignups] Pending confirmation email error:", error);
+          return false;
+        });
+
+        if (emailSent) {
+          sent += 1;
+          await db
+            .update(memberSignups)
+            .set({
+              confirmationTokenHash: hashToken(confirmationToken),
+              confirmationSentAt: nowDate,
+              updatedAt: nowDate,
+            })
+            .where(eq(memberSignups.id, signup.id));
+        } else {
+          failed += 1;
+        }
+      }
+
+      return { pending, sent, failed };
+    } catch (error) {
+      handleDbUnavailable("admin confirmation send", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  const pendingSignups = store.submissions.filter((signup) => !signup.emailConfirmedAt);
+  pending = pendingSignups.length;
+
+  for (const signup of pendingSignups) {
+    const confirmationToken = createConfirmationToken();
+    const confirmationUrl = buildConfirmationUrl(req, confirmationToken);
+    const emailSent = await sendConfirmationEmail(signup.email, signup.fullName, confirmationUrl).catch((error) => {
+      console.warn("[MemberSignups] Pending confirmation email error:", error);
+      return false;
+    });
+
+    if (emailSent) {
+      sent += 1;
+      signup.confirmationTokenHash = hashToken(confirmationToken);
+      signup.confirmationSentAt = now;
+      signup.updatedAt = now;
+    } else {
+      failed += 1;
+    }
+  }
+
+  if (sent > 0) {
+    await writeLocalStore(store);
+  }
+
+  return { pending, sent, failed };
 }
 
 async function getAdminSignups() {
@@ -450,6 +673,35 @@ async function sendSignupNotification(input: {
   });
 }
 
+function buildConfirmationEmail(fullName: string, confirmationUrl: string) {
+  const safeFullName = escapeHtml(fullName);
+  const safeConfirmationUrl = escapeHtml(confirmationUrl);
+
+  return {
+    subject: "אישור הצטרפות לגרעין המייסד של קול משותף",
+    html: `
+      <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#0f172a">
+        <h1 style="color:#1e3a8a">שלום ${safeFullName}, נשאר רק לאשר במייל</h1>
+        <p>כדי להשלים את ההצטרפות לגרעין המייסד של קול משותף, יש ללחוץ על הכפתור הבא:</p>
+        <p>
+          <a href="${safeConfirmationUrl}" style="display:inline-block;background:#1e3a8a;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:bold">
+            אישור ההצטרפות
+          </a>
+        </p>
+        <p>אם הכפתור לא נפתח, אפשר להעתיק את הקישור הבא לדפדפן:</p>
+        <p dir="ltr" style="word-break:break-all">${safeConfirmationUrl}</p>
+        <p>אם לא ביקשת להצטרף, אפשר להתעלם מהמייל.</p>
+      </div>
+    `,
+    text: `שלום ${fullName}, כדי להשלים את ההצטרפות לגרעין המייסד של קול משותף יש לפתוח את הקישור הבא: ${confirmationUrl}`,
+  };
+}
+
+async function sendConfirmationEmail(to: string, fullName: string, confirmationUrl: string) {
+  const message = buildConfirmationEmail(fullName, confirmationUrl);
+  return sendEmail({ to, subject: message.subject, html: message.html, text: message.text });
+}
+
 function sendSignupRouteError(res: Response, error: unknown) {
   if (error instanceof SignupStorageUnavailableError) {
     res.status(error.statusCode).json({ error: error.message });
@@ -473,8 +725,23 @@ export function registerMemberSignupRoutes(app: Express) {
         ok: true,
         source: result.source,
         count: result.submissions.length,
+        emailStatus: getEmailStatus(),
         submissions: result.submissions,
       });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.post("/api/admin/member-signups/send-confirmations", async (req: Request, res: Response) => {
+    if (!isValidAdminToken(req)) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    try {
+      const result = await sendPendingSignupConfirmations(req);
+      res.json({ ok: true, ...result });
     } catch (error) {
       sendSignupRouteError(res, error);
     }
@@ -493,6 +760,70 @@ export function registerMemberSignupRoutes(app: Express) {
     try {
       const names = await getPublicMemberNames();
       res.json({ ok: true, names });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.get("/api/member-signups/confirm", async (req: Request, res: Response) => {
+    const token = normalize(req.query.token);
+
+    if (!token) {
+      res.status(400).send("קישור האישור חסר או אינו תקין.");
+      return;
+    }
+
+    try {
+      const confirmation = await markSignupConfirmed(token);
+
+      if (!confirmation) {
+        res.status(404).send("קישור האישור אינו תקין או שכבר נעשה בו שימוש.");
+        return;
+      }
+
+      const publicMemberCount = await getPublicMemberCount();
+
+      if (!confirmation.wasAlreadyConfirmed) {
+        await sendWelcomeEmail(confirmation.signup.email, confirmation.signup.fullName, publicMemberCount).catch((error) => {
+          console.warn("[MemberSignups] Welcome email error:", error);
+          return false;
+        });
+        await sendSignupNotification({
+          fullName: confirmation.signup.fullName,
+          email: confirmation.signup.email,
+          phone: confirmation.signup.phone || "",
+          note: confirmation.signup.note || "",
+          count: publicMemberCount,
+          isNewSignup: true,
+        }).catch((error) => {
+          console.warn("[MemberSignups] Signup notification error:", error);
+          return false;
+        });
+      }
+
+      res.send(`
+        <!doctype html>
+        <html lang="he" dir="rtl">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>ההצטרפות אושרה</title>
+            <style>
+              body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, sans-serif; background: #fbf7ed; color: #17324d; }
+              main { max-width: 620px; padding: 32px; text-align: center; line-height: 1.7; }
+              a { color: #1d4f91; font-weight: 700; }
+            </style>
+          </head>
+          <body>
+            <main>
+              <h1>ההצטרפות אושרה</h1>
+              <p>תודה, ${escapeHtml(confirmation.signup.fullName)}. הצטרפת לגרעין המייסד של קול משותף.</p>
+              <p>מספר הנרשמים המוצג עכשיו הוא <strong>${publicMemberCount.toLocaleString("he-IL")}</strong>.</p>
+              <p><a href="/">חזרה לאתר</a></p>
+            </main>
+          </body>
+        </html>
+      `);
     } catch (error) {
       sendSignupRouteError(res, error);
     }
@@ -520,25 +851,18 @@ export function registerMemberSignupRoutes(app: Express) {
     }
 
     try {
-      const { isNewSignup } = await saveSignup({ fullName, email, phone, note });
+      const confirmationToken = createConfirmationToken();
+      const confirmationUrl = buildConfirmationUrl(req, confirmationToken);
+      const { isNewSignup, isAlreadyConfirmed } = await saveSignup({ fullName, email, phone, note, confirmationToken });
       const publicMemberCount = await getPublicMemberCount();
-      const emailSent = await sendWelcomeEmail(email, fullName, publicMemberCount).catch((error) => {
-        console.warn("[MemberSignups] Welcome email error:", error);
-        return false;
-      });
-      const notificationSent = await sendSignupNotification({
-        fullName,
-        email,
-        phone,
-        note,
-        count: publicMemberCount,
-        isNewSignup,
-      }).catch((error) => {
-        console.warn("[MemberSignups] Signup notification error:", error);
+      const confirmationEmailSent = isAlreadyConfirmed
+        ? false
+        : await sendConfirmationEmail(email, fullName, confirmationUrl).catch((error) => {
+        console.warn("[MemberSignups] Confirmation email error:", error);
         return false;
       });
 
-      res.json({ ok: true, count: publicMemberCount, isNewSignup, emailSent, notificationSent });
+      res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent });
     } catch (error) {
       sendSignupRouteError(res, error);
     }

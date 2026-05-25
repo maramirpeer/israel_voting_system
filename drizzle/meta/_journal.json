@@ -64,6 +64,20 @@
       "when": 1778990400000,
       "tag": "0008_member_signups",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1779667200000,
+      "tag": "0009_member_signup_email_confirmation",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1779667260000,
+      "tag": "0010_reset_legacy_signup_confirmations",
+      "breakpoints": true
     }
   ]
 }
