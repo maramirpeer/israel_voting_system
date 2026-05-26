@@ -228,6 +228,13 @@ function getDisplayedMemberCount(rawCount: number) {
   return Math.max(1, rawCount - memberCountDisplayOffset);
 }
 
+function isDuplicateColumnError(error: unknown) {
+  const current = error as { code?: string; errno?: number; cause?: { code?: string; errno?: number } };
+  const cause = current?.cause;
+
+  return current?.code === "ER_DUP_FIELDNAME" || current?.errno === 1060 || cause?.code === "ER_DUP_FIELDNAME" || cause?.errno === 1060;
+}
+
 async function ensureMemberSignupTable() {
   const db = await getDb();
 
@@ -266,8 +273,8 @@ async function ensureMemberSignupTable() {
   ];
 
   for (const statement of alterStatements) {
-    await db.execute(statement).catch((error: { code?: string; errno?: number }) => {
-      if (error?.code !== "ER_DUP_FIELDNAME" && error?.errno !== 1060) {
+    await db.execute(statement).catch((error: unknown) => {
+      if (!isDuplicateColumnError(error)) {
         throw error;
       }
     });
