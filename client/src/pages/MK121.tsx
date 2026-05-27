@@ -19,6 +19,7 @@ type MK121QuestionAssignment = { ministryId: number; ministryName?: string; dele
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 
 const getBillDisplayPriority = (title: string) => {
+  if (title.includes("קולות אבודים")) return 2;
   if (title.includes("הגבלת") && title.includes("ראש")) return 0;
   if (title.includes("כל ח״כ חייב") || title.includes("חובת הצבעה")) return 1;
   if (title.includes("זירת מידע")) return 2;
@@ -51,6 +52,17 @@ const demoBills = [
     category: "כנסת",
     status: "voting",
     votes: 17640,
+    supporters: 1000,
+    isWinner: false,
+  },
+  {
+    id: 206,
+    title: "חוק הסדרת מעבר קולות אבודים",
+    description:
+      "קולות של מפלגה שלא עברה את אחוז החסימה יעברו למפלגה אחרת לפי סיכום ברור ושקוף שנקבע מראש ופורסם לציבור לפני הבחירות. כך מצביעים יוכלו לדעת מראש לאן יעבור קולם במקרה שהמפלגה שבחרו לא תעבור את אחוז החסימה. הסוף לחשש מקול אבוד!",
+    category: "בחירות ודמוקרטיה",
+    status: "voting",
+    votes: 15480,
     supporters: 1000,
     isWinner: false,
   },

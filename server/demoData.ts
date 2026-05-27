@@ -545,6 +545,24 @@ export const demoMK121Bills = [
     createdAt: daysFromNow(-1),
     updatedAt: now,
   },
+  {
+    id: 207,
+    cycleId: 1,
+    title: "חוק הסדרת מעבר קולות אבודים",
+    description:
+      "קולות של מפלגה שלא עברה את אחוז החסימה יעברו למפלגה אחרת לפי סיכום ברור ושקוף שנקבע מראש ופורסם לציבור לפני הבחירות. כך מצביעים יוכלו לדעת מראש לאן יעבור קולם במקרה שהמפלגה שבחרו לא תעבור את אחוז החסימה. הסוף לחשש מקול אבוד!",
+    proposedBy: 1,
+    category: "בחירות ודמוקרטיה",
+    votes: 15480,
+    isWinner: false,
+    status: "voting" as const,
+    supporters: 1000,
+    quorumMet: false,
+    createdCycleNumber: 121,
+    archivedAt: null,
+    createdAt: daysFromNow(0),
+    updatedAt: now,
+  },
 ];
 
 export const demoMK121Questions = [
