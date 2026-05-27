@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Download, Eye, Lock, MailCheck, RefreshCw } from "lucide-react";
+import { Download, Eye, Lock, MailCheck, RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Signup = {
@@ -50,6 +50,7 @@ export default function AdminSignups() {
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [isSendingConfirmations, setSendingConfirmations] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
   const sortedSubmissions = useMemo(() => {
     return [...submissions].sort((a, b) => {
@@ -164,6 +165,40 @@ export default function AdminSignups() {
     }
   };
 
+  const deleteSignup = async (signup: Signup) => {
+    if (!token) {
+      setMessage("יש להזין מפתח גישה.");
+      return;
+    }
+
+    const approved = window.confirm(`למחוק את ההרשמה של ${signup.fullName} (${signup.email})?`);
+
+    if (!approved) {
+      return;
+    }
+
+    setDeletingId(signup.id);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/member-signups/${encodeURIComponent(String(signup.id))}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": token },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "מחיקת ההרשמה נכשלה.");
+      }
+
+      setSubmissions((current) => current.filter((currentSignup) => currentSignup.id !== signup.id));
+      setMessage("ההרשמה נמחקה בהצלחה.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "מחיקת ההרשמה נכשלה.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   useEffect(() => {
     if (token) {
       void loadSubmissions(token);
@@ -262,7 +297,7 @@ export default function AdminSignups() {
             <Eye className="h-5 w-5 text-[#4f6f52]" />
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1120px] text-right text-sm">
+            <table className="w-full min-w-[1220px] text-right text-sm">
               <thead className="bg-[#eef6ef] text-[#17324d]">
                 <tr>
                   <th className="p-3">#</th>
@@ -273,6 +308,7 @@ export default function AdminSignups() {
                   <th className="p-3">הערה</th>
                   <th className="p-3">נוצר</th>
                   <th className="p-3">עודכן</th>
+                  <th className="p-3">פעולות</th>
                 </tr>
               </thead>
               <tbody>
@@ -292,11 +328,24 @@ export default function AdminSignups() {
                     </td>
                     <td className="p-3">{formatDate(signup.createdAt)}</td>
                     <td className="p-3">{formatDate(signup.updatedAt)}</td>
+                    <td className="p-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteSignup(signup)}
+                        disabled={deletingId === signup.id}
+                        className="gap-2 border-red-200 text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        {deletingId === signup.id ? "מוחק..." : "מחיקה"}
+                      </Button>
+                    </td>
                   </tr>
                 ))}
                 {!sortedSubmissions.length && (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-[#5a4b38]">
+                    <td colSpan={9} className="p-8 text-center text-[#5a4b38]">
                       אין נתונים להצגה כרגע.
                     </td>
                   </tr>

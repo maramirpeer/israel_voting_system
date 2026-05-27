@@ -620,6 +620,48 @@ async function getAdminSignups() {
   return { source: "local", submissions: store.submissions as AdminMemberSignup[] };
 }
 
+async function deleteAdminSignup(id: string) {
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("admin delete setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("admin delete");
+  }
+
+  if (db) {
+    const numericId = Number(id);
+
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      return false;
+    }
+
+    try {
+      const existing = await db.select({ id: memberSignups.id }).from(memberSignups).where(eq(memberSignups.id, numericId)).limit(1);
+
+      if (!existing.length) {
+        return false;
+      }
+
+      await db.delete(memberSignups).where(eq(memberSignups.id, numericId));
+      return true;
+    } catch (error) {
+      handleDbUnavailable("admin delete", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  const nextSubmissions = store.submissions.filter((signup) => signup.id !== id);
+
+  if (nextSubmissions.length === store.submissions.length) {
+    return false;
+  }
+
+  await writeLocalStore({ submissions: nextSubmissions });
+  return true;
+}
+
 function buildWelcomeEmail(fullName: string, count: number) {
   return {
     subject: "ברוכים הבאים לגרעין המייסד של קול משותף",
@@ -749,6 +791,33 @@ export function registerMemberSignupRoutes(app: Express) {
     try {
       const result = await sendPendingSignupConfirmations(req);
       res.json({ ok: true, ...result });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.delete("/api/admin/member-signups/:id", async (req: Request, res: Response) => {
+    if (!isValidAdminToken(req)) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    const id = normalize(req.params.id);
+
+    if (!id) {
+      res.status(400).json({ error: "Missing signup id." });
+      return;
+    }
+
+    try {
+      const deleted = await deleteAdminSignup(id);
+
+      if (!deleted) {
+        res.status(404).json({ error: "Signup was not found." });
+        return;
+      }
+
+      res.json({ ok: true, deleted: true });
     } catch (error) {
       sendSignupRouteError(res, error);
     }
