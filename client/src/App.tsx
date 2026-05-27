@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { GlobalSignupButton } from "./components/GlobalSignupButton";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Governance from "./pages/Governance";
@@ -60,6 +61,7 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
+          <GlobalSignupButton />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
