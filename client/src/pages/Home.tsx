@@ -558,6 +558,14 @@ ${candidateSenderEmail.trim()}`
             <p className="text-lg leading-9 text-[#4a3722]">
               קול משותף מבקש להיות ביטוי אזרחי של שער ה-50: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לקול משותף.
             </p>
+            <Button
+              type="button"
+              onClick={goToGateFiftyTop}
+              variant="outline"
+              className="mt-6 border-[#17324d] text-[#17324d] hover:bg-[#eef6ff]"
+            >
+              שער ה-50
+            </Button>
           </Card>
         </div>
       </section>
