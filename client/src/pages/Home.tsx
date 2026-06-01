@@ -24,6 +24,9 @@ export default function Home() {
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
   const [isCandidateLetterOpen, setCandidateLetterOpen] = useState(false);
+  const [isCandidateEnlistOpen, setCandidateEnlistOpen] = useState(false);
+  const [isCandidateEnlistSubmitting, setCandidateEnlistSubmitting] = useState(false);
+  const [candidateEnlistMessage, setCandidateEnlistMessage] = useState("");
   const [isMembersOpen, setMembersOpen] = useState(false);
   const [memberNames, setMemberNames] = useState<string[]>([]);
   const [memberNamesMessage, setMemberNamesMessage] = useState("");
@@ -36,6 +39,11 @@ export default function Home() {
     phone: "",
     email: "",
     note: "",
+  });
+  const [candidateEnlistForm, setCandidateEnlistForm] = useState({
+    fullName: "",
+    email: "",
+    nationalId: "",
   });
   const KolMeshutafLink = ({ className = "" }: { className?: string }) => (
     <span
@@ -124,6 +132,9 @@ export default function Home() {
   const updateSignupForm = (field: keyof typeof signupForm, value: string) => {
     setSignupForm((current) => ({ ...current, [field]: value }));
   };
+  const updateCandidateEnlistForm = (field: keyof typeof candidateEnlistForm, value: string) => {
+    setCandidateEnlistForm((current) => ({ ...current, [field]: value }));
+  };
   const loadMemberNames = async (open: boolean) => {
     setMembersOpen(open);
     if (!open) return;
@@ -178,6 +189,35 @@ ${candidateSenderEmail.trim()}`
 
     await navigator.clipboard.writeText(candidateLetterBody);
     setCandidateLetterMessage("נוסח הפנייה הועתק.");
+  };
+  const handleCandidateEnlistSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCandidateEnlistSubmitting(true);
+    setCandidateEnlistMessage("");
+
+    try {
+      const response = await fetch("/api/candidate-enlistments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(candidateEnlistForm),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "ההרשמה נכשלה");
+      }
+
+      setCandidateEnlistForm({ fullName: "", email: "", nationalId: "" });
+      setCandidateEnlistMessage(
+        data.isNewEnlistment
+          ? "נרשמת כמועמד/ת מתגייס/ת לתמיכה בקול משותף."
+          : "הפרטים עודכנו. את/ה כבר מופיע/ה כמועמד/ת מתגייס/ת.",
+      );
+    } catch (error) {
+      setCandidateEnlistMessage(error instanceof Error ? error.message : "ההרשמה נכשלה");
+    } finally {
+      setCandidateEnlistSubmitting(false);
+    }
   };
   const handleSignupSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -593,6 +633,60 @@ ${candidateSenderEmail.trim()}`
               <br />
               האם תתחייב לשתף את ציבור בוחריך במערכת השלטון?
             </p>
+            <Button
+              type="button"
+              onClick={() => setCandidateEnlistOpen(true)}
+              className="bg-[#2f7d5c] text-white hover:bg-[#27684d]"
+            >
+              רוצה להיות המועמד הראשון שמתגייס לתמיכה בקול המשותף?
+            </Button>
+            <Dialog open={isCandidateEnlistOpen} onOpenChange={setCandidateEnlistOpen}>
+              <DialogContent className="text-right sm:max-w-lg" dir="rtl">
+                <DialogHeader className="text-right">
+                  <DialogTitle className="text-2xl text-[#17324d]">להיכלל כמועמד/ת מתגייס/ת</DialogTitle>
+                  <DialogDescription>
+                    מלא/י שם מלא, מייל ות.ז כדי להופיע בדף הניהול כמועמד/ת שמתגייס/ת לתמיכה בקול משותף.
+                  </DialogDescription>
+                </DialogHeader>
+                <form className="space-y-4" onSubmit={handleCandidateEnlistSubmit}>
+                  <div className="space-y-2">
+                    <Label htmlFor="candidate-enlist-full-name">שם מלא</Label>
+                    <Input
+                      id="candidate-enlist-full-name"
+                      value={candidateEnlistForm.fullName}
+                      onChange={(event) => updateCandidateEnlistForm("fullName", event.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="candidate-enlist-email">מייל</Label>
+                    <Input
+                      id="candidate-enlist-email"
+                      type="email"
+                      value={candidateEnlistForm.email}
+                      onChange={(event) => updateCandidateEnlistForm("email", event.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="candidate-enlist-national-id">ת.ז</Label>
+                    <Input
+                      id="candidate-enlist-national-id"
+                      inputMode="numeric"
+                      value={candidateEnlistForm.nationalId}
+                      onChange={(event) => updateCandidateEnlistForm("nationalId", event.target.value)}
+                      required
+                    />
+                  </div>
+                  {candidateEnlistMessage && (
+                    <p className="rounded-md bg-[#eef6ef] p-3 text-sm font-medium text-[#17324d]">{candidateEnlistMessage}</p>
+                  )}
+                  <Button type="submit" className="w-full bg-[#2f7d5c] hover:bg-[#27684d]" disabled={isCandidateEnlistSubmitting}>
+                    {isCandidateEnlistSubmitting ? "שולח..." : "להיכלל כמתגייס/ת"}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
 
           </Card>
         </div>

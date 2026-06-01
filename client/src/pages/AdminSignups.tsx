@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Download, Eye, Lock, MailCheck, RefreshCw, Trash2 } from "lucide-react";
+import { BadgeCheck, CheckCircle2, Download, Eye, Lock, MailCheck, RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Signup = {
@@ -23,6 +23,23 @@ type EmailStatus = {
   hasApiKey: boolean;
   hasFrom: boolean;
   hasPublicSiteUrl: boolean;
+};
+
+type PreliminaryProposal = {
+  id: number;
+  title: string;
+  description: string;
+  supporters: number | null;
+  createdAt: string;
+};
+
+type CandidateEnlistment = {
+  id: string | number;
+  fullName: string;
+  nationalId: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 const tokenStorageKey = "sharedemocracy-admin-signups-token";
@@ -51,6 +68,10 @@ export default function AdminSignups() {
   const [isLoading, setLoading] = useState(false);
   const [isSendingConfirmations, setSendingConfirmations] = useState(false);
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [preliminaryBills, setPreliminaryBills] = useState<PreliminaryProposal[]>([]);
+  const [preliminaryQuestions, setPreliminaryQuestions] = useState<PreliminaryProposal[]>([]);
+  const [candidateEnlistments, setCandidateEnlistments] = useState<CandidateEnlistment[]>([]);
+  const [approvingProposal, setApprovingProposal] = useState<string | null>(null);
 
   const sortedSubmissions = useMemo(() => {
     return [...submissions].sort((a, b) => {
@@ -61,6 +82,13 @@ export default function AdminSignups() {
   }, [submissions]);
   const confirmedCount = submissions.filter((signup) => signup.emailConfirmedAt).length;
   const pendingCount = submissions.length - confirmedCount;
+  const sortedCandidateEnlistments = useMemo(() => {
+    return [...candidateEnlistments].sort((a, b) => {
+      const left = new Date(a.createdAt).getTime();
+      const right = new Date(b.createdAt).getTime();
+      return left - right;
+    });
+  }, [candidateEnlistments]);
 
   const loadSubmissions = async (activeToken = token) => {
     if (!activeToken) {
@@ -83,11 +111,14 @@ export default function AdminSignups() {
       setSubmissions(Array.isArray(data.submissions) ? data.submissions : []);
       setSource(typeof data.source === "string" ? data.source : "");
       setEmailStatus(data.emailStatus && typeof data.emailStatus === "object" ? data.emailStatus : null);
+      void loadPreliminaryProposals(activeToken);
+      void loadCandidateEnlistments(activeToken);
       setMessage("הנתונים נטענו בהצלחה.");
     } catch (error) {
       setSubmissions([]);
       setSource("");
       setEmailStatus(null);
+      setCandidateEnlistments([]);
       setMessage(error instanceof Error ? error.message : "טעינת הנתונים נכשלה.");
     } finally {
       setLoading(false);
@@ -103,7 +134,79 @@ export default function AdminSignups() {
     } else {
       window.localStorage.removeItem(tokenStorageKey);
       setSubmissions([]);
+      setCandidateEnlistments([]);
       setMessage("מפתח הגישה נמחק מהדפדפן.");
+    }
+  };
+
+  const loadPreliminaryProposals = async (activeToken = token) => {
+    if (!activeToken) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/mk121/preliminary-proposals", {
+        headers: { "x-admin-token": activeToken },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "טעינת הדפים המקדימים נכשלה.");
+      }
+
+      setPreliminaryBills(Array.isArray(data.bills) ? data.bills : []);
+      setPreliminaryQuestions(Array.isArray(data.questions) ? data.questions : []);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "טעינת הדפים המקדימים נכשלה.");
+    }
+  };
+
+  const loadCandidateEnlistments = async (activeToken = token) => {
+    if (!activeToken) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/candidate-enlistments", {
+        headers: { "x-admin-token": activeToken },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "טעינת המועמדים המתגייסים נכשלה.");
+      }
+
+      setCandidateEnlistments(Array.isArray(data.enlistments) ? data.enlistments : []);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "טעינת המועמדים המתגייסים נכשלה.");
+    }
+  };
+
+  const approvePreliminaryProposal = async (type: "bill" | "question", id: number) => {
+    if (!token) {
+      setMessage("יש להזין מפתח גישה.");
+      return;
+    }
+
+    setApprovingProposal(`${type}-${id}`);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/mk121/preliminary-proposals/${type}/${id}/approve`, {
+        method: "POST",
+        headers: { "x-admin-token": token },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "אישור הדף המקדים נכשל.");
+      }
+
+      setMessage("הדף המקדים אושר: נקבעו 1000 תומכים והוא עבר לשלב ההצבעה.");
+      await loadPreliminaryProposals(token);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "אישור הדף המקדים נכשל.");
+    } finally {
+      setApprovingProposal(null);
     }
   };
 
@@ -288,6 +391,125 @@ export default function AdminSignups() {
               <MailCheck className="h-4 w-4" />
               {isSendingConfirmations ? "שולח..." : "שליחה לממתינים"}
             </Button>
+          </Card>
+        </section>
+
+        <Card className="overflow-hidden border-[#d8c79f] bg-white/90">
+          <div className="flex items-center justify-between border-b border-[#eadfca] p-4">
+            <div>
+              <h2 className="text-xl font-bold">מועמדים מתגייסים</h2>
+              <p className="mt-1 text-sm text-[#5a4b38]">
+                מועמדים שביקשו להיכלל כתומכים בקול משותף.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full bg-[#eef6ef] px-3 py-1 text-sm font-bold text-[#2f5d35]">
+                {candidateEnlistments.length.toLocaleString("he-IL")}
+              </span>
+              <Button variant="outline" size="sm" onClick={() => loadCandidateEnlistments()} disabled={!token}>
+                רענון
+              </Button>
+              <BadgeCheck className="h-5 w-5 text-[#2f7d5c]" />
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-right text-sm">
+              <thead className="bg-[#eef6ef] text-[#17324d]">
+                <tr>
+                  <th className="p-3">#</th>
+                  <th className="p-3">שם מלא</th>
+                  <th className="p-3">מייל</th>
+                  <th className="p-3">ת.ז</th>
+                  <th className="p-3">נוצר</th>
+                  <th className="p-3">עודכן</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedCandidateEnlistments.map((candidate, index) => (
+                  <tr key={String(candidate.id)} className="border-t border-[#eadfca] align-top">
+                    <td className="p-3 font-bold">{index + 1}</td>
+                    <td className="p-3">{candidate.fullName}</td>
+                    <td className="p-3" dir="ltr">{candidate.email}</td>
+                    <td className="p-3" dir="ltr">{candidate.nationalId}</td>
+                    <td className="p-3">{formatDate(candidate.createdAt)}</td>
+                    <td className="p-3">{formatDate(candidate.updatedAt)}</td>
+                  </tr>
+                ))}
+                {!sortedCandidateEnlistments.length && (
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-[#5a4b38]">
+                      עדיין אין מועמדים מתגייסים.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <section className="grid gap-4 lg:grid-cols-2">
+          <Card className="border-[#d8c79f] bg-white/90 p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold">דפים מקדימים - הצעות חוק</h2>
+              <Button variant="outline" size="sm" onClick={() => loadPreliminaryProposals()} disabled={!token}>
+                רענון
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {preliminaryBills.map((proposal) => (
+                <div key={proposal.id} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/70 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold">{proposal.title}</h3>
+                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
+                      <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => approvePreliminaryProposal("bill", proposal.id)}
+                      disabled={approvingProposal === `bill-${proposal.id}`}
+                      className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      אישור
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {!preliminaryBills.length && <p className="text-sm text-[#5a4b38]">אין הצעות חוק בדף המקדים כרגע.</p>}
+            </div>
+          </Card>
+
+          <Card className="border-[#d8c79f] bg-white/90 p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold">דפים מקדימים - שאילתות</h2>
+              <Button variant="outline" size="sm" onClick={() => loadPreliminaryProposals()} disabled={!token}>
+                רענון
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {preliminaryQuestions.map((proposal) => (
+                <div key={proposal.id} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/70 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-bold">{proposal.title}</h3>
+                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
+                      <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => approvePreliminaryProposal("question", proposal.id)}
+                      disabled={approvingProposal === `question-${proposal.id}`}
+                      className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      אישור
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {!preliminaryQuestions.length && <p className="text-sm text-[#5a4b38]">אין שאילתות בדף המקדים כרגע.</p>}
+            </div>
           </Card>
         </section>
 

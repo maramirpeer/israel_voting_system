@@ -52,6 +52,22 @@ export const memberSignups = mysqlTable("memberSignups", {
 export type MemberSignup = typeof memberSignups.$inferSelect;
 export type InsertMemberSignup = typeof memberSignups.$inferInsert;
 
+// Candidate enlistments collected from the public candidate contract CTA.
+export const candidateEnlistments = mysqlTable("candidateEnlistments", {
+  id: int("id").autoincrement().primaryKey(),
+  fullName: varchar("fullName", { length: 255 }).notNull(),
+  nationalId: varchar("nationalId", { length: 32 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+  uniqueIndex("candidateEnlistments_nationalId_unique").on(table.nationalId),
+  uniqueIndex("candidateEnlistments_email_unique").on(table.email),
+]);
+
+export type CandidateEnlistment = typeof candidateEnlistments.$inferSelect;
+export type InsertCandidateEnlistment = typeof candidateEnlistments.$inferInsert;
+
 // Ministries table
 export const ministries = mysqlTable("ministries", {
   id: int("id").autoincrement().primaryKey(),

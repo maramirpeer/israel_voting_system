@@ -5,7 +5,7 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { count, eq, isNotNull, isNull, or } from "drizzle-orm";
 import { getDb } from "./db";
-import { memberSignups } from "../drizzle/schema";
+import { candidateEnlistments, memberSignups } from "../drizzle/schema";
 import { getContactEmailTo, isEmailConfigured, sendEmail } from "./email";
 
 type LocalMemberSignup = {
@@ -53,6 +53,15 @@ type AdminMemberSignup = {
   updatedAt: string | Date;
 };
 
+type AdminCandidateEnlistment = {
+  id: string | number;
+  fullName: string;
+  nationalId: string;
+  email: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
 type ReferralStatsLevel = {
   level: string;
   title: string;
@@ -73,6 +82,7 @@ const allowLocalSignupStore = process.env.ALLOW_LOCAL_SIGNUP_STORE === "true";
 const foundingMemberName = "אמיר פ";
 const legacyFoundingMemberNames = new Set(["א. פ", "א. פ."]);
 let memberSignupTableReady = false;
+let candidateEnlistmentTableReady = false;
 const publicNamesLimit = 250;
 const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
@@ -395,6 +405,31 @@ async function ensureMemberSignupTable() {
   return db;
 }
 
+async function ensureCandidateEnlistmentTable() {
+  const db = await getDb();
+
+  if (!db || candidateEnlistmentTableReady) {
+    return db;
+  }
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`candidateEnlistments\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`fullName\` varchar(255) NOT NULL,
+      \`nationalId\` varchar(32) NOT NULL,
+      \`email\` varchar(320) NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`candidateEnlistments_id\` PRIMARY KEY(\`id\`),
+      CONSTRAINT \`candidateEnlistments_nationalId_unique\` UNIQUE(\`nationalId\`),
+      CONSTRAINT \`candidateEnlistments_email_unique\` UNIQUE(\`email\`)
+    )
+  `);
+
+  candidateEnlistmentTableReady = true;
+  return db;
+}
+
 async function getPublicMemberNames() {
   const db = await ensureMemberSignupTable().catch((error) => {
     handleDbUnavailable("setup", error);
@@ -613,6 +648,54 @@ async function saveSignup(input: {
   return { isNewSignup, isAlreadyConfirmed, signupKey, referralCode, referredByCode };
 }
 
+async function saveCandidateEnlistment(input: { fullName: string; nationalId: string; email: string }) {
+  const db = await ensureCandidateEnlistmentTable().catch((error) => {
+    handleDbUnavailable("candidate enlistment setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("candidate enlistment write");
+  }
+
+  if (db) {
+    try {
+      const existing = await db
+        .select()
+        .from(candidateEnlistments)
+        .where(or(eq(candidateEnlistments.email, input.email), eq(candidateEnlistments.nationalId, input.nationalId)))
+        .limit(1);
+      const current = existing[0];
+
+      if (current) {
+        await db
+          .update(candidateEnlistments)
+          .set({
+            fullName: input.fullName,
+            nationalId: input.nationalId,
+            email: input.email,
+            updatedAt: new Date(),
+          })
+          .where(eq(candidateEnlistments.id, current.id));
+
+        return { isNewEnlistment: false };
+      }
+
+      await db.insert(candidateEnlistments).values({
+        fullName: input.fullName,
+        nationalId: input.nationalId,
+        email: input.email,
+      });
+
+      return { isNewEnlistment: true };
+    } catch (error) {
+      handleDbUnavailable("candidate enlistment write", error);
+    }
+  }
+
+  throw new SignupStorageUnavailableError("candidate enlistment write");
+}
+
 async function markSignupConfirmed(token: string) {
   const tokenHash = hashToken(token);
   const db = await ensureMemberSignupTable().catch((error) => {
@@ -765,6 +848,28 @@ async function getAdminSignups() {
 
   const store = await readLocalStore();
   return { source: "local", submissions: store.submissions as AdminMemberSignup[] };
+}
+
+async function getAdminCandidateEnlistments() {
+  const db = await ensureCandidateEnlistmentTable().catch((error) => {
+    handleDbUnavailable("admin candidate enlistments setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("admin candidate enlistments read");
+  }
+
+  if (db) {
+    try {
+      const rows = await db.select().from(candidateEnlistments).orderBy(candidateEnlistments.id);
+      return { source: "database", enlistments: rows as AdminCandidateEnlistment[] };
+    } catch (error) {
+      handleDbUnavailable("admin candidate enlistments read", error);
+    }
+  }
+
+  throw new SignupStorageUnavailableError("admin candidate enlistments read");
 }
 
 async function deleteAdminSignup(id: string) {
@@ -933,6 +1038,25 @@ export function registerMemberSignupRoutes(app: Express) {
         count: result.submissions.length,
         emailStatus: getEmailStatus(),
         submissions: result.submissions,
+      });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.get("/api/admin/candidate-enlistments", async (req: Request, res: Response) => {
+    if (!isValidAdminToken(req)) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    try {
+      const result = await getAdminCandidateEnlistments();
+      res.json({
+        ok: true,
+        source: result.source,
+        count: result.enlistments.length,
+        enlistments: result.enlistments,
       });
     } catch (error) {
       sendSignupRouteError(res, error);
@@ -1118,6 +1242,39 @@ export function registerMemberSignupRoutes(app: Express) {
       });
 
       res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent, ...referral });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.post("/api/candidate-enlistments", async (req: Request, res: Response) => {
+    if (isSignupRateLimited(req)) {
+      res.status(429).json({ error: "יותר מדי ניסיונות בזמן קצר. נסה שוב בעוד דקה." });
+      return;
+    }
+
+    const fullName = normalize(req.body.fullName);
+    const nationalId = normalize(req.body.nationalId).replace(/\D/g, "");
+    const email = normalize(req.body.email).toLowerCase();
+
+    if (!fullName) {
+      res.status(400).json({ error: "יש למלא שם מלא" });
+      return;
+    }
+
+    if (!nationalId || nationalId.length < 5) {
+      res.status(400).json({ error: "יש למלא ת.ז תקינה" });
+      return;
+    }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "יש למלא מייל תקין" });
+      return;
+    }
+
+    try {
+      const result = await saveCandidateEnlistment({ fullName, nationalId, email });
+      res.json({ ok: true, ...result });
     } catch (error) {
       sendSignupRouteError(res, error);
     }

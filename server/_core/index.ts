@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { registerMemberSignupRoutes } from "../member-signups";
 import { registerKnessetMemberRoutes } from "../knesset-members";
 import { registerContactRoutes } from "../contact";
+import { registerMK121AdminRoutes } from "../mk121-admin";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -40,6 +41,7 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerMemberSignupRoutes(app);
+  registerMK121AdminRoutes(app);
   registerKnessetMemberRoutes(app);
   registerContactRoutes(app);
   // tRPC API

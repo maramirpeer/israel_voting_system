@@ -153,7 +153,7 @@ export async function getBillsForCycle(cycleId: number) {
   const db = await getDb();
   if (!db) {
     return demoMK121Bills
-      .filter((bill) => bill.cycleId === cycleId && bill.status !== "preliminary")
+      .filter((bill) => bill.cycleId === cycleId && bill.status !== "archived")
       .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
   }
 
@@ -161,7 +161,7 @@ export async function getBillsForCycle(cycleId: number) {
     const bills = await db
       .select()
       .from(mk121Bills)
-      .where(and(eq(mk121Bills.cycleId, cycleId), ne(mk121Bills.status, "preliminary")))
+      .where(and(eq(mk121Bills.cycleId, cycleId), ne(mk121Bills.status, "archived")))
       .orderBy(desc(mk121Bills.votes));
 
     return bills;
@@ -175,7 +175,7 @@ export async function getQuestionsForCycle(cycleId: number) {
   const db = await getDb();
   if (!db) {
     return demoMK121Questions
-      .filter((question) => question.cycleId === cycleId && question.status !== "preliminary")
+      .filter((question) => question.cycleId === cycleId && question.status !== "archived")
       .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
   }
 
@@ -183,7 +183,7 @@ export async function getQuestionsForCycle(cycleId: number) {
     const questions = await db
       .select()
       .from(mk121Questions)
-      .where(and(eq(mk121Questions.cycleId, cycleId), ne(mk121Questions.status, "preliminary")))
+      .where(and(eq(mk121Questions.cycleId, cycleId), ne(mk121Questions.status, "archived")))
       .orderBy(desc(mk121Questions.votes));
 
     return questions;
@@ -760,6 +760,56 @@ export async function getUserPreliminaryQuestions(userId: number, cycleId: numbe
   }
 }
 
+export async function getPreliminaryProposalsForAdmin() {
+  const db = await getDb();
+  if (!db) {
+    return { bills: [], questions: [] };
+  }
+
+  try {
+    const bills = await db
+      .select()
+      .from(mk121Bills)
+      .where(eq(mk121Bills.status, "preliminary"))
+      .orderBy(desc(mk121Bills.createdAt));
+    const questions = await db
+      .select()
+      .from(mk121Questions)
+      .where(eq(mk121Questions.status, "preliminary"))
+      .orderBy(desc(mk121Questions.createdAt));
+
+    return { bills, questions };
+  } catch (error) {
+    console.error("[MK121] Error getting admin preliminary proposals:", error);
+    return { bills: [], questions: [] };
+  }
+}
+
+export async function approvePreliminaryProposalForAdmin(type: "bill" | "question", id: number) {
+  const db = await getDb();
+  if (!db) {
+    return false;
+  }
+
+  try {
+    if (type === "bill") {
+      await db
+        .update(mk121Bills)
+        .set({ supporters: 1000, status: "voting" })
+        .where(eq(mk121Bills.id, id));
+      return true;
+    }
+
+    await db
+      .update(mk121Questions)
+      .set({ supporters: 1000, status: "voting" })
+      .where(eq(mk121Questions.id, id));
+    return true;
+  } catch (error) {
+    console.error("[MK121] Error approving preliminary proposal:", error);
+    return false;
+  }
+}
 
 // Ministry functions
 export async function getMinistriesList() {
