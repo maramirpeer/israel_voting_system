@@ -15,6 +15,10 @@ function buildReferralUrl(referralCode: string) {
   return `${publicSiteUrl}/?ref=${encodeURIComponent(referralCode)}`;
 }
 
+function buildSignupPath(referralCode: string) {
+  return `/?signup=1&ref=${encodeURIComponent(referralCode)}`;
+}
+
 function buildQrImageUrl(referralUrl: string) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=12&data=${encodeURIComponent(referralUrl)}`;
 }
@@ -261,10 +265,10 @@ ${referralUrl}`, [referralUrl]);
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button onClick={() => setLocation("/mk121?submit=bill")} className="bg-white text-[#17324d] hover:bg-[#eef6ff]">
+              <Button onClick={() => setLocation(buildSignupPath(referralCode))} className="bg-white text-[#17324d] hover:bg-[#eef6ff]">
                 הגשת הצעת חוק
               </Button>
-              <Button onClick={() => setLocation("/mk121?submit=question")} variant="outline" className="border-[#d8c79f] text-white hover:bg-white/10">
+              <Button onClick={() => setLocation(buildSignupPath(referralCode))} variant="outline" className="border-[#d8c79f] text-white hover:bg-white/10">
                 הגשת שאילתא
               </Button>
             </div>

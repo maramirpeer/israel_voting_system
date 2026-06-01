@@ -17,7 +17,7 @@ function getCurrentReferralCode() {
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
-  const [isSignupOpen, setSignupOpen] = useState(false);
+  const [isSignupOpen, setSignupOpen] = useState(() => new URLSearchParams(window.location.search).get("signup") === "1");
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
@@ -78,6 +78,12 @@ export default function Home() {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("signup") === "1") {
+      setSignupOpen(true);
+    }
   }, []);
   const goToMK121Top = () => {
     setLocation("/mk121");
