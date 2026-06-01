@@ -12,6 +12,7 @@ import { Loader2, X } from "lucide-react";
 interface ProposalSubmissionFormsProps {
   cycleId: number;
   userId: number;
+  initialTab?: "bill" | "question";
   onSuccess?: () => void;
   onClose?: () => void;
 }
@@ -28,9 +29,22 @@ const BILL_CATEGORIES = [
   "אחר",
 ];
 
+const QUESTION_TARGET_MINISTRIES = [
+  { id: 8, name: "משרד האוצר", description: "ניהול תקציב המדינה, מדיניות כלכלית, מיסוי והשקעות." },
+  { id: 11, name: "משרד הפנים, החברה והרווחה", description: "רשויות מקומיות, פיתוח כפרי, רווחה חברתית ושירותים לאזרח." },
+  { id: 6, name: "משרד הביטחון", description: "ביטחון המדינה, פיקוח על צה\"ל ומדיניות אסטרטגית." },
+  { id: 9, name: "משרד המשפטים", description: "ייעוץ משפטי, מערכת המשפט, חקיקה ואכיפה." },
+  { id: 4, name: "משרד החדשנות ואיכות הסביבה", description: "טכנולוגיה, אנרגיה ירוקה, מדיניות סביבתית וחדשנות." },
+  { id: 7, name: "משרד החוץ וההסברה העולמית", description: "יחסים בינלאומיים, דיפלומטיה, תדמית המדינה והסברה." },
+  { id: 3, name: "משרד החינוך", description: "מערכת החינוך, תוכניות לימוד ורווחת תלמידים." },
+  { id: 1, name: "משרד הבריאות", description: "מערכת הבריאות, קידום בריאות ורפואה ציבורית." },
+  { id: 17, name: "משרד התרבות", description: "תרבות, אמנות, ספורט וזהות תרבותית." },
+];
+
 export function ProposalSubmissionForms({
   cycleId,
   userId,
+  initialTab = "bill",
   onSuccess,
   onClose,
 }: ProposalSubmissionFormsProps) {
@@ -44,10 +58,6 @@ export function ProposalSubmissionForms({
   const [questionTarget, setQuestionTarget] = useState("");
   const [questionTargetValue, setQuestionTargetValue] = useState("");
   const [urgency, setUrgency] = useState("medium");
-
-  // Fetch ministries from database
-  const ministriesQuery = trpc.mk121.getMinistriesList.useQuery();
-  const ministries = ministriesQuery.data || [];
 
   const submitBillMutation = trpc.mk121.submitBillProposal.useMutation({
     onSuccess: () => {
@@ -130,9 +140,10 @@ export function ProposalSubmissionForms({
         </div>
 
         <div className="p-6">
-          <Tabs defaultValue="bill" className="w-full">
-            <TabsList className="grid w-full grid-cols-1 mb-6">
+          <Tabs defaultValue={initialTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="bill">📋 הצעת חוק</TabsTrigger>
+              <TabsTrigger value="question">❓ שאילתא</TabsTrigger>
             </TabsList>
 
             {/* Bill Proposal Form */}
@@ -200,6 +211,9 @@ export function ProposalSubmissionForms({
                 <p className="text-sm text-blue-900">
                   💡 <strong>טיפ:</strong> הצעות חוק ברורות וממוקדות יקבלו יותר קולות. הקפד על כתיבה מקצועית וברורה.
                 </p>
+                <p className="mt-2 text-sm font-semibold text-blue-900">
+                  לאחר ההגשה ההצעה נשמרת ברמה הקיימת ואינה ניתנת לעריכה על ידי החבר. שינוי יתבצע רק דרך האדמין.
+                </p>
               </div>
 
               <Button
@@ -260,7 +274,7 @@ export function ProposalSubmissionForms({
                         return;
                       }
                       const id = parseInt(val);
-                      const selectedMinistry = ministries.find((m) => m.id === id);
+                      const selectedMinistry = QUESTION_TARGET_MINISTRIES.find((m) => m.id === id);
                       setMinistryId(Number.isFinite(id) ? id : null);
                       setQuestionTarget(selectedMinistry?.name || "");
                     }}
@@ -270,22 +284,16 @@ export function ProposalSubmissionForms({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ראש הממשלה">ראש הממשלה</SelectItem>
-                      {ministriesQuery.isLoading ? (
-                        <div className="p-2 text-sm text-slate-600">טוען משרדים...</div>
-                      ) : ministries.length === 0 ? (
-                        <div className="p-2 text-sm text-slate-600">אין משרדים זמינים</div>
-                      ) : (
-                        ministries.map((ministry) => (
-                          <SelectItem key={ministry.id} value={ministry.id.toString()}>
-                            {ministry.name}
-                          </SelectItem>
-                        ))
-                      )}
+                      {QUESTION_TARGET_MINISTRIES.map((ministry) => (
+                        <SelectItem key={ministry.id} value={ministry.id.toString()}>
+                          {ministry.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   {ministryId && (
                     <p className="text-xs text-slate-600 mt-2">
-                      {ministries.find(m => m.id === ministryId)?.description}
+                      {QUESTION_TARGET_MINISTRIES.find(m => m.id === ministryId)?.description}
                     </p>
                   )}
                 </div>
@@ -326,6 +334,9 @@ export function ProposalSubmissionForms({
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                 <p className="text-sm text-purple-900">
                   💡 <strong>טיפ:</strong> שאילתות בעלות דחיפות גבוהה וממוקדות על בעיה ספציפית יקבלו יותר תשומת לב.
+                </p>
+                <p className="mt-2 text-sm font-semibold text-purple-900">
+                  לאחר ההגשה השאילתא נשמרת ברמה הקיימת ואינה ניתנת לעריכה על ידי החבר. שינוי יתבצע רק דרך האדמין.
                 </p>
               </div>
 
