@@ -71,7 +71,7 @@ export function GlobalSignupButton() {
       <Button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed left-4 top-4 z-[100] gap-2 bg-[#1d4f91] px-4 shadow-lg hover:bg-[#173f74]"
+        className="fixed bottom-4 left-4 z-30 gap-2 bg-[#1d4f91] px-4 shadow-lg hover:bg-[#173f74]"
       >
         <UserPlus className="h-4 w-4" />
         הצטרפות
