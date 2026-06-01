@@ -571,7 +571,7 @@ ${candidateSenderEmail.trim()}`
       </section>
 
       {/* Future Candidate Contract Section */}
-      <section className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
+      <section className="relative z-10 order-[61] py-20 bg-white/78 backdrop-blur-[1px]">
         <div className="container max-w-5xl text-right" dir="rtl">
           <Card className="border-[#d8c79f] bg-white p-8 shadow-sm">
             <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
@@ -599,7 +599,7 @@ ${candidateSenderEmail.trim()}`
       </section>
 
       {/* CTA Section */}
-      <section className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(23,50,77,0.96)_0%,rgba(29,79,145,0.94)_38%,rgba(47,125,92,0.94)_70%,rgba(138,106,63,0.96)_100%)]">
+      <section className="relative z-10 order-[60] py-20 bg-[linear-gradient(120deg,rgba(23,50,77,0.96)_0%,rgba(29,79,145,0.94)_38%,rgba(47,125,92,0.94)_70%,rgba(138,106,63,0.96)_100%)]">
         <div className="container max-w-4xl text-right" dir="rtl">
           <h2 className="mb-4 text-4xl font-bold text-white">מוכן להשתתף?</h2>
           <div className="mb-8 text-xl font-semibold leading-10 text-white">
