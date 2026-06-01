@@ -173,10 +173,11 @@ const demoQuestions = [
 
 
 export default function MK121() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const demoUser = user || { id: 1, name: "ישראל ישראלי", email: "demo@example.local" };
   const [, setLocation] = useLocation();
-  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const initialSubmitTab = new URLSearchParams(window.location.search).get("submit") === "question" ? "question" : "bill";
+  const [showSubmissionForm, setShowSubmissionForm] = useState(() => new URLSearchParams(window.location.search).has("submit"));
   const [localBillVotes, setLocalBillVotes] = useState<number[]>([]);
   const [localBillAgainstVotes, setLocalBillAgainstVotes] = useState<number[]>([]);
   const [localQuestionVotes, setLocalQuestionVotes] = useState<number[]>([]);
@@ -553,7 +554,7 @@ export default function MK121() {
               )}
               {timeRemaining > 0 && <p className="text-sm font-bold text-blue-600">{timeRemaining} ימים נותרים</p>}
             </div>
-            {isAuthenticated && cycle && (
+            {cycle && (
               <Button
                 onClick={() => setShowSubmissionForm(true)}
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
@@ -875,10 +876,11 @@ export default function MK121() {
       </main>
 
       {/* Proposal Submission Modal */}
-      {showSubmissionForm && cycle && user && (
+      {showSubmissionForm && cycle && (
         <ProposalSubmissionForms
           cycleId={cycle.id}
-          userId={user.id}
+          userId={demoUser.id}
+          initialTab={initialSubmitTab}
           onSuccess={() => {
             setShowSubmissionForm(false);
             billsQuery.refetch();

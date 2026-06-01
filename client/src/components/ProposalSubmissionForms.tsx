@@ -57,7 +57,6 @@ export function ProposalSubmissionForms({
   const [ministryId, setMinistryId] = useState<number | null>(null);
   const [questionTarget, setQuestionTarget] = useState("");
   const [questionTargetValue, setQuestionTargetValue] = useState("");
-  const [urgency, setUrgency] = useState("medium");
 
   const submitBillMutation = trpc.mk121.submitBillProposal.useMutation({
     onSuccess: () => {
@@ -80,7 +79,6 @@ export function ProposalSubmissionForms({
       setMinistryId(null);
       setQuestionTarget("");
       setQuestionTargetValue("");
-      setUrgency("medium");
       onSuccess?.();
     },
     onError: (error) => {
@@ -119,7 +117,7 @@ export function ProposalSubmissionForms({
       title: questionTitle,
       description: questionDescription,
       targetMinistry: questionTarget,
-      urgency: (urgency as "low" | "medium" | "high") || "medium",
+      urgency: "medium",
       userId,
     });
   };
@@ -249,7 +247,7 @@ export function ProposalSubmissionForms({
               <div>
                 <label className="block text-sm font-semibold text-slate-900 mb-2">תיאור מפורט</label>
                 <Textarea
-                  placeholder="תאר את השאילתא בפירוט. מה הנושא? למה זה דחוף?"
+                  placeholder="תאר את השאילתא בפירוט. מה הנושא? למה זה חשוב לציבור?"
                   value={questionDescription}
                   onChange={(e) => setQuestionDescription(e.target.value)}
                   maxLength={2000}
@@ -259,7 +257,7 @@ export function ProposalSubmissionForms({
                 <p className="text-xs text-slate-500 mt-1">{questionDescription.length}/2000</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-900 mb-2">
                     📢 יעד השאילתא
@@ -282,7 +280,7 @@ export function ProposalSubmissionForms({
                     <SelectTrigger className="border-slate-300">
                       <SelectValue placeholder="בחר שר/ה לפי משרד או ראש ממשלה" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-[100]">
                       <SelectItem value="ראש הממשלה">ראש הממשלה</SelectItem>
                       {QUESTION_TARGET_MINISTRIES.map((ministry) => (
                         <SelectItem key={ministry.id} value={ministry.id.toString()}>
@@ -298,19 +296,6 @@ export function ProposalSubmissionForms({
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">רמת דחיפות</label>
-                  <Select value={urgency} onValueChange={setUrgency}>
-                    <SelectTrigger className="border-slate-300">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">🟢 נמוכה</SelectItem>
-                      <SelectItem value="medium">🟡 בינונית</SelectItem>
-                      <SelectItem value="high">🔴 גבוהה</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
@@ -333,7 +318,7 @@ export function ProposalSubmissionForms({
 
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                 <p className="text-sm text-purple-900">
-                  💡 <strong>טיפ:</strong> שאילתות בעלות דחיפות גבוהה וממוקדות על בעיה ספציפית יקבלו יותר תשומת לב.
+                  💡 <strong>טיפ:</strong> שאילתות ברורות וממוקדות על בעיה ספציפית יקבלו יותר תשומת לב.
                 </p>
                 <p className="mt-2 text-sm font-semibold text-purple-900">
                   לאחר ההגשה השאילתא נשמרת ברמה הקיימת ואינה ניתנת לעריכה על ידי החבר. שינוי יתבצע רק דרך האדמין.
