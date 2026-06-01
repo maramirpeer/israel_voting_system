@@ -330,9 +330,6 @@ ${candidateSenderEmail.trim()}`
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
               <KolMeshutafLink /> היא תנועה להנחלת תוסף למערכת הפוליטית הקיימת.
             </p>
-            <p className="mt-5 text-xl text-[#4a3722] leading-relaxed font-semibold">
-              <KolMeshutafLink /> מבקש להיות ביטוי אזרחי של <GateFiftyLink />: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לקול משותף של אחריות, שקיפות ומשילות.
-            </p>
             <p className="mt-3 text-lg text-[#4a3722] leading-relaxed">
               למעלה מזה, תנועת <KolMeshutafLink /> מציעה למועמדים לכנסת הבאה את הזכות להצטרף לתומכיה,
               ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
@@ -550,6 +547,18 @@ ${candidateSenderEmail.trim()}`
               </TabsContent>
             </Tabs>
           </div>
+        </div>
+      </section>
+
+      {/* Epilogue Section */}
+      <section className="relative z-10 order-[82] py-16 bg-white/78 backdrop-blur-[1px]">
+        <div className="container max-w-4xl text-right" dir="rtl">
+          <Card className="border-[#d8c79f] bg-[#fbf7ed]/92 p-8 shadow-sm">
+            <h2 className="mb-5 text-3xl font-bold text-[#17324d]">אפילוג</h2>
+            <p className="text-lg leading-9 text-[#4a3722]">
+              קול משותף מבקש להיות ביטוי אזרחי של שער ה-50: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לקול משותף.
+            </p>
+          </Card>
         </div>
       </section>
 
