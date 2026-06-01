@@ -20,6 +20,7 @@ import GateFifty from "./pages/GateFifty";
 import Contact from "./pages/Contact";
 import CandidateContract from "./pages/CandidateContract";
 import { Analytics } from "./pages/Analytics";
+import GroupBuilding from "./pages/GroupBuilding";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -31,6 +32,7 @@ function Router() {
       <Route path={"/gate-50"} component={GateFifty} />
       <Route path={"/contact"} component={Contact} />
       <Route path={"/candidate-contract"} component={CandidateContract} />
+      <Route path={"/group-building"} component={GroupBuilding} />
       <Route path={"/"} component={Home} />
       <Route path={"/ministry/:id"} component={MinistryDetails} />
       <Route path={"/ministry-dashboard"} component={MinistryDashboard} />

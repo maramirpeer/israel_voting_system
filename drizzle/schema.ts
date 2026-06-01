@@ -39,6 +39,8 @@ export const memberSignups = mysqlTable("memberSignups", {
   confirmationSentAt: timestamp("confirmationSentAt"),
   welcomeEmailSentAt: timestamp("welcomeEmailSentAt"),
   notificationSentAt: timestamp("notificationSentAt"),
+  referralCode: varchar("referralCode", { length: 32 }),
+  referredByCode: varchar("referredByCode", { length: 32 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => [

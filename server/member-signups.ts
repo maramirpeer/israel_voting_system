@@ -3,7 +3,7 @@ import { createHash, randomBytes, randomUUID } from "crypto";
 import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import { and, count, eq, isNotNull, isNull, or } from "drizzle-orm";
+import { count, eq, isNull, or } from "drizzle-orm";
 import { getDb } from "./db";
 import { memberSignups } from "../drizzle/schema";
 import { getContactEmailTo, isEmailConfigured, sendEmail } from "./email";
@@ -20,6 +20,8 @@ type LocalMemberSignup = {
   confirmationSentAt?: string | null;
   welcomeEmailSentAt?: string | null;
   notificationSentAt?: string | null;
+  referralCode?: string | null;
+  referredByCode?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -45,18 +47,29 @@ type AdminMemberSignup = {
   confirmationSentAt: string | Date | null;
   welcomeEmailSentAt: string | Date | null;
   notificationSentAt: string | Date | null;
+  referralCode: string | null;
+  referredByCode: string | null;
   createdAt: string | Date;
   updatedAt: string | Date;
+};
+
+type ReferralStatsLevel = {
+  level: string;
+  title: string;
+  count: number;
+  weight: string;
+  credit: number;
+};
+
+type ReferralStatsRow = {
+  referralCode?: string | null;
+  referredByCode?: string | null;
 };
 
 const dataDir = path.join(process.cwd(), "data");
 const dataFile = path.join(dataDir, "member-signups.json");
 const memberTarget = 180000;
 const allowLocalSignupStore = process.env.ALLOW_LOCAL_SIGNUP_STORE === "true";
-const configuredMemberCountDisplayOffset = Number(process.env.MEMBER_SIGNUP_DISPLAY_OFFSET ?? "1");
-const memberCountDisplayOffset = Number.isFinite(configuredMemberCountDisplayOffset)
-  ? Math.max(0, configuredMemberCountDisplayOffset)
-  : 1;
 const foundingMemberName = "אמיר פ";
 const legacyFoundingMemberNames = new Set(["א. פ", "א. פ."]);
 let memberSignupTableReady = false;
@@ -65,6 +78,13 @@ const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
 const signupRateLimits = new Map<string, { count: number; resetAt: number }>();
 const confirmationTokenBytes = 32;
+const referralCreditWeights = [1, 0.5, 0.25];
+const referralLevelLabels = [
+  { level: "רמה 1", title: "חברים שהצטרפו ישירות דרכך", weight: "100%" },
+  { level: "רמה 2", title: "חברים שהגיעו דרך החברים שלך", weight: "50%" },
+  { level: "רמה 3", title: "המשך מעגל ההשפעה", weight: "25%" },
+  { level: "רמה 4+", title: "שרשרת חברים מתמשכת", weight: "דועך" },
+];
 
 class SignupStorageUnavailableError extends Error {
   statusCode = 503;
@@ -183,6 +203,101 @@ function buildConfirmationUrl(req: Request, token: string) {
   return `${getRequestBaseUrl(req)}/api/member-signups/confirm?token=${encodeURIComponent(token)}`;
 }
 
+function buildReferralCode(signupKey: string) {
+  return `KM-${signupKey.slice(0, 8).toUpperCase()}`;
+}
+
+function normalizeReferralCode(value: unknown) {
+  const normalized = normalize(value).toUpperCase().replace(/[^A-Z0-9-]/g, "");
+  return normalized || null;
+}
+
+function buildReferralUrl(req: Request, referralCode: string) {
+  return `${getRequestBaseUrl(req)}/group-building?ref=${encodeURIComponent(referralCode)}`;
+}
+
+function buildQrImageUrl(referralUrl: string) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=12&data=${encodeURIComponent(referralUrl)}`;
+}
+
+function buildReferralPayload(req: Request, signupKey: string) {
+  const referralCode = buildReferralCode(signupKey);
+  const referralUrl = buildReferralUrl(req, referralCode);
+
+  return {
+    referralCode,
+    referralUrl,
+    qrImageUrl: buildQrImageUrl(referralUrl),
+  };
+}
+
+function getReferralCreditWeight(depth: number) {
+  return referralCreditWeights[depth - 1] ?? Math.pow(0.5, depth - 1);
+}
+
+function buildEmptyReferralLevels(): ReferralStatsLevel[] {
+  return referralLevelLabels.map((item) => ({
+    ...item,
+    count: 0,
+    credit: 0,
+  }));
+}
+
+function buildReferralStatsFromRows(referralCode: string, rows: ReferralStatsRow[]) {
+  const normalizedReferralCode = normalizeReferralCode(referralCode) || "";
+  const levels = buildEmptyReferralLevels();
+  const childrenByParent = new Map<string, string[]>();
+
+  for (const row of rows) {
+    const parentCode = normalizeReferralCode(row.referredByCode);
+    const childCode = normalizeReferralCode(row.referralCode);
+
+    if (!parentCode || !childCode || parentCode === childCode) {
+      continue;
+    }
+
+    const children = childrenByParent.get(parentCode) || [];
+    children.push(childCode);
+    childrenByParent.set(parentCode, children);
+  }
+
+  const seen = new Set<string>([normalizedReferralCode]);
+  const queue = (childrenByParent.get(normalizedReferralCode) || []).map((code) => ({ code, depth: 1 }));
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+
+    if (!current || seen.has(current.code)) {
+      continue;
+    }
+
+    seen.add(current.code);
+    const levelIndex = Math.min(current.depth - 1, levels.length - 1);
+    const credit = getReferralCreditWeight(current.depth);
+    levels[levelIndex].count += 1;
+    levels[levelIndex].credit += credit;
+
+    for (const childCode of childrenByParent.get(current.code) || []) {
+      queue.push({ code: childCode, depth: current.depth + 1 });
+    }
+  }
+
+  const directSignups = levels[0]?.count || 0;
+  const totalCluster = levels.reduce((sum, item) => sum + item.count, 0);
+  const influenceScore = levels.reduce((sum, item) => sum + item.credit, 0);
+
+  return {
+    referralCode: normalizedReferralCode,
+    directSignups,
+    totalCluster,
+    influenceScore,
+    levels: levels.map((item) => ({
+      ...item,
+      credit: Number(item.credit.toFixed(2)),
+    })),
+  };
+}
+
 function getEmailStatus() {
   return {
     configured: isEmailConfigured(),
@@ -217,15 +332,7 @@ function getPublicMemberName(signup: PublicMemberSignup) {
 function getPublicMemberNamesFromRows(rows: PublicMemberSignup[]) {
   const names = rows.map(getPublicMemberName).filter(Boolean);
 
-  if (!names.includes(foundingMemberName)) {
-    names.unshift(foundingMemberName);
-  }
-
   return Array.from(new Set(names));
-}
-
-function getDisplayedMemberCount(rawCount: number) {
-  return Math.max(1, rawCount - memberCountDisplayOffset);
 }
 
 function isDuplicateColumnError(error: unknown) {
@@ -255,6 +362,8 @@ async function ensureMemberSignupTable() {
       \`confirmationSentAt\` timestamp,
       \`welcomeEmailSentAt\` timestamp,
       \`notificationSentAt\` timestamp,
+      \`referralCode\` varchar(32),
+      \`referredByCode\` varchar(32),
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
       CONSTRAINT \`memberSignups_id\` PRIMARY KEY(\`id\`),
@@ -270,6 +379,8 @@ async function ensureMemberSignupTable() {
     "ALTER TABLE `memberSignups` ADD COLUMN `confirmationSentAt` timestamp",
     "ALTER TABLE `memberSignups` ADD COLUMN `welcomeEmailSentAt` timestamp",
     "ALTER TABLE `memberSignups` ADD COLUMN `notificationSentAt` timestamp",
+    "ALTER TABLE `memberSignups` ADD COLUMN `referralCode` varchar(32)",
+    "ALTER TABLE `memberSignups` ADD COLUMN `referredByCode` varchar(32)",
   ];
 
   for (const statement of alterStatements) {
@@ -303,7 +414,6 @@ async function getPublicMemberNames() {
           email: memberSignups.email,
         })
         .from(memberSignups)
-        .where(isNotNull(memberSignups.emailConfirmedAt))
         .orderBy(memberSignups.id)
         .limit(publicNamesLimit);
 
@@ -314,7 +424,7 @@ async function getPublicMemberNames() {
   }
 
   const store = await readLocalStore();
-  return getPublicMemberNamesFromRows(store.submissions.filter((signup) => signup.emailConfirmedAt));
+  return getPublicMemberNamesFromRows(store.submissions);
 }
 
 async function getPublicMemberCount() {
@@ -331,34 +441,57 @@ async function getPublicMemberCount() {
     try {
       const [total] = await db
         .select({ value: count() })
-        .from(memberSignups)
-        .where(isNotNull(memberSignups.emailConfirmedAt));
-      const foundingRows = await db
-        .select({ id: memberSignups.id })
-        .from(memberSignups)
-        .where(
-          and(
-            or(eq(memberSignups.nationalId, "033012535"), eq(memberSignups.email, "amir_peer@hotmail.com")),
-            isNotNull(memberSignups.emailConfirmedAt),
-          ),
-        )
-        .limit(1);
-      const includesFoundingMember = foundingRows.length > 0;
+        .from(memberSignups);
 
-      const rawCount = (total?.value || 0) + (includesFoundingMember ? 0 : 1);
-      return getDisplayedMemberCount(rawCount);
+      return total?.value || 0;
     } catch (error) {
       handleDbUnavailable("count", error);
     }
   }
 
   const store = await readLocalStore();
-  const includesFoundingMember = store.submissions.some(
-    (signup) => signup.email.toLowerCase() === "amir_peer@hotmail.com" && signup.emailConfirmedAt,
-  );
+  return store.submissions.length;
+}
 
-  const rawCount = store.submissions.filter((signup) => signup.emailConfirmedAt).length + (includesFoundingMember ? 0 : 1);
-  return getDisplayedMemberCount(rawCount);
+async function getReferralStats(referralCode: string) {
+  const normalizedReferralCode = normalizeReferralCode(referralCode);
+
+  if (!normalizedReferralCode) {
+    return {
+      referralCode: "",
+      directSignups: 0,
+      totalCluster: 0,
+      influenceScore: 0,
+      levels: buildEmptyReferralLevels(),
+    };
+  }
+
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("referral stats setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("referral stats read");
+  }
+
+  if (db) {
+    try {
+      const rows = await db
+        .select({
+          referralCode: memberSignups.referralCode,
+          referredByCode: memberSignups.referredByCode,
+        })
+        .from(memberSignups);
+
+      return buildReferralStatsFromRows(normalizedReferralCode, rows);
+    } catch (error) {
+      handleDbUnavailable("referral stats read", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  return buildReferralStatsFromRows(normalizedReferralCode, store.submissions);
 }
 
 async function saveSignup(input: {
@@ -367,6 +500,7 @@ async function saveSignup(input: {
   phone: string;
   note: string;
   confirmationToken: string;
+  referredByCode: string | null;
 }) {
   const db = await ensureMemberSignupTable().catch((error) => {
     handleDbUnavailable("setup", error);
@@ -374,6 +508,8 @@ async function saveSignup(input: {
   });
   const storedFullName = input.fullName;
   const signupKey = createHash("sha256").update(input.email).digest("hex").slice(0, 32);
+  const referralCode = buildReferralCode(signupKey);
+  const referredByCode = input.referredByCode === referralCode ? null : input.referredByCode;
   const nowDate = new Date();
   const confirmationTokenHash = hashToken(input.confirmationToken);
 
@@ -399,6 +535,8 @@ async function saveSignup(input: {
           email: input.email,
           phone: input.phone || null,
           note: input.note || null,
+          referralCode,
+          referredByCode,
           confirmationTokenHash,
           confirmationSentAt: nowDate,
         });
@@ -411,6 +549,8 @@ async function saveSignup(input: {
             email: input.email,
             phone: input.phone || null,
             note: input.note || null,
+            referralCode,
+            referredByCode,
             emailConfirmedAt: isAlreadyConfirmed ? existingSignup.emailConfirmedAt : null,
             confirmationTokenHash: isAlreadyConfirmed ? null : confirmationTokenHash,
             confirmationSentAt: isAlreadyConfirmed ? existingSignup.confirmationSentAt : nowDate,
@@ -419,7 +559,7 @@ async function saveSignup(input: {
           .where(eq(memberSignups.id, existingSignup.id));
       }
 
-      return { isNewSignup, isAlreadyConfirmed };
+      return { isNewSignup, isAlreadyConfirmed, signupKey, referralCode, referredByCode };
     } catch (error) {
       handleDbUnavailable("write", error);
     }
@@ -443,6 +583,8 @@ async function saveSignup(input: {
       ...storedInput,
       fullName: storedFullName,
       nationalId: signupKey,
+      referralCode,
+      referredByCode,
       emailConfirmedAt: isAlreadyConfirmed ? existingSignup?.emailConfirmedAt : null,
       confirmationTokenHash: isAlreadyConfirmed ? null : confirmationTokenHash,
       confirmationSentAt: isAlreadyConfirmed ? existingSignup?.confirmationSentAt || now : now,
@@ -454,6 +596,8 @@ async function saveSignup(input: {
       ...storedInput,
       fullName: storedFullName,
       nationalId: signupKey,
+      referralCode,
+      referredByCode,
       emailConfirmedAt: null,
       confirmationTokenHash,
       confirmationSentAt: now,
@@ -463,7 +607,7 @@ async function saveSignup(input: {
   }
 
   await writeLocalStore(store);
-  return { isNewSignup, isAlreadyConfirmed };
+  return { isNewSignup, isAlreadyConfirmed, signupKey, referralCode, referredByCode };
 }
 
 async function markSignupConfirmed(token: string) {
@@ -662,7 +806,10 @@ async function deleteAdminSignup(id: string) {
   return true;
 }
 
-function buildWelcomeEmail(fullName: string, count: number) {
+function buildWelcomeEmail(fullName: string, count: number, referral: { referralCode: string; referralUrl: string; qrImageUrl: string }) {
+  const safeReferralUrl = escapeHtml(referral.referralUrl);
+  const safeQrImageUrl = escapeHtml(referral.qrImageUrl);
+
   return {
     subject: "ברוכים הבאים לגרעין המייסד של קול משותף",
     html: `
@@ -670,16 +817,23 @@ function buildWelcomeEmail(fullName: string, count: number) {
         <h1 style="color:#1e3a8a">ברוכים הבאים, ${fullName}</h1>
         <p>תודה על ההצטרפות לגרעין המייסד של קול משותף.</p>
         <p>הרשמתך נשמרה, והמד עלה ל-<strong>${count.toLocaleString("he-IL")}</strong> נרשמים מתוך יעד של <strong>${memberTarget.toLocaleString("he-IL")}</strong>.</p>
+        <p>קוד ההזמנה האישי שלך: <strong dir="ltr">${referral.referralCode}</strong></p>
+        <p>
+          <a href="${safeReferralUrl}" style="display:inline-block;background:#1e3a8a;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:bold">
+            פתיחת עמוד השיתוף האישי
+          </a>
+        </p>
+        <p><img src="${safeQrImageUrl}" alt="QR אישי להזמנת חברים" width="180" height="180" style="border:1px solid #e5d9bf;border-radius:8px;padding:8px;background:#ffffff" /></p>
         <p>נשתמש במייל הזה לעדכונים עתידיים על התקדמות היוזמה, בצורה מדודה ולא מציפה.</p>
         <p>מספר הנרשמים משמש אומדן לכוח ציבורי אפשרי, ואינו מהווה סקר, תחזית או הבטחת הצבעה בפועל.</p>
       </div>
     `,
-    text: `ברוכים הבאים, ${fullName}. תודה על ההצטרפות לגרעין המייסד של קול משותף. הרשמתך נשמרה, והמד עלה ל-${count.toLocaleString("he-IL")} נרשמים מתוך יעד של ${memberTarget.toLocaleString("he-IL")}. נשתמש במייל הזה לעדכונים עתידיים על התקדמות היוזמה.`,
+    text: `ברוכים הבאים, ${fullName}. תודה על ההצטרפות לגרעין המייסד של קול משותף. הרשמתך נשמרה, והמד עלה ל-${count.toLocaleString("he-IL")} נרשמים מתוך יעד של ${memberTarget.toLocaleString("he-IL")}. קוד ההזמנה האישי שלך: ${referral.referralCode}. עמוד השיתוף האישי: ${referral.referralUrl}`,
   };
 }
 
-async function sendWelcomeEmail(to: string, fullName: string, count: number) {
-  const message = buildWelcomeEmail(fullName, count);
+async function sendWelcomeEmail(to: string, fullName: string, count: number, referral: { referralCode: string; referralUrl: string; qrImageUrl: string }) {
+  const message = buildWelcomeEmail(fullName, count, referral);
   return sendEmail({ to, subject: message.subject, html: message.html, text: message.text });
 }
 
@@ -841,6 +995,21 @@ export function registerMemberSignupRoutes(app: Express) {
     }
   });
 
+  app.get("/api/member-signups/referral/:code", async (req: Request, res: Response) => {
+    try {
+      const stats = await getReferralStats(req.params.code);
+      const referralUrl = stats.referralCode ? buildReferralUrl(req, stats.referralCode) : "";
+      res.json({
+        ok: true,
+        ...stats,
+        referralUrl,
+        qrImageUrl: referralUrl ? buildQrImageUrl(referralUrl) : "",
+      });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
   app.get("/api/member-signups/confirm", async (req: Request, res: Response) => {
     const token = normalize(req.query.token);
 
@@ -858,9 +1027,11 @@ export function registerMemberSignupRoutes(app: Express) {
       }
 
       const publicMemberCount = await getPublicMemberCount();
+      const signupKey = confirmation.signup.nationalId || createHash("sha256").update(confirmation.signup.email).digest("hex").slice(0, 32);
+      const referral = buildReferralPayload(req, signupKey);
 
       if (!confirmation.wasAlreadyConfirmed) {
-        await sendWelcomeEmail(confirmation.signup.email, confirmation.signup.fullName, publicMemberCount).catch((error) => {
+        await sendWelcomeEmail(confirmation.signup.email, confirmation.signup.fullName, publicMemberCount, referral).catch((error) => {
           console.warn("[MemberSignups] Welcome email error:", error);
           return false;
         });
@@ -895,6 +1066,9 @@ export function registerMemberSignupRoutes(app: Express) {
               <h1>ההצטרפות אושרה</h1>
               <p>תודה, ${escapeHtml(confirmation.signup.fullName)}. הצטרפת לגרעין המייסד של קול משותף.</p>
               <p>מספר הנרשמים המוצג עכשיו הוא <strong>${publicMemberCount.toLocaleString("he-IL")}</strong>.</p>
+              <p>קוד ההזמנה האישי שלך: <strong dir="ltr">${referral.referralCode}</strong></p>
+              <p><img src="${escapeHtml(referral.qrImageUrl)}" alt="QR אישי להזמנת חברים" width="180" height="180" /></p>
+              <p><a href="${escapeHtml(referral.referralUrl)}">פתיחת עמוד השיתוף האישי</a></p>
               <p><a href="/">חזרה לאתר</a></p>
             </main>
           </body>
@@ -915,6 +1089,7 @@ export function registerMemberSignupRoutes(app: Express) {
     const email = normalize(req.body.email).toLowerCase();
     const phone = normalize(req.body.phone);
     const note = normalize(req.body.note);
+    const referredByCode = normalizeReferralCode(req.body.referredByCode || req.body.referralCode || req.query.ref);
 
     if (!fullName) {
       res.status(400).json({ error: "יש למלא שם מלא" });
@@ -929,8 +1104,9 @@ export function registerMemberSignupRoutes(app: Express) {
     try {
       const confirmationToken = createConfirmationToken();
       const confirmationUrl = buildConfirmationUrl(req, confirmationToken);
-      const { isNewSignup, isAlreadyConfirmed } = await saveSignup({ fullName, email, phone, note, confirmationToken });
+      const { isNewSignup, isAlreadyConfirmed, signupKey } = await saveSignup({ fullName, email, phone, note, confirmationToken, referredByCode });
       const publicMemberCount = await getPublicMemberCount();
+      const referral = buildReferralPayload(req, signupKey);
       const confirmationEmailSent = isAlreadyConfirmed
         ? false
         : await sendConfirmationEmail(email, fullName, confirmationUrl).catch((error) => {
@@ -938,7 +1114,7 @@ export function registerMemberSignupRoutes(app: Express) {
         return false;
       });
 
-      res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent });
+      res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent, ...referral });
     } catch (error) {
       sendSignupRouteError(res, error);
     }

@@ -6,6 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { UserPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
+function getCurrentReferralCode() {
+  return new URLSearchParams(window.location.search).get("ref") || "";
+}
+
 export function GlobalSignupButton() {
   const [isOpen, setOpen] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
@@ -33,7 +37,7 @@ export function GlobalSignupButton() {
       const response = await fetch("/api/member-signups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, referredByCode: getCurrentReferralCode() }),
         signal: controller.signal,
       });
       const data = await response.json();

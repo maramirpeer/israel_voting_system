@@ -10,6 +10,10 @@ import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, Bar
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
+function getCurrentReferralCode() {
+  return new URLSearchParams(window.location.search).get("ref") || "";
+}
+
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
@@ -95,6 +99,10 @@ export default function Home() {
     setLocation("/contact");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   };
+  const goToGroupBuildingTop = () => {
+    setLocation("/group-building");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  };
   const GateFiftyLink = () => (
     <button
       type="button"
@@ -176,7 +184,7 @@ ${candidateSenderEmail.trim()}`
       const response = await fetch("/api/member-signups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupForm),
+        body: JSON.stringify({ ...signupForm, referredByCode: getCurrentReferralCode() }),
         signal: controller.signal,
       });
       const data = await response.json();
@@ -225,6 +233,16 @@ ${candidateSenderEmail.trim()}`
           <nav className="hidden md:flex items-center gap-8">
             <a href="#channels" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">הערוצים</a>
             <a href="#vision" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">החזון</a>
+            <a
+              href="/group-building"
+              onClick={(event) => {
+                event.preventDefault();
+                goToGroupBuildingTop();
+              }}
+              className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition"
+            >
+              בניין הקבוצה
+            </a>
             <a href="#features" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">תכונות</a>
             <a href="#faq" className="text-sm font-medium text-[#4a3722] hover:text-[#1d4f91] transition">שאלות נפוצות</a>
           </nav>
@@ -289,6 +307,9 @@ ${candidateSenderEmail.trim()}`
               </Button>
               <Button size="lg" variant="outline" className="bg-[#fbf7ed]/90 border-[#c8a96a] text-[#17324d] hover:bg-white" onClick={goToGovernanceTop}>
                 ממשלה משתפת - ערוץ לממשלה
+              </Button>
+              <Button size="lg" variant="outline" className="bg-white/90 border-[#2f7d5c] text-[#17324d] hover:bg-[#eef6ef]" onClick={goToGroupBuildingTop}>
+                בניין קבוצת קול משותף
               </Button>
             </div>
           </div>
@@ -655,7 +676,13 @@ ${candidateSenderEmail.trim()}`
       {/* CTA Section */}
       <section className="relative z-10 py-20 bg-[linear-gradient(120deg,rgba(23,50,77,0.96)_0%,rgba(29,79,145,0.94)_38%,rgba(47,125,92,0.94)_70%,rgba(138,106,63,0.96)_100%)]">
         <div className="container max-w-4xl text-right" dir="rtl">
-          <h2 className="text-4xl font-bold text-white mb-6">מוכן להשתתף?</h2>
+          <h2 className="mb-4 text-4xl font-bold text-white">מוכן להשתתף?</h2>
+          <div className="mb-8 text-xl font-semibold leading-10 text-white">
+            <p className="text-2xl font-black">בניית קבוצת החברים - הפצה</p>
+            <p className="mt-3">
+              כל חבר מקבל קישור ו-QR אישי, וכל מצטרף דרכו מגדיל את מדד ההשפעה שלו. ההפצה בונה את קבוצת החברים, וממנה נפתחת גם האפשרות להשתתפות פעילה דרך הצעת חוק או שאילתא.
+            </p>
+          </div>
           <div className="mx-auto mb-8 space-y-4 text-lg leading-9 text-blue-50" dir="rtl">
             <p>
               <KolMeshutafLink className="text-white" /> היא יוזמה לשדרוג המערכת הפוליטית בישראל למערכת מתקדמת, גמישה, שקופה ומשתפת יותר - כזו שמחברת את הציבור לתהליך קבלת ההחלטות באופן רציף, ישיר ודינמי.
