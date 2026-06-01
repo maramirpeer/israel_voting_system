@@ -146,7 +146,7 @@ ${referralUrl}`, [referralUrl]);
             <p className="text-sm font-bold text-[#2f7d5c]">קול משותף</p>
             <h1 className="text-4xl font-black leading-tight sm:text-5xl">בניית קבוצת החברים - הפצה</h1>
             <p className="max-w-3xl text-lg leading-8 text-[#5a4b38]">
-              כל מצטרף מקבל קישור אישי. מי שנרשם דרכך מצטרף לקבוצת החברים שלך, וגם ההזמנות שלו ממשיכות להגדיל את מעגל ההשפעה האזרחי.
+              כל מצטרף מקבל קישור אישי. מי שנרשם דרכך מצטרף לקבוצת החברים שלך, וגם ההזמנות שלו ממשיכות להגדיל את מעגל ההשפעה האזרחי שלך.
             </p>
           </div>
           <Button variant="outline" onClick={() => setLocation("/")} className="gap-2 border-[#c8a96a] bg-white/80">
