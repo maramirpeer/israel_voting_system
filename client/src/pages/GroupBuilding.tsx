@@ -202,16 +202,16 @@ ${referralUrl}`, [referralUrl]);
                     {referralUrl}
                   </p>
                 </div>
-                <div className="grid gap-2 sm:grid-cols-3">
-                  <Button onClick={() => copyToClipboard(referralUrl, "הקישור האישי הועתק.")} className="gap-2 bg-[#1d4f91] hover:bg-[#173f74]">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button onClick={() => copyToClipboard(referralUrl, "הקישור האישי הועתק.")} className="min-w-24 gap-2 bg-[#1d4f91] hover:bg-[#173f74]">
                     <Copy className="h-4 w-4" />
                     העתקה
                   </Button>
-                  <Button variant="outline" onClick={shareInvite} className="gap-2 border-[#2f7d5c] text-[#2f7d5c]">
+                  <Button variant="outline" onClick={shareInvite} className="min-w-24 gap-2 border-[#2f7d5c] text-[#2f7d5c]">
                     <Share2 className="h-4 w-4" />
                     שיתוף
                   </Button>
-                  <Button variant="outline" onClick={openWhatsApp} className="gap-2 border-[#c8a96a] text-[#4a3722]">
+                  <Button variant="outline" onClick={openWhatsApp} className="min-w-28 gap-2 border-[#c8a96a] text-[#4a3722]">
                     <Send className="h-4 w-4" />
                     WhatsApp
                   </Button>
