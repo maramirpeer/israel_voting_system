@@ -434,41 +434,11 @@ export default function MK121() {
   }, []);
 
   const handleVoteBill = (billId: number) => {
-    if (userBillVotes.includes(billId)) {
-      setLocalBillVotes((current) => current.filter((id) => id !== billId));
-      setLocalBillVoteIncrements((current) => ({
-        ...current,
-        [billId]: Math.max((current[billId] || 0) - 1, -1),
-      }));
-      toast.success("ההצבעה בוטלה");
-      return;
-    }
-    setLocalBillAgainstVotes((current) => current.filter((id) => id !== billId));
-    setLocalBillVotes((current) => [...current, billId]);
-    setLocalBillVoteIncrements((current) => ({
-      ...current,
-      [billId]: (current[billId] || 0) + 1,
-    }));
-    if (!useDemoData) {
-      voteBillMutation.mutate({ billId, userId: demoUser.id });
-    } else {
-      toast.success("הקול שלך נרשם!");
-    }
+    setLocation("/?signup=1");
   };
 
   const handleVoteBillAgainst = (billId: number) => {
-    if (localBillAgainstVotes.includes(billId)) {
-      setLocalBillAgainstVotes((current) => current.filter((id) => id !== billId));
-      toast.success("הצבעת הנגד בוטלה");
-      return;
-    }
-    setLocalBillVotes((current) => current.filter((id) => id !== billId));
-    setLocalBillVoteIncrements((current) => ({
-      ...current,
-      [billId]: Math.max((current[billId] || 0) - 1, 0),
-    }));
-    setLocalBillAgainstVotes((current) => [...current, billId]);
-    toast.success("הצבעת נגד נרשמה");
+    setLocation("/?signup=1");
   };
 
   const handleVoteQuestion = (questionId: number) => {
