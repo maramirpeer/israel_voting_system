@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
-import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home, FileText } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,51 @@ import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer,
 
 const hoursFromNow = (hours: number) => new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
 const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+const MIN_FINAL_PUBLIC_VOTES = 40001;
+
+const ensureFinalPublicVotes = (status: string, votesFor: number, votesAgainst: number) => {
+  if (status !== "approved" && status !== "rejected") {
+    return { votesFor, votesAgainst };
+  }
+
+  const totalVotes = votesFor + votesAgainst;
+  if (totalVotes >= MIN_FINAL_PUBLIC_VOTES) {
+    return { votesFor, votesAgainst };
+  }
+
+  const defaultForRatio = status === "approved" ? 0.72 : 0.36;
+  const forRatio = totalVotes > 0 ? votesFor / totalVotes : defaultForRatio;
+  const normalizedFor = Math.max(1, Math.round(MIN_FINAL_PUBLIC_VOTES * forRatio));
+
+  return {
+    votesFor: normalizedFor,
+    votesAgainst: MIN_FINAL_PUBLIC_VOTES - normalizedFor,
+  };
+};
+
+const knessetBillArchive = [
+  {
+    id: 1,
+    title: "חובת פרסום יומן פגישות של רגולטורים",
+    ministry: "משרד האוצר",
+    transferredAt: "אביב 2026",
+    votes: 42180,
+  },
+  {
+    id: 2,
+    title: "החזר אוטומטי על איחור חמור בתחבורה ציבורית",
+    ministry: "משרד הפנים, החברה והרווחה",
+    transferredAt: "אביב 2026",
+    votes: 43890,
+  },
+  {
+    id: 3,
+    title: "כל ח״כ חייב להצביע",
+    ministry: "ח״כ 121",
+    transferredAt: "אביב 2026",
+    votes: 45620,
+  },
+];
 
 const localDemoMinistries = [
   { id: 8, name: "משרד האוצר", description: "ניהול תקציב המדינה, מדיניות כלכלית, מיסוי והשקעות." },
@@ -78,6 +123,8 @@ const localDemoDecisions = [
     description: "איחוד פניות אזרחים לרשויות המקומיות במערכת אחת עם מעקב שקוף.",
     category: "medium",
     status: "approved",
+    publicVotesFor: 31240,
+    publicVotesAgainst: 11780,
     createdAt: daysAgo(8),
     publicVotingEndsAt: hoursFromNow(-24),
   },
@@ -88,6 +135,8 @@ const localDemoDecisions = [
     description: "הפניית תמיכות לפי השתתפות ציבורית ומדדי נגישות.",
     category: "routine",
     status: "approved",
+    publicVotesFor: 29360,
+    publicVotesAgainst: 12540,
     createdAt: daysAgo(12),
     publicVotingEndsAt: hoursFromNow(-72),
   },
@@ -98,6 +147,8 @@ const localDemoDecisions = [
     description: "הצעת קמפיין רחב היקף שנדחתה לאחר התנגדות ציבורית.",
     category: "major",
     status: "rejected",
+    publicVotesFor: 14920,
+    publicVotesAgainst: 28580,
     createdAt: daysAgo(16),
     publicVotingEndsAt: hoursFromNow(-120),
   },
@@ -606,6 +657,41 @@ export default function Governance() {
               </div>
             </Card>
 
+            <Card className="p-6 bg-white border-amber-200 text-right">
+              <div className="mb-5 flex items-center justify-between gap-4 flex-row-reverse">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-slate-900">ארכיון הצעות חוק שעברו לכנסת להצבעה</h3>
+                  <p className="text-sm text-slate-600">הצעות שעברו את רף התמיכה הציבורית ונשלחו למסלול הצבעה בכנסת.</p>
+                </div>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                {knessetBillArchive.map((bill) => (
+                  <div key={bill.id} className="rounded-lg border border-amber-100 bg-amber-50/60 p-4">
+                    <Badge className="mb-3 bg-amber-100 text-amber-800 border-amber-200">עבר לכנסת</Badge>
+                    <h4 className="min-h-12 text-base font-bold leading-6 text-slate-900">{bill.title}</h4>
+                    <div className="mt-4 space-y-2 text-sm text-slate-700">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-slate-500">מקור</span>
+                        <span className="font-medium">{bill.ministry}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-slate-500">מועד העברה</span>
+                        <span className="font-medium">{bill.transferredAt}</span>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <span className="text-slate-500">תמיכה ציבורית</span>
+                        <span className="font-bold text-amber-800">{bill.votes.toLocaleString("he-IL")}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
             {/* How It Works */}
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h3 className="text-xl font-bold text-slate-900 mb-4">🔄 איך זה עובד?</h3>
@@ -708,8 +794,11 @@ export default function Governance() {
                     const baseVotes = 400 + ((decision.id * 137) % 9600); // 400-10000
                     const forPercentage = ((decision.id * 17) % 100); // 0-99%
                     const userVote = userVotes[decision.id];
-                    const votesFor = Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "for" ? 1 : 0);
-                    const votesAgainst = baseVotes - Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "against" ? 1 : 0);
+                    const rawVotesFor = Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "for" ? 1 : 0);
+                    const rawVotesAgainst = baseVotes - Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "against" ? 1 : 0);
+                    const normalizedVotes = ensureFinalPublicVotes(decision.status, rawVotesFor, rawVotesAgainst);
+                    const votesFor = normalizedVotes.votesFor;
+                    const votesAgainst = normalizedVotes.votesAgainst;
                     const totalVotes = votesFor + votesAgainst;
                     const percentageFor = (votesFor / totalVotes) * 100;
                     const percentageAgainst = (votesAgainst / totalVotes) * 100;

@@ -8,6 +8,28 @@ import { AlertCircle, Clock, Home } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 
+const MIN_FINAL_PUBLIC_VOTES = 40001;
+
+const ensureFinalPublicVotes = (status: string, votesFor: number, votesAgainst: number) => {
+  if (status !== "approved" && status !== "rejected") {
+    return { votesFor, votesAgainst };
+  }
+
+  const totalVotes = votesFor + votesAgainst;
+  if (totalVotes >= MIN_FINAL_PUBLIC_VOTES) {
+    return { votesFor, votesAgainst };
+  }
+
+  const defaultForRatio = status === "approved" ? 0.72 : 0.36;
+  const forRatio = totalVotes > 0 ? votesFor / totalVotes : defaultForRatio;
+  const normalizedFor = Math.max(1, Math.round(MIN_FINAL_PUBLIC_VOTES * forRatio));
+
+  return {
+    votesFor: normalizedFor,
+    votesAgainst: MIN_FINAL_PUBLIC_VOTES - normalizedFor,
+  };
+};
+
 export default function DecisionsSummary() {
   const [, setLocation] = useLocation();
   const [selectedMinistry, setSelectedMinistry] = useState<number | null>(null);
@@ -163,8 +185,11 @@ export default function DecisionsSummary() {
           <div className="space-y-4">
             {displayedDecisions.map((decision) => {
               const baseVotes = Number(decision.publicVotesFor ?? 0) + Number(decision.publicVotesAgainst ?? 0) || 400 + ((decision.id * 137) % 9600);
-              const forVotes = Number(decision.publicVotesFor ?? Math.floor(baseVotes * (((decision.id * 17) % 100) / 100)));
-              const againstVotes = Number(decision.publicVotesAgainst ?? baseVotes - forVotes);
+              const rawForVotes = Number(decision.publicVotesFor ?? Math.floor(baseVotes * (((decision.id * 17) % 100) / 100)));
+              const rawAgainstVotes = Number(decision.publicVotesAgainst ?? baseVotes - rawForVotes);
+              const normalizedVotes = ensureFinalPublicVotes(decision.status, rawForVotes, rawAgainstVotes);
+              const forVotes = normalizedVotes.votesFor;
+              const againstVotes = normalizedVotes.votesAgainst;
               const totalVotes = forVotes + againstVotes || 1;
               const percentageFor = (forVotes / totalVotes) * 100;
               const percentageAgainst = (againstVotes / totalVotes) * 100;
