@@ -553,21 +553,6 @@ ${candidateSenderEmail.trim()}`
         </div>
       </section>
 
-      {/* Epilogue Section */}
-      <section className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
-        <div className="container max-w-4xl text-right" dir="rtl">
-          <Card className="p-8 bg-[#fbf7ed]/92 border-[#d8c79f] shadow-sm">
-            <h2 className="text-3xl font-bold text-[#17324d] mb-6">אפילוג</h2>
-            <div className="space-y-4 text-lg leading-9 text-[#4a3722]">
-              <p>
-                <KolMeshutafLink /> מבקשת לשדרג את המערכת הפוליטית בצורתה הנוכחית,
-                ולחבר אותה לצורתה העתידית - שקופה ומשתפת.
-              </p>
-            </div>
-          </Card>
-        </div>
-      </section>
-
       {/* Future Candidate Contract Section */}
       <section className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
         <div className="container max-w-5xl text-right" dir="rtl">
