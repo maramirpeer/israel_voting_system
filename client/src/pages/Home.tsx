@@ -573,7 +573,7 @@ ${candidateSenderEmail.trim()}`
               שתסדיר את הקמת מנגנון <KolMeshutafLink className="text-[#17324d]" /> בכנסת הבאה.
             </p>
             <p className="mb-6 rounded-lg border-r-4 border-[#2f7d5c] bg-[#eef6ef] p-4 text-xl font-bold leading-8 text-[#17324d]">
-              ח״כ עתידי/ת יקר/ה - נבחרת בזכות אמון הציבור!
+              ח״כ עתידי/ת יקר/ה - נבחרת בזכות אמון הציבור! האם תתחייב לשתף את ציבור בוחריך במערכת השלטון?
             </p>
 
             <div className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
