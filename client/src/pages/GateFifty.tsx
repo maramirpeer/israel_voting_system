@@ -45,6 +45,9 @@ export default function GateFifty() {
             ואז מגיע היום החמישים: חג השבועות, מתן תורה. זהו לא עוד צעד בתוך הרצף, אלא פתיחה של שער אחר,
             שבו התיקון הפרטי והציבורי יכול להפוך לקבלה של תורה, משמעות וכיוון.
           </p>
+          <p className="mt-4 text-lg font-semibold leading-8 text-[#17324d]">
+            קול משותף נולד בחדר לידה בחג השבועות.
+          </p>
         </div>
 
         <div className="mx-auto mt-10 grid max-w-5xl gap-6 md:grid-cols-3">
