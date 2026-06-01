@@ -220,7 +220,7 @@ ${candidateSenderEmail.trim()}`
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#fbf7ed]" dir="rtl">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#fbf7ed]" dir="rtl">
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center opacity-18"
@@ -429,7 +429,7 @@ ${candidateSenderEmail.trim()}`
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative z-10 py-20 bg-white/78 backdrop-blur-[1px]">
+      <section id="features" className="relative z-10 order-[80] py-20 bg-white/78 backdrop-blur-[1px]">
         <div className="container">
           <div className="mx-auto mb-12 max-w-3xl text-right">
             <h2 className="text-4xl font-bold text-[#17324d] mb-4">תכונות מרכזיות</h2>
@@ -474,7 +474,7 @@ ${candidateSenderEmail.trim()}`
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="relative z-10 py-20 bg-[#f8f3e6]/88 backdrop-blur-[1px]">
+      <section id="faq" className="relative z-10 order-[81] py-20 bg-[#f8f3e6]/88 backdrop-blur-[1px]">
         <div className="container">
           <h2 className="text-4xl font-bold text-blue-900 mb-12 text-right">שאלות נפוצות</h2>
           
@@ -952,7 +952,7 @@ ${candidateSenderEmail.trim()}`
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="relative z-10 bg-[#17324d] py-12 text-right text-[#d8c79f]" dir="rtl">
+      <footer id="contact" className="relative z-10 order-[90] bg-[#17324d] py-12 text-right text-[#d8c79f]" dir="rtl">
         <div className="container">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
