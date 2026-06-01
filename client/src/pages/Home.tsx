@@ -345,7 +345,7 @@ ${candidateSenderEmail.trim()}`
       <section id="channels" className="relative z-10 py-20 bg-[linear-gradient(180deg,rgba(251,247,237,0.9)_0%,rgba(255,255,255,0.82)_48%,rgba(238,246,239,0.9)_100%)]">
         <div className="container">
           <div className="mb-16 text-right">
-            <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף מעשיים</h2>
+            <h2 className="text-4xl font-bold text-[#17324d] mb-4">שני ערוצי שיתוף עתידיים מעשיים</h2>
             <div className="mx-auto mt-4 max-w-4xl space-y-4 text-lg leading-8 text-[#5f513e]">
               <p className="font-bold text-[#17324d]">
                 <KolMeshutafLink /> מקדמת שני ערוצי מעורבות משלימים לחיבור הציבור לעבודת השלטון:
