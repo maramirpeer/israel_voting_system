@@ -618,7 +618,7 @@ ${candidateSenderEmail.trim()}`
           <Card className="border-[#d8c79f] bg-[#fbf7ed]/92 p-8 shadow-sm">
             <h2 className="mb-5 text-3xl font-bold text-[#17324d]">אפילוג</h2>
             <p className="text-lg leading-9 text-[#4a3722]">
-              קול משותף מבקש להיות ביטוי אזרחי של שער ה-50: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף לקול משותף.
+              <KolMeshutafLink className="text-[#17324d]" /> מבקש להיות ביטוי אזרחי של שער ה-50: לאחר ריבוי קולות, דעות ושברים - נפתח שער של בינה ציבורית, שבו הקול הפרטי אינו נמחק אלא מצטרף ל<KolMeshutafLink className="text-[#17324d]" />.
             </p>
             <Button
               type="button"
@@ -667,7 +667,7 @@ ${candidateSenderEmail.trim()}`
                 <DialogHeader className="text-right">
                   <DialogTitle className="text-2xl text-[#17324d]">להיכלל כמועמד/ת מתגייס/ת</DialogTitle>
                   <DialogDescription>
-                    מלא/י שם מלא, מייל ות.ז כדי להופיע בדף הניהול כמועמד/ת שמתגייס/ת לתמיכה בקול משותף.
+                    מלא/י שם מלא, מייל ות.ז כדי להופיע בדף הניהול כמועמד/ת שמתגייס/ת לתמיכה ב<KolMeshutafLink className="text-[#17324d]" />.
                   </DialogDescription>
                 </DialogHeader>
                 <form className="space-y-4" onSubmit={handleCandidateEnlistSubmit}>
@@ -1039,7 +1039,7 @@ ${candidateSenderEmail.trim()}`
             </div>
           </div>
           <div className="border-t border-white/15 pt-8 text-right text-sm">
-            <p>&copy; 2026 <KolMeshutafLink className="text-[#d8c79f]" />. כל הזכויות שמורות.</p>
+            <p>&copy; 2026 <KolMeshutafLink className="text-white underline decoration-[#d8c79f] decoration-2 underline-offset-4" />. כל הזכויות שמורות.</p>
           </div>
         </div>
       </footer>
