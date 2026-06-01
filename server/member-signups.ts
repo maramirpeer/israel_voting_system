@@ -58,6 +58,7 @@ type AdminCandidateEnlistment = {
   fullName: string;
   nationalId: string;
   email: string;
+  includedAt: string | Date | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 };
@@ -418,6 +419,7 @@ async function ensureCandidateEnlistmentTable() {
       \`fullName\` varchar(255) NOT NULL,
       \`nationalId\` varchar(32) NOT NULL,
       \`email\` varchar(320) NOT NULL,
+      \`includedAt\` timestamp,
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
       CONSTRAINT \`candidateEnlistments_id\` PRIMARY KEY(\`id\`),
@@ -425,6 +427,12 @@ async function ensureCandidateEnlistmentTable() {
       CONSTRAINT \`candidateEnlistments_email_unique\` UNIQUE(\`email\`)
     )
   `);
+
+  await db.execute("ALTER TABLE `candidateEnlistments` ADD COLUMN `includedAt` timestamp").catch((error: unknown) => {
+    if (!isDuplicateColumnError(error)) {
+      throw error;
+    }
+  });
 
   candidateEnlistmentTableReady = true;
   return db;
@@ -872,6 +880,116 @@ async function getAdminCandidateEnlistments() {
   throw new SignupStorageUnavailableError("admin candidate enlistments read");
 }
 
+async function includeCandidateEnlistment(id: string) {
+  const db = await ensureCandidateEnlistmentTable().catch((error) => {
+    handleDbUnavailable("admin candidate include setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("admin candidate include");
+  }
+
+  if (db) {
+    const numericId = Number(id);
+
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      return false;
+    }
+
+    try {
+      const existing = await db
+        .select({ id: candidateEnlistments.id })
+        .from(candidateEnlistments)
+        .where(eq(candidateEnlistments.id, numericId))
+        .limit(1);
+
+      if (!existing.length) {
+        return false;
+      }
+
+      await db
+        .update(candidateEnlistments)
+        .set({
+          includedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(candidateEnlistments.id, numericId));
+      return true;
+    } catch (error) {
+      handleDbUnavailable("admin candidate include", error);
+    }
+  }
+
+  throw new SignupStorageUnavailableError("admin candidate include");
+}
+
+async function deleteCandidateEnlistment(id: string) {
+  const db = await ensureCandidateEnlistmentTable().catch((error) => {
+    handleDbUnavailable("admin candidate delete setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("admin candidate delete");
+  }
+
+  if (db) {
+    const numericId = Number(id);
+
+    if (!Number.isInteger(numericId) || numericId <= 0) {
+      return false;
+    }
+
+    try {
+      const existing = await db
+        .select({ id: candidateEnlistments.id })
+        .from(candidateEnlistments)
+        .where(eq(candidateEnlistments.id, numericId))
+        .limit(1);
+
+      if (!existing.length) {
+        return false;
+      }
+
+      await db.delete(candidateEnlistments).where(eq(candidateEnlistments.id, numericId));
+      return true;
+    } catch (error) {
+      handleDbUnavailable("admin candidate delete", error);
+    }
+  }
+
+  throw new SignupStorageUnavailableError("admin candidate delete");
+}
+
+async function getPublicCandidateEnlistments() {
+  const db = await ensureCandidateEnlistmentTable().catch((error) => {
+    handleDbUnavailable("public candidate enlistments setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("public candidate enlistments read");
+  }
+
+  if (db) {
+    try {
+      return await db
+        .select({
+          fullName: candidateEnlistments.fullName,
+          includedAt: candidateEnlistments.includedAt,
+        })
+        .from(candidateEnlistments)
+        .where(isNotNull(candidateEnlistments.includedAt))
+        .orderBy(candidateEnlistments.includedAt);
+    } catch (error) {
+      handleDbUnavailable("public candidate enlistments read", error);
+    }
+  }
+
+  throw new SignupStorageUnavailableError("public candidate enlistments read");
+}
+
 async function deleteAdminSignup(id: string) {
   const db = await ensureMemberSignupTable().catch((error) => {
     handleDbUnavailable("admin delete setup", error);
@@ -1063,6 +1181,46 @@ export function registerMemberSignupRoutes(app: Express) {
     }
   });
 
+  app.post("/api/admin/candidate-enlistments/:id/include", async (req: Request, res: Response) => {
+    if (!isValidAdminToken(req)) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    try {
+      const included = await includeCandidateEnlistment(req.params.id);
+
+      if (!included) {
+        res.status(404).json({ error: "Candidate enlistment was not found." });
+        return;
+      }
+
+      res.json({ ok: true, included: true });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.delete("/api/admin/candidate-enlistments/:id", async (req: Request, res: Response) => {
+    if (!isValidAdminToken(req)) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+
+    try {
+      const deleted = await deleteCandidateEnlistment(req.params.id);
+
+      if (!deleted) {
+        res.status(404).json({ error: "Candidate enlistment was not found." });
+        return;
+      }
+
+      res.json({ ok: true, deleted: true });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
   app.post("/api/admin/member-signups/send-confirmations", async (req: Request, res: Response) => {
     if (!isValidAdminToken(req)) {
       res.status(404).json({ error: "Not found" });
@@ -1108,6 +1266,15 @@ export function registerMemberSignupRoutes(app: Express) {
     try {
       const count = await getPublicMemberCount();
       res.json({ ok: true, count, target: memberTarget });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.get("/api/candidate-enlistments", async (_req: Request, res: Response) => {
+    try {
+      const candidates = await getPublicCandidateEnlistments();
+      res.json({ ok: true, candidates });
     } catch (error) {
       sendSignupRouteError(res, error);
     }

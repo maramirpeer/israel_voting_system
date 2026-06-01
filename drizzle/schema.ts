@@ -58,6 +58,7 @@ export const candidateEnlistments = mysqlTable("candidateEnlistments", {
   fullName: varchar("fullName", { length: 255 }).notNull(),
   nationalId: varchar("nationalId", { length: 32 }).notNull(),
   email: varchar("email", { length: 320 }).notNull(),
+  includedAt: timestamp("includedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => [

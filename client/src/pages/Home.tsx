@@ -34,6 +34,7 @@ export default function Home() {
   const [citizenName, setCitizenName] = useState("");
   const [candidateSenderEmail, setCandidateSenderEmail] = useState("");
   const [candidateLetterMessage, setCandidateLetterMessage] = useState("");
+  const [publicCandidateEnlistments, setPublicCandidateEnlistments] = useState<Array<{ fullName: string; includedAt: string | null }>>([]);
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     phone: "",
@@ -80,6 +81,27 @@ export default function Home() {
       .catch(() => {
         if (isMounted) {
           setMemberCount(0);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch("/api/candidate-enlistments")
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (isMounted && Array.isArray(data?.candidates)) {
+          setPublicCandidateEnlistments(data.candidates);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setPublicCandidateEnlistments([]);
         }
       });
 
@@ -687,6 +709,23 @@ ${candidateSenderEmail.trim()}`
                 </form>
               </DialogContent>
             </Dialog>
+            <div className="mt-8 rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
+              <h3 className="text-xl font-bold text-[#17324d]">רשימת המועמדים המתגייסים לתמיכה</h3>
+              {publicCandidateEnlistments.length > 0 ? (
+                <ul className="mt-4 space-y-2 text-base leading-7 text-slate-700">
+                  {publicCandidateEnlistments.map((candidate, index) => (
+                    <li key={`${candidate.fullName}-${index}`} className="flex items-center gap-2">
+                      <BadgeCheck className="h-4 w-4 text-[#2f7d5c]" />
+                      <span>{candidate.fullName}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-3 text-sm leading-6 text-[#5a4b38]">
+                  הרשימה הציבורית תתעדכן לאחר שמועמדים יאושרו בדף הניהול.
+                </p>
+              )}
+            </div>
 
           </Card>
         </div>

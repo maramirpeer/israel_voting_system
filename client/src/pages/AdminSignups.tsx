@@ -38,6 +38,7 @@ type CandidateEnlistment = {
   fullName: string;
   nationalId: string;
   email: string;
+  includedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -72,6 +73,8 @@ export default function AdminSignups() {
   const [preliminaryQuestions, setPreliminaryQuestions] = useState<PreliminaryProposal[]>([]);
   const [candidateEnlistments, setCandidateEnlistments] = useState<CandidateEnlistment[]>([]);
   const [approvingProposal, setApprovingProposal] = useState<string | null>(null);
+  const [includingCandidateId, setIncludingCandidateId] = useState<string | number | null>(null);
+  const [deletingCandidateId, setDeletingCandidateId] = useState<string | number | null>(null);
 
   const sortedSubmissions = useMemo(() => {
     return [...submissions].sort((a, b) => {
@@ -179,6 +182,68 @@ export default function AdminSignups() {
       setCandidateEnlistments(Array.isArray(data.enlistments) ? data.enlistments : []);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "טעינת המועמדים המתגייסים נכשלה.");
+    }
+  };
+
+  const includeCandidateOnSite = async (candidate: CandidateEnlistment) => {
+    if (!token) {
+      setMessage("יש להזין מפתח גישה.");
+      return;
+    }
+
+    setIncludingCandidateId(candidate.id);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/candidate-enlistments/${encodeURIComponent(String(candidate.id))}/include`, {
+        method: "POST",
+        headers: { "x-admin-token": token },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "הצגת המועמד באתר נכשלה.");
+      }
+
+      setMessage(`${candidate.fullName} נוסף/ה לרשימת המועמדים המתגייסים באתר.`);
+      await loadCandidateEnlistments(token);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "הצגת המועמד באתר נכשלה.");
+    } finally {
+      setIncludingCandidateId(null);
+    }
+  };
+
+  const deleteCandidateEnlistment = async (candidate: CandidateEnlistment) => {
+    if (!token) {
+      setMessage("יש להזין מפתח גישה.");
+      return;
+    }
+
+    const approved = window.confirm(`למחוק את המועמד/ת ${candidate.fullName} (${candidate.email})?`);
+
+    if (!approved) {
+      return;
+    }
+
+    setDeletingCandidateId(candidate.id);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/candidate-enlistments/${encodeURIComponent(String(candidate.id))}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": token },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "מחיקת המועמד נכשלה.");
+      }
+
+      setCandidateEnlistments((current) => current.filter((currentCandidate) => currentCandidate.id !== candidate.id));
+      setMessage("המועמד/ת נמחק/ה בהצלחה.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "מחיקת המועמד נכשלה.");
+    } finally {
+      setDeletingCandidateId(null);
     }
   };
 
@@ -413,15 +478,17 @@ export default function AdminSignups() {
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-right text-sm">
+            <table className="w-full min-w-[980px] text-right text-sm">
               <thead className="bg-[#eef6ef] text-[#17324d]">
                 <tr>
                   <th className="p-3">#</th>
                   <th className="p-3">שם מלא</th>
                   <th className="p-3">מייל</th>
                   <th className="p-3">ת.ז</th>
+                  <th className="p-3">סטטוס</th>
                   <th className="p-3">נוצר</th>
                   <th className="p-3">עודכן</th>
+                  <th className="p-3">פעולות</th>
                 </tr>
               </thead>
               <tbody>
@@ -431,13 +498,43 @@ export default function AdminSignups() {
                     <td className="p-3">{candidate.fullName}</td>
                     <td className="p-3" dir="ltr">{candidate.email}</td>
                     <td className="p-3" dir="ltr">{candidate.nationalId}</td>
+                    <td className="p-3">
+                      <span className={`rounded px-2 py-1 text-xs font-bold ${candidate.includedAt ? "bg-[#eef6ef] text-[#2f5d35]" : "bg-[#fff3cd] text-[#7a5b00]"}`}>
+                        {candidate.includedAt ? "מוצג באתר" : "ממתין להחלטת אדמין"}
+                      </span>
+                    </td>
                     <td className="p-3">{formatDate(candidate.createdAt)}</td>
                     <td className="p-3">{formatDate(candidate.updatedAt)}</td>
+                    <td className="p-3">
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => includeCandidateOnSite(candidate)}
+                          disabled={Boolean(candidate.includedAt) || includingCandidateId === candidate.id}
+                          className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
+                        >
+                          <BadgeCheck className="h-4 w-4" />
+                          {candidate.includedAt ? "כבר באתר" : includingCandidateId === candidate.id ? "מציג..." : "הצג באתר"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteCandidateEnlistment(candidate)}
+                          disabled={deletingCandidateId === candidate.id}
+                          className="gap-2 border-red-200 text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {deletingCandidateId === candidate.id ? "מוחק..." : "מחיקה"}
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {!sortedCandidateEnlistments.length && (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-[#5a4b38]">
+                    <td colSpan={8} className="p-8 text-center text-[#5a4b38]">
                       עדיין אין מועמדים מתגייסים.
                     </td>
                   </tr>
