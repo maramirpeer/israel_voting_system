@@ -104,7 +104,7 @@ const localDemoDecisions = [
 ];
 
 export default function Governance() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const [, setLocation] = useLocation();
   const [selectedMinistry, setSelectedMinistry] = useState<number | null>(null);
   const [publicTimeRemaining, setPublicTimeRemaining] = useState<{ [key: number]: string }>({});
@@ -265,6 +265,11 @@ export default function Governance() {
   };
 
   const handleVote = async (decisionId: number, vote: "for" | "against") => {
+    if (loading) return;
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
     setUserVotes((current) => ({
       ...current,
       [decisionId]: current[decisionId] === vote ? null : vote,
@@ -289,6 +294,13 @@ export default function Governance() {
     window.setTimeout(() => {
       decisionsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
+  };
+
+  const requireSignupForActivity = () => {
+    if (loading) return true;
+    if (isAuthenticated) return false;
+    setLocation("/?signup=1");
+    return true;
   };
 
   const getStatusColor = (status: string) => {
@@ -383,7 +395,10 @@ export default function Governance() {
       <main className="container py-8">
         <div className="mb-8 grid gap-3 md:grid-cols-2">
           <Button
-            onClick={() => setLocation("/delegate-selection")}
+            onClick={() => {
+              if (requireSignupForActivity()) return;
+              setLocation("/delegate-selection");
+            }}
             className="w-full min-h-20 bg-purple-700 text-xl font-bold text-white hover:bg-purple-800"
           >
             🗳️ הכוון קולך

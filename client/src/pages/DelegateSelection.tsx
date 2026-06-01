@@ -51,7 +51,7 @@ const getDemoMinistryDelegates = (ministryId: number, ministryName?: string) => 
 };
 
 export default function DelegateSelection() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const demoUser = user || { id: 1, name: "ישראל ישראלי", email: "demo@example.local" };
   const [, setLocation] = useLocation();
   const [, routeParams] = useRoute<{ ministryId: string }>("/delegate-selection/:ministryId");
@@ -74,6 +74,12 @@ export default function DelegateSelection() {
     const saved = window.localStorage.getItem(MK121_ASSIGNMENT_KEY);
     return saved ? JSON.parse(saved) : { type: "direct" };
   });
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      setLocation("/?signup=1");
+    }
+  }, [isAuthenticated, loading, setLocation]);
 
   // Queries
   const ministriesQuery = trpc.governance.ministries.list.useQuery();

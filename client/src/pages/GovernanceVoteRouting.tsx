@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { ArrowLeft, Building2, Route } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -42,6 +43,7 @@ const getAssignmentText = (assignment?: GovernanceAssignment) => {
 };
 
 export default function GovernanceVoteRouting() {
+  const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const assignments = readAssignments();
   const delegatedCount = ministries.filter((ministry) => assignments[String(ministry.id)]?.votingMethod === "delegate").length;
@@ -100,7 +102,7 @@ export default function GovernanceVoteRouting() {
           </div>
         </Card>
 
-        <Button onClick={() => setLocation("/delegate-selection")} className="w-full bg-purple-700 hover:bg-purple-800">
+        <Button onClick={() => setLocation(isAuthenticated ? "/delegate-selection" : "/?signup=1")} className="w-full bg-purple-700 hover:bg-purple-800">
           עדכן ניתוב קול
         </Button>
       </main>

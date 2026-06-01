@@ -173,7 +173,7 @@ const demoQuestions = [
 
 
 export default function MK121() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const demoUser = user || { id: 1, name: "ישראל ישראלי", email: "demo@example.local" };
   const [, setLocation] = useLocation();
   const initialSubmitTab = new URLSearchParams(window.location.search).get("submit") === "question" ? "question" : "bill";
@@ -202,6 +202,13 @@ export default function MK121() {
   useEffect(() => {
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   }, []);
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated && new URLSearchParams(window.location.search).has("submit")) {
+      setShowSubmissionForm(false);
+      setLocation("/?signup=1");
+    }
+  }, [isAuthenticated, loading, setLocation]);
 
   // Queries with auto-refresh polling (every 30 seconds for live updates)
   const currentCycleQuery = trpc.mk121.getCurrentCycle.useQuery(undefined, {
@@ -434,14 +441,60 @@ export default function MK121() {
   }, []);
 
   const handleVoteBill = (billId: number) => {
-    setLocation("/?signup=1");
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
+    setLocalBillAgainstVotes((current) => current.filter((id) => id !== billId));
+    if (userBillVotes.includes(billId)) {
+      setLocalBillVotes((current) => current.filter((id) => id !== billId));
+      setLocalBillVoteIncrements((current) => ({
+        ...current,
+        [billId]: Math.max((current[billId] || 0) - 1, -1),
+      }));
+      toast.success("×”×”×¦×‘×¢×” ×‘×•×˜×œ×”");
+      return;
+    }
+    setLocalBillVotes((current) => [...current, billId]);
+    setLocalBillVoteIncrements((current) => ({
+      ...current,
+      [billId]: (current[billId] || 0) + 1,
+    }));
+    if (!useDemoData) {
+      voteBillMutation.mutate({ billId, userId: demoUser.id });
+    } else {
+      toast.success("×”×§×•×œ ×©×œ×š × ×¨×©×!");
+    }
   };
 
   const handleVoteBillAgainst = (billId: number) => {
-    setLocation("/?signup=1");
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
+    setLocalBillVotes((current) => current.filter((id) => id !== billId));
+    setLocalBillVoteIncrements((current) => ({
+      ...current,
+      [billId]: Math.min((current[billId] || 0) - 1, 0),
+    }));
+    if (localBillAgainstVotes.includes(billId)) {
+      setLocalBillAgainstVotes((current) => current.filter((id) => id !== billId));
+      toast.success("×”×”×¦×‘×¢×” ×‘×•×˜×œ×”");
+      return;
+    }
+    setLocalBillAgainstVotes((current) => [...current, billId]);
+    if (!useDemoData) {
+      voteBillMutation.mutate({ billId, userId: demoUser.id });
+    } else {
+      toast.success("×”×§×•×œ ×©×œ×š × ×¨×©×!");
+    }
   };
 
   const handleVoteQuestion = (questionId: number) => {
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
     if (userQuestionVotes.includes(questionId)) {
       setLocalQuestionVotes((current) => current.filter((id) => id !== questionId));
       setLocalQuestionVoteIncrements((current) => ({
@@ -464,6 +517,10 @@ export default function MK121() {
   };
 
   const handleSupportBill = (billId: number) => {
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
     if (userBillSupports.includes(billId)) {
       removeBillSupportMutation.mutate({ billId, userId: demoUser.id });
     } else {
@@ -472,11 +529,21 @@ export default function MK121() {
   };
 
   const handleSupportQuestion = (questionId: number) => {
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
     if (userQuestionSupports.includes(questionId)) {
       removeQuestionSupportMutation.mutate({ questionId, userId: demoUser.id });
     } else {
       supportQuestionMutation.mutate({ questionId, userId: demoUser.id });
     }
+  };
+  const requireSignupForActivity = () => {
+    if (loading) return true;
+    if (isAuthenticated) return false;
+    setLocation("/?signup=1");
+    return true;
   };
 
   // Public access - no authentication required for demo
@@ -526,7 +593,10 @@ export default function MK121() {
             </div>
             {cycle && (
               <Button
-                onClick={() => setShowSubmissionForm(true)}
+                onClick={() => {
+                  if (requireSignupForActivity()) return;
+                  setShowSubmissionForm(true);
+                }}
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
@@ -548,7 +618,10 @@ export default function MK121() {
           <>
             <div className="mb-8 grid gap-3 md:grid-cols-2">
               <Button
-                onClick={() => setLocation("/delegate-selection?channel=mk121")}
+                onClick={() => {
+                  if (requireSignupForActivity()) return;
+                  setLocation("/delegate-selection?channel=mk121");
+                }}
                 className="w-full min-h-16 bg-purple-700 text-lg font-bold text-white hover:bg-purple-800"
               >
                 🗳️ הכוון קולך

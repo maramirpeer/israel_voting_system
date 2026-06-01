@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { ArrowLeft, FileText, Scale } from "lucide-react";
 import { useState } from "react";
@@ -42,6 +43,7 @@ const readJson = <T,>(key: string, fallback: T): T => {
 };
 
 export default function MK121VoteRouting() {
+  const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
   const billAssignment = readJson<MK121Assignment>(MK121_ASSIGNMENT_KEY, { type: "direct" });
   const [billDirectOverrides, setBillDirectOverrides] = useState<Record<string, boolean>>(() =>
@@ -68,10 +70,18 @@ export default function MK121VoteRouting() {
   };
 
   const setBillDirect = (billId: number) => {
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
     saveBillDirectOverrides({ ...billDirectOverrides, [String(billId)]: true });
   };
 
   const setBillDelegated = (billId: number) => {
+    if (!isAuthenticated) {
+      setLocation("/?signup=1");
+      return;
+    }
     const next = { ...billDirectOverrides };
     delete next[String(billId)];
     saveBillDirectOverrides(next);
@@ -143,7 +153,7 @@ export default function MK121VoteRouting() {
                       </Button>
                     )
                   ) : (
-                    <Button variant="outline" onClick={() => setLocation("/delegate-selection?channel=mk121")} className="md:w-44">
+                    <Button variant="outline" onClick={() => setLocation(isAuthenticated ? "/delegate-selection?channel=mk121" : "/?signup=1")} className="md:w-44">
                       בחר מואצל
                     </Button>
                   )}
@@ -158,7 +168,7 @@ export default function MK121VoteRouting() {
           </div>
         </Card>
 
-        <Button onClick={() => setLocation("/delegate-selection?channel=mk121")} className="w-full bg-purple-700 hover:bg-purple-800">
+        <Button onClick={() => setLocation(isAuthenticated ? "/delegate-selection?channel=mk121" : "/?signup=1")} className="w-full bg-purple-700 hover:bg-purple-800">
           עדכן ניתוב קול להצעות חוק
         </Button>
       </main>
