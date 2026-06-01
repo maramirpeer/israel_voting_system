@@ -3,7 +3,7 @@ import { createHash, randomBytes, randomUUID } from "crypto";
 import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import { count, eq, isNull, or } from "drizzle-orm";
+import { count, eq, isNotNull, isNull, or } from "drizzle-orm";
 import { getDb } from "./db";
 import { memberSignups } from "../drizzle/schema";
 import { getContactEmailTo, isEmailConfigured, sendEmail } from "./email";
@@ -414,6 +414,7 @@ async function getPublicMemberNames() {
           email: memberSignups.email,
         })
         .from(memberSignups)
+        .where(isNotNull(memberSignups.emailConfirmedAt))
         .orderBy(memberSignups.id)
         .limit(publicNamesLimit);
 
@@ -441,7 +442,8 @@ async function getPublicMemberCount() {
     try {
       const [total] = await db
         .select({ value: count() })
-        .from(memberSignups);
+        .from(memberSignups)
+        .where(isNotNull(memberSignups.emailConfirmedAt));
 
       return total?.value || 0;
     } catch (error) {
@@ -450,7 +452,7 @@ async function getPublicMemberCount() {
   }
 
   const store = await readLocalStore();
-  return store.submissions.length;
+  return store.submissions.filter((signup) => signup.emailConfirmedAt).length;
 }
 
 async function getReferralStats(referralCode: string) {
@@ -482,7 +484,8 @@ async function getReferralStats(referralCode: string) {
           referralCode: memberSignups.referralCode,
           referredByCode: memberSignups.referredByCode,
         })
-        .from(memberSignups);
+        .from(memberSignups)
+        .where(isNotNull(memberSignups.emailConfirmedAt));
 
       return buildReferralStatsFromRows(normalizedReferralCode, rows);
     } catch (error) {
@@ -491,7 +494,7 @@ async function getReferralStats(referralCode: string) {
   }
 
   const store = await readLocalStore();
-  return buildReferralStatsFromRows(normalizedReferralCode, store.submissions);
+  return buildReferralStatsFromRows(normalizedReferralCode, store.submissions.filter((signup) => signup.emailConfirmedAt));
 }
 
 async function saveSignup(input: {
