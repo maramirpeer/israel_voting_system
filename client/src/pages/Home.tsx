@@ -572,8 +572,18 @@ ${candidateSenderEmail.trim()}`
               מועמד/ת שחותם/ת על החוזה מתחייב/ת כי אם ייבחר/תיבחר לכנסת, יפעל/תפעל לקידום הצעת החוק
               שתסדיר את הקמת מנגנון <KolMeshutafLink className="text-[#17324d]" /> בכנסת הבאה.
             </p>
+            <Button
+              type="button"
+              onClick={goToCandidateContractTop}
+              variant="outline"
+              className="mb-6 border-[#17324d] text-[#17324d] hover:bg-[#eef6ff]"
+            >
+              קרא/י את החוזה המלא
+            </Button>
             <p className="mb-6 rounded-lg border-r-4 border-[#2f7d5c] bg-[#eef6ef] p-4 text-xl font-bold leading-8 text-[#17324d]">
-              ח״כ עתידי/ת יקר/ה - נבחרת בזכות אמון הציבור! האם תתחייב לשתף את ציבור בוחריך במערכת השלטון?
+              ח״כ עתידי/ת יקר/ה - נבחרת בזכות אמון הציבור!
+              <br />
+              האם תתחייב לשתף את ציבור בוחריך במערכת השלטון?
             </p>
 
           </Card>
