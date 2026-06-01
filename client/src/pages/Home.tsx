@@ -576,24 +576,6 @@ ${candidateSenderEmail.trim()}`
               ח״כ עתידי/ת יקר/ה - נבחרת בזכות אמון הציבור! האם תתחייב לשתף את ציבור בוחריך במערכת השלטון?
             </p>
 
-            <div className="rounded-lg border border-[#d8c79f] bg-[#fbf7ed] p-5">
-              <div className="space-y-4 text-lg leading-8 text-slate-700">
-                <p>
-                  החוזה מציג התחייבות של מועמד/ת לכנסת לראות במנדט הציבורי שליחות מטעם הבוחרים, ולא רכוש אישי, מפלגתי או סיעתי.
-                </p>
-                <p>
-                  מועמד/ת שיחתום/תחתום עליו מתחייב/ת לקדם מנגנון ציבורי, שקוף ואחראי שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
-                </p>
-                <button
-                  type="button"
-                  onClick={goToCandidateContractTop}
-                  className="text-xl font-black text-[#17324d] underline decoration-[#c8a96a] decoration-2 underline-offset-4 transition hover:text-[#1d4f91]"
-                >
-                  קרא עוד
-                </button>
-              </div>
-            </div>
-
             <Dialog open={isCandidateLetterOpen} onOpenChange={setCandidateLetterOpen}>
               <DialogTrigger asChild>
                 <Button className="mt-6 bg-[#17324d] hover:bg-[#1d4f91]">
