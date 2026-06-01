@@ -335,7 +335,7 @@ ${candidateSenderEmail.trim()}`
               ומזמינה אותם להתחייב לפעול להקמת ערוץ השיתוף שלנו, בהיבחרם.
             </p>
             <p className="text-2xl text-[#4a3722] leading-relaxed font-semibold">
-              "לא מחליפים את הממשל אלא מחברים אותו."
+              "לא מחליפים את הממשל אלא גורמים לו להתחבר."
             </p>
           </div>
         </div>
