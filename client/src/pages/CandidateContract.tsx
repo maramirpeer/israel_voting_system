@@ -66,6 +66,9 @@ export default function CandidateContract() {
                 התחייבות זו תחול על הצעת חוק שתונח בפני הכנסת הבאה ותעסוק בהסדרת מנגנון השתתפות ציבורית
                 מחייב, שקוף ואחראי.
               </p>
+              <p className="mt-3">
+                אם חוק <KolMeshutafText className="mx-1 text-[#17324d]" /> לא יוצע, אני מתחייב/ת להציע את החוק בעצמי.
+              </p>
             </div>
 
             <div>
