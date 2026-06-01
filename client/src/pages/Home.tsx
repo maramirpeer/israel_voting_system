@@ -603,7 +603,7 @@ ${candidateSenderEmail.trim()}`
         <div className="container max-w-4xl text-right" dir="rtl">
           <h2 className="mb-4 text-4xl font-bold text-white">מוכן להשתתף?</h2>
           <div className="mb-8 text-xl font-semibold leading-10 text-white">
-            <p className="text-2xl font-black">בניית קבוצת החברים - הפצה</p>
+            <p className="text-2xl font-black">בניין קבוצת החברים - הפצה</p>
             <p className="mt-3">
               כל חבר מקבל קישור ו-QR אישי, וכל מצטרף דרכו מגדיל את מדד ההשפעה שלו. ההפצה בונה את קבוצת החברים, וממנה נפתחת גם האפשרות להשתתפות פעילה דרך הצעת חוק או שאילתא.
             </p>

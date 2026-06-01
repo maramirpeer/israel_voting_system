@@ -148,7 +148,7 @@ ${referralUrl}`, [referralUrl]);
         <header className="grid gap-5 border-b border-[#d8c79f] pb-6 lg:grid-cols-[1fr_auto] lg:items-start">
           <div className="space-y-3 text-right">
             <p className="text-sm font-bold text-[#2f7d5c]">קול משותף</p>
-            <h1 className="text-4xl font-black leading-tight sm:text-5xl">בניית קבוצת החברים - הפצה</h1>
+            <h1 className="text-4xl font-black leading-tight sm:text-5xl">בניין קבוצת החברים - הפצה</h1>
             <p className="max-w-3xl text-lg leading-8 text-[#5a4b38]">
               כל מצטרף מקבל קישור אישי. מי שנרשם דרכך מצטרף לקבוצת החברים שלך, וגם ההזמנות שלו ממשיכות להגדיל את מעגל ההשפעה האזרחי שלך.
             </p>
