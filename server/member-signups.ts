@@ -540,6 +540,72 @@ async function getReferralStats(referralCode: string) {
   return buildReferralStatsFromRows(normalizedReferralCode, store.submissions.filter((signup) => signup.emailConfirmedAt));
 }
 
+async function getConfirmedReferralByEmail(req: Request, email: string) {
+  const normalizedEmail = normalize(email).toLowerCase();
+
+  if (!normalizedEmail) {
+    return null;
+  }
+
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("member referral lookup setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("member referral lookup");
+  }
+
+  if (db) {
+    try {
+      const rows = await db
+        .select({
+          email: memberSignups.email,
+          nationalId: memberSignups.nationalId,
+          referralCode: memberSignups.referralCode,
+          emailConfirmedAt: memberSignups.emailConfirmedAt,
+        })
+        .from(memberSignups)
+        .where(eq(memberSignups.email, normalizedEmail))
+        .limit(1);
+
+      const signup = rows[0];
+      if (!signup?.emailConfirmedAt) {
+        return null;
+      }
+
+      const signupKey = signup.nationalId || createHash("sha256").update(signup.email).digest("hex").slice(0, 32);
+      const referralCode = signup.referralCode || buildReferralCode(signupKey);
+      const referralUrl = buildReferralUrl(req, referralCode);
+
+      return {
+        referralCode,
+        referralUrl,
+        qrImageUrl: buildQrImageUrl(referralUrl),
+      };
+    } catch (error) {
+      handleDbUnavailable("member referral lookup", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  const signup = store.submissions.find((item) => item.email.toLowerCase() === normalizedEmail);
+
+  if (!signup?.emailConfirmedAt) {
+    return null;
+  }
+
+  const signupKey = signup.nationalId || createHash("sha256").update(signup.email).digest("hex").slice(0, 32);
+  const referralCode = signup.referralCode || buildReferralCode(signupKey);
+  const referralUrl = buildReferralUrl(req, referralCode);
+
+  return {
+    referralCode,
+    referralUrl,
+    qrImageUrl: buildQrImageUrl(referralUrl),
+  };
+}
+
 async function saveSignup(input: {
   fullName: string;
   email: string;
@@ -1299,6 +1365,28 @@ export function registerMemberSignupRoutes(app: Express) {
         referralUrl,
         qrImageUrl: referralUrl ? buildQrImageUrl(referralUrl) : "",
       });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.post("/api/member-signups/recover-referral", async (req: Request, res: Response) => {
+    const email = normalize(req.body.email).toLowerCase();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "יש למלא אימייל תקין." });
+      return;
+    }
+
+    try {
+      const referral = await getConfirmedReferralByEmail(req, email);
+
+      if (!referral) {
+        res.status(404).json({ error: "לא נמצאה הרשמה מאושרת למייל הזה. אם נרשמת, יש לאשר קודם את קישור האישור במייל." });
+        return;
+      }
+
+      res.json({ ok: true, ...referral });
     } catch (error) {
       sendSignupRouteError(res, error);
     }
