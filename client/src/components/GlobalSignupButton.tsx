@@ -46,10 +46,14 @@ export function GlobalSignupButton() {
         throw new Error(data.error || "השליחה נכשלה");
       }
 
+      const personalReferralMessage = data.referralUrl && data.referralCode
+        ? ` הקוד האישי שלך: ${data.referralCode}. עמוד השיתוף האישי שלך: ${data.referralUrl}`
+        : "";
+
       setForm({ fullName: "", phone: "", email: "", note: "" });
       setMessage(
         data.isAlreadyConfirmed
-          ? "ההרשמה שלך כבר מאושרת."
+          ? `ההרשמה שלך כבר מאושרת.${personalReferralMessage}`
           : data.confirmationEmailSent
             ? "שלחנו אליך מייל עם קישור לאישור ההצטרפות."
             : "הפרטים נשמרו, אבל מייל האישור לא נשלח כרגע.",

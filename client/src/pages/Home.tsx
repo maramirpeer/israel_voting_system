@@ -265,8 +265,12 @@ ${candidateSenderEmail.trim()}`
         setMemberCount(data.count);
       }
 
+      const personalReferralMessage = data.referralUrl && data.referralCode
+        ? ` הקוד האישי שלך: ${data.referralCode}. עמוד השיתוף האישי שלך: ${data.referralUrl}`
+        : "";
+
       const message = data.isAlreadyConfirmed
-        ? `הרשומה שלך כבר מאושרת. המד עומד על ${data.count} נרשמים.`
+        ? `הרשומה שלך כבר מאושרת. המד עומד על ${data.count} נרשמים.${personalReferralMessage}`
         : data.confirmationEmailSent
           ? "שלחנו אליך מייל עם קישור לאישור ההצטרפות. ההצטרפות תיספר אחרי לחיצה על הקישור."
           : "הפרטים נשמרו, אבל מייל האישור לא נשלח כרגע. ננסה שוב לאחר חיבור שירות המייל בשרת.";
