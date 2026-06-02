@@ -20,7 +20,7 @@ export default function GateFifty() {
             className="mb-10 border-[#c8a96a] bg-white/70 text-[#17324d] hover:bg-white"
           >
             <ArrowRight className="ml-2 h-4 w-4" />
-            חזרה לפתיח
+            חזרה לאפילוג
           </Button>
 
           <div className="mx-auto max-w-4xl">
@@ -46,7 +46,7 @@ export default function GateFifty() {
             שבו התיקון הפרטי והציבורי יכול להפוך לקבלה של תורה, משמעות וכיוון.
           </p>
           <p className="mt-4 text-lg font-semibold leading-8 text-[#17324d]">
-            קול משותף נולד בחדר לידה בחג השבועות.
+            קול משותף נולד בחג השבועות 2026.
           </p>
         </div>
 
