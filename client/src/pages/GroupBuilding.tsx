@@ -242,7 +242,8 @@ ${referralUrl}`, [referralUrl]);
       }
 
       setPersonalLoaderOpen(false);
-      window.location.assign(`/group-building?ref=${encodeURIComponent(nextReferralCode)}`);
+      window.history.pushState(null, "", `/group-building?ref=${encodeURIComponent(nextReferralCode)}`);
+      window.location.reload();
     } catch (error) {
       setPersonalLoaderMessage(error instanceof Error ? error.message : "טעינת הדף האישי נכשלה.");
     } finally {
