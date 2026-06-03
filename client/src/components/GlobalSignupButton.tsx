@@ -140,7 +140,7 @@ export function GlobalSignupButton() {
         data.isAlreadyConfirmed
           ? `ההרשמה שלך כבר מאושרת.${personalReferralMessage}`
           : data.confirmationEmailSent
-            ? "שלחנו אליך מייל עם קישור לאישור ההצטרפות."
+            ? "שלחנו אליך מייל עם קישור לאישור ההצטרפות. בדקו גם את תיקיית הספאם/ג׳אנק."
             : "הפרטים נשמרו, אבל מייל האישור לא נשלח כרגע.",
       );
     } catch (error) {
