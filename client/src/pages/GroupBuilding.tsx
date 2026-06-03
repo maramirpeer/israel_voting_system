@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BadgeCheck, Copy, Home, Link2, MessageCircle, Network, QrCode, Send, Share2, Users, Zap } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { BadgeCheck, Copy, Home, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, Send, Share2, Users, Zap } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
 const fallbackReferralCode = "KM-R7K92A";
@@ -52,14 +56,22 @@ type ReferralStats = {
   directSignups: number;
   totalCluster: number;
   influenceScore: number;
+  directSignupNames: string[];
+  directSignupPreviewName: string;
   levels: typeof levels;
 };
 
 export default function GroupBuilding() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [statusMessage, setStatusMessage] = useState("");
-  const referralCodeFromUrl = useMemo(() => normalizeReferralCode(new URLSearchParams(window.location.search).get("ref")), []);
+  const [isPersonalLoaderOpen, setPersonalLoaderOpen] = useState(false);
+  const [personalEmail, setPersonalEmail] = useState("");
+  const [personalLoaderMessage, setPersonalLoaderMessage] = useState("");
+  const [isPersonalLoaderSubmitting, setPersonalLoaderSubmitting] = useState(false);
+  const searchParams = useMemo(() => new URLSearchParams(location.split("?")[1] || window.location.search), [location]);
+  const referralCodeFromUrl = useMemo(() => normalizeReferralCode(searchParams.get("ref")), [searchParams]);
   const hasPersonalReferralCode = referralCodeFromUrl.length > 0;
+  const showDirectDetails = hasPersonalReferralCode && searchParams.get("direct") === "1";
   const referralCode = referralCodeFromUrl || fallbackReferralCode;
   const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
   const referralUrl = useMemo(() => buildReferralUrl(referralCode), [referralCode]);
@@ -82,6 +94,9 @@ ${referralUrl}`, [referralUrl]);
   const tree = useMemo(() => buildTree(referralCode), [referralCode]);
   const totalCluster = hasPersonalReferralCode && referralStats ? referralStats.totalCluster : displayLevels.reduce((sum, item) => sum + item.count, 0);
   const totalCredit = hasPersonalReferralCode && referralStats ? referralStats.influenceScore : displayLevels.reduce((sum, item) => sum + item.credit, 0);
+  const directSignupNames = referralStats?.directSignupNames || [];
+  const directSignupPreviewName = referralStats?.directSignupPreviewName || directSignupNames[0] || "";
+  const directDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}&direct=1`;
 
   useEffect(() => {
     if (!hasPersonalReferralCode) {
@@ -104,6 +119,8 @@ ${referralUrl}`, [referralUrl]);
             directSignups: data.directSignups,
             totalCluster: data.totalCluster,
             influenceScore: data.influenceScore,
+            directSignupNames: Array.isArray(data.directSignupNames) ? data.directSignupNames : [],
+            directSignupPreviewName: typeof data.directSignupPreviewName === "string" ? data.directSignupPreviewName : "",
             levels: data.levels,
           });
         }
@@ -142,6 +159,44 @@ ${referralUrl}`, [referralUrl]);
     window.open(`https://wa.me/?text=${encodeURIComponent(inviteText)}`, "_blank", "noopener,noreferrer");
   };
 
+  const loadPersonalGroupPage = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const email = personalEmail.trim();
+
+    if (!email) {
+      setPersonalLoaderMessage("צריך להזין אימייל רשום כדי לטעון את הדף האישי.");
+      return;
+    }
+
+    setPersonalLoaderSubmitting(true);
+    setPersonalLoaderMessage("");
+
+    try {
+      const response = await fetch("/api/member-signups/recover-referral", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "לא נמצאה הרשמה מאושרת למייל הזה.");
+      }
+
+      const nextReferralCode = normalizeReferralCode(data.referralCode || "");
+      if (!nextReferralCode) {
+        throw new Error("נמצא חבר רשום, אבל לא נמצא קישור אישי.");
+      }
+
+      setPersonalLoaderOpen(false);
+      setLocation(`/group-building?ref=${encodeURIComponent(nextReferralCode)}`);
+    } catch (error) {
+      setPersonalLoaderMessage(error instanceof Error ? error.message : "טעינת הדף האישי נכשלה.");
+    } finally {
+      setPersonalLoaderSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fbf7ed_0%,#ffffff_44%,#eef6ff_100%)] px-4 py-8 text-[#17324d]" dir="rtl">
       <div className="mx-auto max-w-6xl space-y-8">
@@ -159,13 +214,61 @@ ${referralUrl}`, [referralUrl]);
           </Button>
         </header>
 
+        <Card
+          className={`border p-5 ${
+            hasPersonalReferralCode
+              ? "border-[#2f7d5c] bg-[#eef8f2]"
+              : "border-[#c8a96a] bg-[#fff9e8]"
+          }`}
+        >
+          <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="space-y-2 text-right">
+              <p className={`text-sm font-black ${hasPersonalReferralCode ? "text-[#2f7d5c]" : "text-[#9a6a12]"}`}>
+                {hasPersonalReferralCode ? "דף אישי אמיתי" : "אלו נתוני דמה"}
+              </p>
+              <p className="text-base font-semibold leading-7 text-[#4a3722]">
+                {hasPersonalReferralCode
+                  ? "המספרים, הקוד והקישור בדף הזה מחוברים לבניין ההשפעה האישית שלך על ההצטרפות לקבוצה."
+                  : "המספרים והקוד שמופיעים כאן הם להמחשה בלבד. כדי לראות נתונים אמיתיים צריך לעבור לבניין ההשפעה האישית על ההצטרפות לקבוצה."}
+              </p>
+            </div>
+            {!hasPersonalReferralCode && (
+              <Button onClick={() => setPersonalLoaderOpen(true)} className="gap-2 bg-[#1d4f91] hover:bg-[#173f74]">
+                <LogIn className="h-4 w-4" />
+                מעבר לבניין ההשפעה האישית
+              </Button>
+            )}
+          </div>
+        </Card>
+
         <section className="grid gap-4 md:grid-cols-3">
           <Card className="border-[#d8c79f] bg-white/92 p-5">
             <div className="flex items-center justify-between">
               <Users className="h-8 w-8 text-[#1d4f91]" />
               <p className="text-sm font-bold text-[#5a4b38]">הצטרפו ישירות</p>
             </div>
-            <p className="mt-3 text-4xl font-black">{displayLevels[0].count.toLocaleString("he-IL")}</p>
+            <HoverCard openDelay={180}>
+              <HoverCardTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => setLocation(directDetailsPath)}
+                  className="mt-3 block text-4xl font-black leading-none text-[#17324d] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d4f91]"
+                  aria-label="פתיחת פירוט המצטרפים הישירים"
+                >
+                  {displayLevels[0].count.toLocaleString("he-IL")}
+                </button>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-72 border-[#d8c79f] bg-white text-right" side="bottom">
+                {directSignupPreviewName ? (
+                  <div className="space-y-2">
+                    <p className="text-xs font-bold text-[#5a4b38]">אחד מהמצטרפים ישירות דרכך</p>
+                    <p className="text-lg font-black text-[#17324d]">{directSignupPreviewName}</p>
+                  </div>
+                ) : (
+                  <p className="text-sm font-semibold text-[#5a4b38]">עדיין אין שמות להצגה.</p>
+                )}
+              </HoverCardContent>
+            </HoverCard>
           </Card>
           <Card className="border-[#d8c79f] bg-white/92 p-5">
             <div className="flex items-center justify-between">
@@ -182,6 +285,34 @@ ${referralUrl}`, [referralUrl]);
             <p className="mt-3 text-4xl font-black">{totalCredit.toLocaleString("he-IL", { maximumFractionDigits: 1 })}</p>
           </Card>
         </section>
+
+        {showDirectDetails && (
+          <Card className="border-[#d8c79f] bg-white/95 p-6">
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <List className="h-7 w-7 text-[#1d4f91]" />
+              <div className="text-right">
+                <h2 className="text-2xl font-bold">המצטרפים הישירים שלי</h2>
+                <p className="mt-1 text-sm font-semibold text-[#5a4b38]">
+                  מי שאישרו הצטרפות דרך הקישור האישי שלך.
+                </p>
+              </div>
+            </div>
+            {directSignupNames.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {directSignupNames.map((name, index) => (
+                  <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
+                    <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
+                    <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
+                עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
+              </div>
+            )}
+          </Card>
+        )}
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Card className="border-[#d8c79f] bg-white/95 p-6">
@@ -326,6 +457,41 @@ ${referralUrl}`, [referralUrl]);
           </Card>
         </section>
       </div>
+
+      <Dialog open={isPersonalLoaderOpen} onOpenChange={setPersonalLoaderOpen}>
+        <DialogContent className="max-w-md border-[#d8c79f] bg-[#fbf7ed] text-right" dir="rtl">
+          <DialogHeader className="text-right">
+            <DialogTitle className="text-2xl font-black text-[#17324d]">מעבר לבניין ההשפעה האישית</DialogTitle>
+            <DialogDescription className="leading-7 text-[#5a4b38]">
+              הזינו אימייל רשום כדי לפתוח את הדף האישי עם הקוד, ההצטרפויות והמדדים האמיתיים.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={loadPersonalGroupPage} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="personal-group-email">אימייל רשום</Label>
+              <Input
+                id="personal-group-email"
+                type="email"
+                value={personalEmail}
+                onChange={(event) => setPersonalEmail(event.target.value)}
+                autoComplete="email"
+                placeholder="name@example.com"
+                className="text-left"
+                dir="ltr"
+              />
+            </div>
+            {personalLoaderMessage && (
+              <p className="rounded-md border border-[#d8c79f] bg-white/80 p-3 text-sm font-bold text-[#9a2a2a]">
+                {personalLoaderMessage}
+              </p>
+            )}
+            <Button type="submit" disabled={isPersonalLoaderSubmitting} className="w-full gap-2 bg-[#1d4f91] hover:bg-[#173f74]">
+              {isPersonalLoaderSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+              טעינת הדף האישי
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
