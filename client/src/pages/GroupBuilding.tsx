@@ -242,7 +242,7 @@ ${referralUrl}`, [referralUrl]);
       }
 
       setPersonalLoaderOpen(false);
-      setLocation(`/group-building?ref=${encodeURIComponent(nextReferralCode)}`);
+      window.location.assign(`/group-building?ref=${encodeURIComponent(nextReferralCode)}`);
     } catch (error) {
       setPersonalLoaderMessage(error instanceof Error ? error.message : "טעינת הדף האישי נכשלה.");
     } finally {
