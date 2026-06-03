@@ -18,6 +18,8 @@ import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer,
 const hoursFromNow = (hours: number) => new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
 const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 const MIN_FINAL_PUBLIC_VOTES = 40001;
+const REJECTION_REVIEW_QUORUM = 40000;
+const FINAL_REJECTION_MAJORITY = 2500000;
 
 const ensureFinalPublicVotes = (status: string, votesFor: number, votesAgainst: number) => {
   if (status !== "approved" && status !== "rejected") {
@@ -37,6 +39,53 @@ const ensureFinalPublicVotes = (status: string, votesFor: number, votesAgainst: 
     votesFor: normalizedFor,
     votesAgainst: MIN_FINAL_PUBLIC_VOTES - normalizedFor,
   };
+};
+
+const buildRejectedVoteRecord = (decision: any, fallbackVotesFor: number, fallbackVotesAgainst: number) => {
+  const sourceVotesFor = Number(decision.publicVotesFor ?? decision.votesFor ?? fallbackVotesFor);
+  const sourceVotesAgainst = Number(decision.publicVotesAgainst ?? decision.votesAgainst ?? fallbackVotesAgainst);
+  const sourceTotal = Math.max(1, sourceVotesFor + sourceVotesAgainst);
+  const baseAgainstRatio = Math.max(0.58, sourceVotesAgainst / sourceTotal);
+  const firstTotal = Math.max(REJECTION_REVIEW_QUORUM, sourceTotal);
+  const firstAgainst = Math.round(firstTotal * baseAgainstRatio);
+  const secondTotal = Math.max(REJECTION_REVIEW_QUORUM, firstTotal + 5200 + ((decision.id * 317) % 6800));
+  const secondAgainstRatio = Math.min(0.86, baseAgainstRatio + 0.07);
+  const secondAgainst = Math.round(secondTotal * secondAgainstRatio);
+  const finalAgainst = FINAL_REJECTION_MAJORITY + 1 + ((decision.id * 977) % 240000);
+  const finalFor = Math.round(finalAgainst * (0.58 + ((decision.id % 5) * 0.035)));
+
+  return [
+    {
+      stage: "הצבעה 1",
+      title: "התנגדות ציבורית ראשונה",
+      votesFor: firstTotal - firstAgainst,
+      votesAgainst: firstAgainst,
+      totalVotes: firstTotal,
+      threshold: REJECTION_REVIEW_QUORUM,
+      thresholdLabel: "נוכחות מינימלית: 40,000 מצביעים",
+      result: firstAgainst > firstTotal / 2 ? "נדחתה בסבב ראשון" : "לא נדחתה",
+    },
+    {
+      stage: "הצבעה 2",
+      title: "הצבעה חוזרת לאחר נימוק השר",
+      votesFor: secondTotal - secondAgainst,
+      votesAgainst: secondAgainst,
+      totalVotes: secondTotal,
+      threshold: REJECTION_REVIEW_QUORUM,
+      thresholdLabel: "נוכחות מינימלית: 40,000 מצביעים",
+      result: secondAgainst > secondTotal / 2 ? "נדחתה גם בסבב שני" : "לא נדחתה",
+    },
+    {
+      stage: "הצבעה 3",
+      title: "הצבעה סופית ברוב כולל",
+      votesFor: finalFor,
+      votesAgainst: finalAgainst,
+      totalVotes: finalFor + finalAgainst,
+      threshold: FINAL_REJECTION_MAJORITY,
+      thresholdLabel: "רף דחייה סופי: יותר מ-2.5 מיליון קולות נגד",
+      result: "נדחתה סופית",
+    },
+  ];
 };
 
 const knessetBillArchive = [
@@ -790,12 +839,17 @@ export default function Governance() {
                 {displayedDecisions
                   .filter((d) => !selectedMinistry || d.ministryId === selectedMinistry)
                   .map((decision) => {
-                    // Use same formula as overview tab for consistent vote numbers
                     const baseVotes = 400 + ((decision.id * 137) % 9600); // 400-10000
                     const forPercentage = ((decision.id * 17) % 100); // 0-99%
                     const userVote = userVotes[decision.id];
-                    const rawVotesFor = Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "for" ? 1 : 0);
-                    const rawVotesAgainst = baseVotes - Math.floor(baseVotes * (forPercentage / 100)) + (userVote === "against" ? 1 : 0);
+                    const fallbackVotesFor = Math.floor(baseVotes * (forPercentage / 100));
+                    const fallbackVotesAgainst = baseVotes - fallbackVotesFor;
+                    const decisionVotes = decision as any;
+                    const storedVotesFor = Number(decisionVotes.publicVotesFor ?? decisionVotes.votesFor ?? NaN);
+                    const storedVotesAgainst = Number(decisionVotes.publicVotesAgainst ?? decisionVotes.votesAgainst ?? NaN);
+                    const hasStoredVoteCounts = Number.isFinite(storedVotesFor) && Number.isFinite(storedVotesAgainst);
+                    const rawVotesFor = (hasStoredVoteCounts ? storedVotesFor : fallbackVotesFor) + (userVote === "for" ? 1 : 0);
+                    const rawVotesAgainst = (hasStoredVoteCounts ? storedVotesAgainst : fallbackVotesAgainst) + (userVote === "against" ? 1 : 0);
                     const normalizedVotes = ensureFinalPublicVotes(decision.status, rawVotesFor, rawVotesAgainst);
                     const votesFor = normalizedVotes.votesFor;
                     const votesAgainst = normalizedVotes.votesAgainst;
@@ -803,6 +857,9 @@ export default function Governance() {
                     const percentageFor = (votesFor / totalVotes) * 100;
                     const percentageAgainst = (votesAgainst / totalVotes) * 100;
                     const isFinalDecision = decision.status === "approved" || decision.status === "rejected";
+                    const rejectedVoteRecord = decision.status === "rejected"
+                      ? buildRejectedVoteRecord(decision, rawVotesFor, rawVotesAgainst)
+                      : [];
                     return (
                       <Card key={decision.id} className={`p-6 ${getCategoryColor(decision.category)}`}>
                         <div className="flex justify-between items-start mb-3">
@@ -825,7 +882,77 @@ export default function Governance() {
                           )}
                         </div>
 
+                        {decision.status === "rejected" && (
+                          <div className="my-4 space-y-4 rounded-lg bg-white p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div className="text-right">
+                                <h4 className="font-bold text-slate-900">תיעוד הצבעות הדחייה</h4>
+                                <p className="text-sm text-slate-600">
+                                  שלוש הצבעות: שתי הצבעות ציבוריות בנוכחות 40,000 מצביעים, והצבעה שלישית סופית ברוב כולל מעל 2.5 מיליון.
+                                </p>
+                              </div>
+                              <Badge className="bg-red-100 text-red-700 border-red-200">נדחתה לפי מנגנון מלא</Badge>
+                            </div>
+
+                            <div className="h-56 rounded-md border border-red-100 bg-red-50/40 p-3">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={rejectedVoteRecord} margin={{ top: 8, right: 10, left: 10, bottom: 0 }}>
+                                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                  <XAxis dataKey="stage" tick={{ fontSize: 11 }} />
+                                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(value) => Number(value).toLocaleString("he-IL")} />
+                                  <Tooltip formatter={(value) => Number(value).toLocaleString("he-IL")} />
+                                  <Bar dataKey="totalVotes" name="מניין קולות" radius={[4, 4, 0, 0]}>
+                                    {rejectedVoteRecord.map((entry) => (
+                                      <Cell key={entry.stage} fill={entry.stage === "הצבעה 3" ? "#991b1b" : "#dc2626"} />
+                                    ))}
+                                  </Bar>
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+
+                            <div className="grid gap-3 lg:grid-cols-3">
+                              {rejectedVoteRecord.map((round) => {
+                                const roundForPercentage = (round.votesFor / round.totalVotes) * 100;
+                                const roundAgainstPercentage = (round.votesAgainst / round.totalVotes) * 100;
+                                const thresholdPercentage = Math.min(100, (round.totalVotes / round.threshold) * 100);
+
+                                return (
+                                  <div key={round.stage} className="rounded-md border border-red-100 bg-red-50/50 p-3">
+                                    <div className="mb-3 flex items-start justify-between gap-3">
+                                      <Badge variant="outline" className="border-red-200 text-red-700">{round.stage}</Badge>
+                                      <div className="text-right">
+                                        <p className="font-bold text-slate-900">{round.title}</p>
+                                        <p className="text-xs font-semibold text-red-700">{round.result}</p>
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2 text-sm">
+                                      <div className="flex justify-between gap-2">
+                                        <span className="font-bold text-green-700">בעד: {round.votesFor.toLocaleString("he-IL")}</span>
+                                        <span className="text-slate-500">{roundForPercentage.toFixed(1)}%</span>
+                                      </div>
+                                      <Progress value={roundForPercentage} className="h-2" />
+                                      <div className="flex justify-between gap-2">
+                                        <span className="font-bold text-red-700">נגד: {round.votesAgainst.toLocaleString("he-IL")}</span>
+                                        <span className="text-slate-500">{roundAgainstPercentage.toFixed(1)}%</span>
+                                      </div>
+                                      <Progress value={roundAgainstPercentage} className="h-2" />
+                                      <div className="pt-2">
+                                        <div className="mb-1 flex justify-between gap-2 text-xs font-semibold text-slate-600">
+                                          <span>{round.thresholdLabel}</span>
+                                          <span>{round.totalVotes.toLocaleString("he-IL")}</span>
+                                        </div>
+                                        <Progress value={thresholdPercentage} className="h-2" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
                         {/* Voting Stats */}
+                        {decision.status !== "rejected" && (
                         <div className="bg-white p-4 rounded-lg my-4 space-y-3">
                           <div>
                             <div className="flex justify-between mb-1">
@@ -843,6 +970,7 @@ export default function Governance() {
                             <Progress value={percentageAgainst} className="h-2" />
                           </div>
                         </div>
+                        )}
 
                         {userVote && (
                           <div className={`rounded-md border p-3 text-sm font-bold ${
