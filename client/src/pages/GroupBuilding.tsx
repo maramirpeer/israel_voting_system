@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BadgeCheck, Copy, Home, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, Send, Share2, Users, Zap } from "lucide-react";
+import { BadgeCheck, Copy, Home, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, RotateCcw, Send, Share2, Shield, Users, Vote, Zap } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
@@ -40,6 +40,24 @@ const actions = [
   { title: "מעתיקים קישור", text: "הקישור מזהה מי הגיע דרכך ומחבר אותו לקבוצת החברים שלך.", icon: Link2 },
   { title: "שולחים לחברים", text: "הזמנה אישית עובדת טוב יותר מפרסום כללי. עדיף להתחיל מ-5 אנשים קרובים.", icon: MessageCircle },
   { title: "הקבוצה גדלה", text: "גם מי שחבריך מזמינים ממשיך להיספר כחלק ממעגל ההשפעה.", icon: Network },
+];
+
+const delegationPrinciples = [
+  {
+    title: "הצבעה עצמית",
+    text: "ברירת המחדל היא שכל חבר מצביע בעצמו בכל הצבעה פנימית של קבוצת החברים.",
+    icon: Vote,
+  },
+  {
+    title: "האצלה לחבר",
+    text: "חבר יכול להאציל את קולו לחבר אחר בקבוצה, לכל ההצבעות או רק לנושא מסוים.",
+    icon: Users,
+  },
+  {
+    title: "הקול נשאר של בעליו",
+    text: "בכל שלב הקול יכול לחזור לבעליו, לפני הצבעה או בזמן שינוי העדפה.",
+    icon: RotateCcw,
+  },
 ];
 
 const buildTree = (referralCode: string) => [
@@ -440,6 +458,43 @@ ${referralUrl}`, [referralUrl]);
             </Card>
           ))}
         </section>
+
+        <Card className="border-[#c8a96a] bg-white/95 p-6">
+          <div className="grid gap-6 lg:grid-cols-[1fr_280px] lg:items-start">
+            <div className="space-y-4 text-right">
+              <div className="flex items-center justify-between gap-3">
+                <Shield className="h-8 w-8 text-[#2f7d5c]" />
+                <div>
+                  <p className="text-sm font-black text-[#2f7d5c]">מערכת קבלת החלטות קבוצתית</p>
+                  <h2 className="mt-1 text-3xl font-black text-[#17324d]">האצלת קולות והצבעות פנימיות</h2>
+                </div>
+              </div>
+              <p className="max-w-4xl text-lg leading-8 text-[#4a3722]">
+                קבוצת החברים צריכה לקבל החלטות לפי רוב מתוך החברים הרשומים. כל חבר יכול להצביע בעצמו,
+                או להאציל את קולו לחבר אחר שהוא סומך עליו לטובת הצבעות הקבוצה.
+              </p>
+              <div className="grid gap-3 md:grid-cols-3">
+                {delegationPrinciples.map(({ title, text, icon: Icon }) => (
+                  <div key={title} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/70 p-4">
+                    <Icon className="h-6 w-6 text-[#1d4f91]" />
+                    <h3 className="mt-3 text-lg font-black text-[#17324d]">{title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#5a4b38]">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-md border border-[#d8c79f] bg-[#eef6ff] p-5 text-center">
+              <p className="text-sm font-black text-[#1d4f91]">חברי קבוצה רשומים כרגע</p>
+              <p className="mt-2 text-5xl font-black text-[#17324d]">2</p>
+              <p className="mt-3 text-sm font-semibold leading-6 text-[#4a3722]">
+                החלטה קבוצתית מתקבלת כאשר רוב החברים הרשומים מצביעים בעדה, ישירות או דרך קול שהואצל.
+              </p>
+              <div className="mt-4 rounded bg-white/80 p-3 text-sm font-bold text-[#2f7d5c]">
+                רוב נדרש כרגע: 2 מתוך 2
+              </div>
+            </div>
+          </div>
+        </Card>
 
         <Card className="border-[#d8c79f] bg-[#17324d] p-6 text-white">
           <div className="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
