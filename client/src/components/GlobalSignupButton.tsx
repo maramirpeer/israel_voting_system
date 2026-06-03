@@ -21,7 +21,6 @@ export function GlobalSignupButton() {
   const [memberEmail, setMemberEmail] = useState("");
   const [memberEmailTypedPrefix, setMemberEmailTypedPrefix] = useState("");
   const [memberEmailSuggestions, setMemberEmailSuggestions] = useState<string[]>([]);
-  const [showMemberEmailSuggestions, setShowMemberEmailSuggestions] = useState(false);
   const memberEmailInputRef = useRef<HTMLInputElement | null>(null);
   const [form, setForm] = useState({
     fullName: "",
@@ -51,7 +50,6 @@ export function GlobalSignupButton() {
         .then((data) => {
           const emails = Array.isArray(data?.emails) ? data.emails : [];
           setMemberEmailSuggestions(emails);
-          setShowMemberEmailSuggestions(emails.length > 0);
         })
         .catch(() => undefined);
     }, 160);
@@ -194,8 +192,7 @@ export function GlobalSignupButton() {
                 ref={memberEmailInputRef}
                 type="text"
                 inputMode="email"
-                list="member-login-email-suggestions"
-                autoComplete="email"
+                autoComplete="off"
                 value={memberEmail}
                 onChange={(event) => {
                   const nextValue = event.target.value;
@@ -203,34 +200,9 @@ export function GlobalSignupButton() {
                   const typedPrefix = nextValue.slice(0, selectionStart);
                   setMemberEmail(nextValue);
                   setMemberEmailTypedPrefix(typedPrefix);
-                  setShowMemberEmailSuggestions(true);
                 }}
-                onFocus={() => setShowMemberEmailSuggestions(memberEmailSuggestions.length > 0)}
                 required
               />
-              <datalist id="member-login-email-suggestions">
-                {memberEmailSuggestions.map((email) => (
-                  <option key={email} value={email} />
-                ))}
-              </datalist>
-              {showMemberEmailSuggestions && memberEmailSuggestions.length > 0 && (
-                <div className="rounded-md border border-[#d8c79f] bg-white shadow-sm" dir="ltr">
-                  {memberEmailSuggestions.map((email) => (
-                    <button
-                      key={email}
-                      type="button"
-                      className="block w-full px-3 py-2 text-left text-sm font-semibold text-[#17324d] hover:bg-[#eef6ff] focus:bg-[#eef6ff] focus:outline-none"
-                      onClick={() => {
-                        setMemberEmail(email);
-                        setMemberEmailTypedPrefix(email);
-                        setShowMemberEmailSuggestions(false);
-                      }}
-                    >
-                      {email}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
             {memberLoginMessage && <p className="rounded-md bg-[#eef6ef] p-3 text-sm font-medium text-[#17324d]">{memberLoginMessage}</p>}
             {memberReferralUrl && (
