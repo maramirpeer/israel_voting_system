@@ -652,6 +652,11 @@ ${candidateSenderEmail.trim()}`
             <p className="mb-3 text-sm font-bold text-[#2f7d5c]">חוזה ציבורי</p>
             <h2 className="mb-4 text-3xl font-bold text-[#17324d]">חוזה למועמדים לכנסת הבאה</h2>
             <p className="mb-5 text-lg leading-8 text-slate-700">
+              הזמן היחידי בו הציבור לוקח חלק מעשי במערכת הדמוקרטית הוא בבחירות, לכן זה הזמן של
+              <KolMeshutafLink className="text-[#17324d]" /> לקבל את תשומת הלב וההתגייסות של חברי הכנסת העתידיים,
+              בכדי שלציבור תהיה מעורבות רציפה במערכת הדמוקרטית והקשר בין הציבור לנבחריו יישמר.
+            </p>
+            <p className="mb-5 text-lg leading-8 text-slate-700">
               מועמד/ת שחותם/ת על החוזה מתחייב/ת כי אם ייבחר/תיבחר לכנסת, יפעל/תפעל לקידום הצעת החוק
               שתסדיר את הקמת מנגנון <KolMeshutafLink className="text-[#17324d]" /> בכנסת הבאה.
             </p>
