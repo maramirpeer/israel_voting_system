@@ -25,6 +25,8 @@ const getBillDisplayPriority = (title: string) => {
 };
 
 const demoBills: MK121Bill[] = [
+  { id: 207, title: "איסור כהונת ח״כ שהורשע בפלילים", votes: 18720 },
+  { id: 208, title: "דע למי הולך כספך", votes: 16490 },
   { id: 201, title: "הגבלת זמן ראש הממשלה", votes: 21980 },
   { id: 202, title: "כל ח״כ חייב להצביע", votes: 17640 },
   { id: 205, title: "הקשחת חוקי היסוד", votes: 16890 },
