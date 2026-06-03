@@ -5,7 +5,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BadgeCheck, Copy, Home, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, Send, Share2, Users, Zap } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
 const fallbackReferralCode = "KM-R7K92A";
@@ -66,8 +66,11 @@ export default function GroupBuilding() {
   const [statusMessage, setStatusMessage] = useState("");
   const [isPersonalLoaderOpen, setPersonalLoaderOpen] = useState(false);
   const [personalEmail, setPersonalEmail] = useState("");
+  const [personalEmailTypedPrefix, setPersonalEmailTypedPrefix] = useState("");
+  const [personalEmailSuggestions, setPersonalEmailSuggestions] = useState<string[]>([]);
   const [personalLoaderMessage, setPersonalLoaderMessage] = useState("");
   const [isPersonalLoaderSubmitting, setPersonalLoaderSubmitting] = useState(false);
+  const personalEmailInputRef = useRef<HTMLInputElement | null>(null);
   const searchParams = useMemo(() => new URLSearchParams(location.split("?")[1] || window.location.search), [location]);
   const referralCodeFromUrl = useMemo(() => normalizeReferralCode(searchParams.get("ref")), [searchParams]);
   const hasPersonalReferralCode = referralCodeFromUrl.length > 0;
@@ -97,6 +100,56 @@ ${referralUrl}`, [referralUrl]);
   const directSignupNames = referralStats?.directSignupNames || [];
   const directSignupPreviewName = referralStats?.directSignupPreviewName || directSignupNames[0] || "";
   const directDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}&direct=1`;
+
+  useEffect(() => {
+    const emailPrefix = personalEmailTypedPrefix.trim().toLowerCase();
+
+    if (!isPersonalLoaderOpen || emailPrefix.length < 2) {
+      setPersonalEmailSuggestions([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      fetch(`/api/member-signups/email-suggestions?q=${encodeURIComponent(emailPrefix)}`, {
+        signal: controller.signal,
+      })
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          const emails = Array.isArray(data?.emails) ? data.emails : [];
+          setPersonalEmailSuggestions(emails);
+        })
+        .catch(() => undefined);
+    }, 160);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [isPersonalLoaderOpen, personalEmailTypedPrefix]);
+
+  useEffect(() => {
+    const typedEmail = personalEmailTypedPrefix.trim().toLowerCase();
+
+    if (!isPersonalLoaderOpen || typedEmail.length < 2) {
+      return;
+    }
+
+    const completion = personalEmailSuggestions.find((email) => {
+      const normalizedEmail = email.toLowerCase();
+      return normalizedEmail.startsWith(typedEmail) && normalizedEmail !== typedEmail;
+    });
+
+    if (!completion) {
+      return;
+    }
+
+    const typedLength = personalEmailTypedPrefix.length;
+    setPersonalEmail(completion);
+    window.requestAnimationFrame(() => {
+      personalEmailInputRef.current?.setSelectionRange(typedLength, completion.length);
+    });
+  }, [isPersonalLoaderOpen, personalEmailTypedPrefix, personalEmailSuggestions]);
 
   useEffect(() => {
     if (!hasPersonalReferralCode) {
@@ -471,9 +524,17 @@ ${referralUrl}`, [referralUrl]);
               <Label htmlFor="personal-group-email">אימייל רשום</Label>
               <Input
                 id="personal-group-email"
-                type="email"
+                ref={personalEmailInputRef}
+                type="text"
+                inputMode="email"
                 value={personalEmail}
-                onChange={(event) => setPersonalEmail(event.target.value)}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+                  const selectionStart = event.target.selectionStart ?? nextValue.length;
+                  const typedPrefix = nextValue.slice(0, selectionStart);
+                  setPersonalEmail(nextValue);
+                  setPersonalEmailTypedPrefix(typedPrefix);
+                }}
                 autoComplete="email"
                 placeholder="name@example.com"
                 className="text-left"
