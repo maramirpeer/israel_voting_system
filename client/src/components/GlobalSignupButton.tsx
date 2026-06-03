@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { LogIn, UserPlus } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 function getCurrentReferralCode() {
   return new URLSearchParams(window.location.search).get("ref") || "";
@@ -19,6 +19,10 @@ export function GlobalSignupButton() {
   const [memberLoginMessage, setMemberLoginMessage] = useState("");
   const [memberReferralUrl, setMemberReferralUrl] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
+  const [memberEmailTypedPrefix, setMemberEmailTypedPrefix] = useState("");
+  const [memberEmailSuggestions, setMemberEmailSuggestions] = useState<string[]>([]);
+  const [showMemberEmailSuggestions, setShowMemberEmailSuggestions] = useState(false);
+  const memberEmailInputRef = useRef<HTMLInputElement | null>(null);
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -29,6 +33,57 @@ export function GlobalSignupButton() {
   const updateForm = (field: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
   };
+
+  useEffect(() => {
+    const emailPrefix = memberEmailTypedPrefix.trim().toLowerCase();
+
+    if (!isMemberLoginOpen || emailPrefix.length < 2) {
+      setMemberEmailSuggestions([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      fetch(`/api/member-signups/email-suggestions?q=${encodeURIComponent(emailPrefix)}`, {
+        signal: controller.signal,
+      })
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          const emails = Array.isArray(data?.emails) ? data.emails : [];
+          setMemberEmailSuggestions(emails);
+          setShowMemberEmailSuggestions(emails.length > 0);
+        })
+        .catch(() => undefined);
+    }, 160);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [isMemberLoginOpen, memberEmailTypedPrefix]);
+
+  useEffect(() => {
+    const typedEmail = memberEmailTypedPrefix.trim().toLowerCase();
+
+    if (!isMemberLoginOpen || typedEmail.length < 2) {
+      return;
+    }
+
+    const completion = memberEmailSuggestions.find((email) => {
+      const normalizedEmail = email.toLowerCase();
+      return normalizedEmail.startsWith(typedEmail) && normalizedEmail !== typedEmail;
+    });
+
+    if (!completion) {
+      return;
+    }
+
+    const typedLength = memberEmailTypedPrefix.length;
+    setMemberEmail(completion);
+    window.requestAnimationFrame(() => {
+      memberEmailInputRef.current?.setSelectionRange(typedLength, completion.length);
+    });
+  }, [isMemberLoginOpen, memberEmailTypedPrefix, memberEmailSuggestions]);
 
   const handleMemberLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -136,11 +191,46 @@ export function GlobalSignupButton() {
               <Label htmlFor="member-login-email">אימייל רשום</Label>
               <Input
                 id="member-login-email"
-                type="email"
+                ref={memberEmailInputRef}
+                type="text"
+                inputMode="email"
+                list="member-login-email-suggestions"
+                autoComplete="email"
                 value={memberEmail}
-                onChange={(event) => setMemberEmail(event.target.value)}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+                  const selectionStart = event.target.selectionStart ?? nextValue.length;
+                  const typedPrefix = nextValue.slice(0, selectionStart);
+                  setMemberEmail(nextValue);
+                  setMemberEmailTypedPrefix(typedPrefix);
+                  setShowMemberEmailSuggestions(true);
+                }}
+                onFocus={() => setShowMemberEmailSuggestions(memberEmailSuggestions.length > 0)}
                 required
               />
+              <datalist id="member-login-email-suggestions">
+                {memberEmailSuggestions.map((email) => (
+                  <option key={email} value={email} />
+                ))}
+              </datalist>
+              {showMemberEmailSuggestions && memberEmailSuggestions.length > 0 && (
+                <div className="rounded-md border border-[#d8c79f] bg-white shadow-sm" dir="ltr">
+                  {memberEmailSuggestions.map((email) => (
+                    <button
+                      key={email}
+                      type="button"
+                      className="block w-full px-3 py-2 text-left text-sm font-semibold text-[#17324d] hover:bg-[#eef6ff] focus:bg-[#eef6ff] focus:outline-none"
+                      onClick={() => {
+                        setMemberEmail(email);
+                        setMemberEmailTypedPrefix(email);
+                        setShowMemberEmailSuggestions(false);
+                      }}
+                    >
+                      {email}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {memberLoginMessage && <p className="rounded-md bg-[#eef6ef] p-3 text-sm font-medium text-[#17324d]">{memberLoginMessage}</p>}
             {memberReferralUrl && (

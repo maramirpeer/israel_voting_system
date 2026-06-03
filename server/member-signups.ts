@@ -3,7 +3,7 @@ import { createHash, randomBytes, randomUUID } from "crypto";
 import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import { count, eq, isNotNull, isNull, or } from "drizzle-orm";
+import { and, count, eq, isNotNull, isNull, like, or } from "drizzle-orm";
 import { getDb } from "./db";
 import { candidateEnlistments, memberSignups } from "../drizzle/schema";
 import { getContactEmailTo, isEmailConfigured, sendEmail } from "./email";
@@ -72,6 +72,8 @@ type ReferralStatsLevel = {
 };
 
 type ReferralStatsRow = {
+  fullName?: string | null;
+  email?: string | null;
   referralCode?: string | null;
   referredByCode?: string | null;
 };
@@ -85,6 +87,7 @@ const legacyFoundingMemberNames = new Set(["א. פ", "א. פ."]);
 let memberSignupTableReady = false;
 let candidateEnlistmentTableReady = false;
 const publicNamesLimit = 250;
+const memberEmailSuggestionsLimit = 8;
 const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
 const signupRateLimits = new Map<string, { count: number; resetAt: number }>();
@@ -258,6 +261,7 @@ function buildReferralStatsFromRows(referralCode: string, rows: ReferralStatsRow
   const normalizedReferralCode = normalizeReferralCode(referralCode) || "";
   const levels = buildEmptyReferralLevels();
   const childrenByParent = new Map<string, string[]>();
+  const directSignupNames: string[] = [];
 
   for (const row of rows) {
     const parentCode = normalizeReferralCode(row.referredByCode);
@@ -270,6 +274,13 @@ function buildReferralStatsFromRows(referralCode: string, rows: ReferralStatsRow
     const children = childrenByParent.get(parentCode) || [];
     children.push(childCode);
     childrenByParent.set(parentCode, children);
+
+    if (parentCode === normalizedReferralCode && row.fullName && row.email) {
+      directSignupNames.push(getPublicMemberName({
+        fullName: row.fullName,
+        email: row.email,
+      }));
+    }
   }
 
   const seen = new Set<string>([normalizedReferralCode]);
@@ -302,6 +313,8 @@ function buildReferralStatsFromRows(referralCode: string, rows: ReferralStatsRow
     directSignups,
     totalCluster,
     influenceScore,
+    directSignupNames: Array.from(new Set(directSignupNames)).sort((first, second) => first.localeCompare(second, "he")),
+    directSignupPreviewName: directSignupNames[0] || "",
     levels: levels.map((item) => ({
       ...item,
       credit: Number(item.credit.toFixed(2)),
@@ -471,6 +484,49 @@ async function getPublicMemberNames() {
   return getPublicMemberNamesFromRows(store.submissions);
 }
 
+async function getConfirmedMemberEmailSuggestions(query: string) {
+  const normalizedQuery = normalize(query).toLowerCase();
+
+  if (normalizedQuery.length < 2) {
+    return [];
+  }
+
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("member email suggestions setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("member email suggestions read");
+  }
+
+  if (db) {
+    try {
+      const rows = await db
+        .select({ email: memberSignups.email })
+        .from(memberSignups)
+        .where(and(isNotNull(memberSignups.emailConfirmedAt), like(memberSignups.email, `%${normalizedQuery}%`)))
+        .orderBy(memberSignups.email)
+        .limit(memberEmailSuggestionsLimit);
+
+      return rows.map((row) => row.email);
+    } catch (error) {
+      handleDbUnavailable("member email suggestions read", error);
+    }
+  }
+
+  const store = await readLocalStore();
+  return Array.from(
+    new Set(
+      store.submissions
+        .filter((signup) => signup.emailConfirmedAt && signup.email.toLowerCase().includes(normalizedQuery))
+        .map((signup) => signup.email.toLowerCase()),
+    ),
+  )
+    .sort((first, second) => first.localeCompare(second))
+    .slice(0, memberEmailSuggestionsLimit);
+}
+
 async function getPublicMemberCount() {
   const db = await ensureMemberSignupTable().catch((error) => {
     handleDbUnavailable("setup", error);
@@ -507,6 +563,8 @@ async function getReferralStats(referralCode: string) {
       directSignups: 0,
       totalCluster: 0,
       influenceScore: 0,
+      directSignupNames: [],
+      directSignupPreviewName: "",
       levels: buildEmptyReferralLevels(),
     };
   }
@@ -524,6 +582,8 @@ async function getReferralStats(referralCode: string) {
     try {
       const rows = await db
         .select({
+          fullName: memberSignups.fullName,
+          email: memberSignups.email,
           referralCode: memberSignups.referralCode,
           referredByCode: memberSignups.referredByCode,
         })
@@ -1350,6 +1410,15 @@ export function registerMemberSignupRoutes(app: Express) {
     try {
       const names = await getPublicMemberNames();
       res.json({ ok: true, names });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
+  app.get("/api/member-signups/email-suggestions", async (req: Request, res: Response) => {
+    try {
+      const emails = await getConfirmedMemberEmailSuggestions(normalize(req.query.q));
+      res.json({ ok: true, emails });
     } catch (error) {
       sendSignupRouteError(res, error);
     }
