@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3, FileText, BadgeCheck, Send, Copy } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useLocation } from "wouter";
 
 function getCurrentReferralCode() {
@@ -46,7 +46,7 @@ export default function Home() {
     email: "",
     nationalId: "",
   });
-  const KolMeshutafLink = ({ className = "" }: { className?: string }) => (
+  const SignupTextLink = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
     <span
       role="button"
       tabIndex={0}
@@ -64,8 +64,11 @@ export default function Home() {
       }}
       className={`cursor-pointer font-bold underline-offset-4 transition hover:underline ${className}`}
     >
-      קול משותף
+      {children}
     </span>
+  );
+  const KolMeshutafLink = ({ className = "" }: { className?: string }) => (
+    <SignupTextLink className={className}>קול משותף</SignupTextLink>
   );
 
   useEffect(() => {
@@ -404,7 +407,7 @@ ${candidateSenderEmail.trim()}`
               "לא מחליפים את הממשל אלא גורמים לו להתחבר."
             </p>
             <p className="mt-8 text-3xl font-black leading-tight text-[#17324d] sm:text-4xl">
-              בבחירות הבאות מצביעים רק לח"כ שייצרו את קול משותף לציבור
+              בבחירות הקרובות מצביעים <SignupTextLink className="text-[#1d4f91]">רק</SignupTextLink> למועמדים שמתחייבים לתמוך ב<KolMeshutafLink className="text-[#1d4f91]" />!
             </p>
           </div>
         </div>
