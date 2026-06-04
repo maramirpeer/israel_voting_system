@@ -118,6 +118,7 @@ ${referralUrl}`, [referralUrl]);
   const totalCredit = hasPersonalReferralCode && referralStats ? referralStats.influenceScore : displayLevels.reduce((sum, item) => sum + item.credit, 0);
   const influencePercent = totalCluster > 0 ? (totalCredit / totalCluster) * 100 : 0;
   const totalRegisteredMembers = memberCount ?? 0;
+  const requiredMajority = Math.floor(totalRegisteredMembers / 2) + 1;
   const directSignupNames = referralStats?.directSignupNames || [];
   const directDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}&direct=1`;
 
@@ -502,12 +503,12 @@ ${referralUrl}`, [referralUrl]);
             </div>
             <div className="rounded-md border border-[#d8c79f] bg-[#eef6ff] p-5 text-center">
               <p className="text-sm font-black text-[#1d4f91]">חברי קבוצה רשומים כרגע</p>
-              <p className="mt-2 text-5xl font-black text-[#17324d]">2</p>
+              <p className="mt-2 text-5xl font-black text-[#17324d]">{totalRegisteredMembers.toLocaleString("he-IL")}</p>
               <p className="mt-3 text-sm font-semibold leading-6 text-[#4a3722]">
                 החלטה קבוצתית מתקבלת כאשר רוב החברים הרשומים מצביעים בעדה, ישירות או דרך קול שהואצל.
               </p>
               <div className="mt-4 rounded bg-white/80 p-3 text-sm font-bold text-[#2f7d5c]">
-                רוב נדרש כרגע: 2 מתוך 2
+                רוב נדרש כרגע: {requiredMajority.toLocaleString("he-IL")} מתוך {totalRegisteredMembers.toLocaleString("he-IL")}
               </div>
             </div>
           </div>
