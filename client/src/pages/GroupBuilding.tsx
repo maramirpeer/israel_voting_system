@@ -366,6 +366,34 @@ ${referralUrl}`, [referralUrl]);
           </Card>
         </section>
 
+        {showDirectDetails && (
+          <Card className="border-[#d8c79f] bg-white/95 p-6">
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <List className="h-7 w-7 text-[#1d4f91]" />
+              <div className="text-right">
+                <h2 className="text-2xl font-bold">המצטרפים הישירים שלי</h2>
+                <p className="mt-1 text-sm font-semibold text-[#5a4b38]">
+                  שמות המצטרפים שאישרו הצטרפות דרך הקישור האישי שלך.
+                </p>
+              </div>
+            </div>
+            {directSignupNames.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {directSignupNames.map((name, index) => (
+                  <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
+                    <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
+                    <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
+                עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
+              </div>
+            )}
+          </Card>
+        )}
+
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Card className="border-[#d8c79f] bg-white/95 p-6">
             <div className="mb-5 flex items-center justify-between">
