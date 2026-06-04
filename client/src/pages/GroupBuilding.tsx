@@ -92,10 +92,8 @@ export default function GroupBuilding() {
   const searchParams = useMemo(() => new URLSearchParams(location.split("?")[1] || window.location.search), [location]);
   const referralCodeFromUrl = useMemo(() => normalizeReferralCode(searchParams.get("ref")), [searchParams]);
   const hasPersonalReferralCode = referralCodeFromUrl.length > 0;
-  const isDirectDetailsRequested = hasPersonalReferralCode && searchParams.get("direct") === "1";
-  const [isDirectListOpen, setDirectListOpen] = useState(isDirectDetailsRequested);
   const directListRef = useRef<HTMLDivElement | null>(null);
-  const showDirectDetails = isDirectDetailsRequested || isDirectListOpen;
+  const showDirectDetails = hasPersonalReferralCode;
   const referralCode = referralCodeFromUrl || fallbackReferralCode;
   const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
   const referralUrl = useMemo(() => buildReferralUrl(referralCode), [referralCode]);
@@ -139,12 +137,6 @@ ${referralUrl}`, [referralUrl]);
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (isDirectDetailsRequested) {
-      setDirectListOpen(true);
-    }
-  }, [isDirectDetailsRequested]);
 
   useEffect(() => {
     const emailPrefix = personalEmailTypedPrefix.trim().toLowerCase();
@@ -258,8 +250,7 @@ ${referralUrl}`, [referralUrl]);
   };
 
   const openDirectSignupList = () => {
-    setDirectListOpen(true);
-    setLocation(directDetailsPath);
+    window.history.replaceState(null, "", directDetailsPath);
     window.setTimeout(() => {
       directListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 0);
@@ -383,7 +374,7 @@ ${referralUrl}`, [referralUrl]);
         </section>
 
         {showDirectDetails && (
-          <div ref={directListRef}>
+          <div id="direct-signups" ref={directListRef} tabIndex={-1}>
             <Card className="border-[#d8c79f] bg-white/95 p-6">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <List className="h-7 w-7 text-[#1d4f91]" />
