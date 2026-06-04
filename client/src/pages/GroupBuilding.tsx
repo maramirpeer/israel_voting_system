@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BadgeCheck, Copy, Home, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, RotateCcw, Send, Share2, Shield, Users, Vote, Zap } from "lucide-react";
@@ -89,6 +88,7 @@ export default function GroupBuilding() {
   const [personalLoaderMessage, setPersonalLoaderMessage] = useState("");
   const [isPersonalLoaderSubmitting, setPersonalLoaderSubmitting] = useState(false);
   const personalEmailInputRef = useRef<HTMLInputElement | null>(null);
+  const [memberCount, setMemberCount] = useState<number | null>(null);
   const searchParams = useMemo(() => new URLSearchParams(location.split("?")[1] || window.location.search), [location]);
   const referralCodeFromUrl = useMemo(() => normalizeReferralCode(searchParams.get("ref")), [searchParams]);
   const hasPersonalReferralCode = referralCodeFromUrl.length > 0;
@@ -115,9 +115,28 @@ ${referralUrl}`, [referralUrl]);
   const tree = useMemo(() => buildTree(referralCode), [referralCode]);
   const totalCluster = hasPersonalReferralCode && referralStats ? referralStats.totalCluster : displayLevels.reduce((sum, item) => sum + item.count, 0);
   const totalCredit = hasPersonalReferralCode && referralStats ? referralStats.influenceScore : displayLevels.reduce((sum, item) => sum + item.credit, 0);
+  const influencePercent = totalCluster > 0 ? (totalCredit / totalCluster) * 100 : 0;
+  const totalRegisteredMembers = memberCount ?? 0;
   const directSignupNames = referralStats?.directSignupNames || [];
-  const directSignupPreviewName = referralStats?.directSignupPreviewName || directSignupNames[0] || "";
   const directDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}&direct=1`;
+  const closeDirectDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}`;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch("/api/member-signups/count")
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (isMounted && typeof data?.count === "number") {
+          setMemberCount(data.count);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const emailPrefix = personalEmailTypedPrefix.trim().toLowerCase();
@@ -319,72 +338,33 @@ ${referralUrl}`, [referralUrl]);
               <Users className="h-8 w-8 text-[#1d4f91]" />
               <p className="text-sm font-bold text-[#5a4b38]">הצטרפו ישירות</p>
             </div>
-            <HoverCard openDelay={180}>
-              <HoverCardTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => setLocation(directDetailsPath)}
-                  className="mt-3 block text-4xl font-black leading-none text-[#17324d] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d4f91]"
-                  aria-label="פתיחת פירוט המצטרפים הישירים"
-                >
-                  {displayLevels[0].count.toLocaleString("he-IL")}
-                </button>
-              </HoverCardTrigger>
-              <HoverCardContent className="w-72 border-[#d8c79f] bg-white text-right" side="bottom">
-                {directSignupPreviewName ? (
-                  <div className="space-y-2">
-                    <p className="text-xs font-bold text-[#5a4b38]">אחד מהמצטרפים ישירות דרכך</p>
-                    <p className="text-lg font-black text-[#17324d]">{directSignupPreviewName}</p>
-                  </div>
-                ) : (
-                  <p className="text-sm font-semibold text-[#5a4b38]">עדיין אין שמות להצגה.</p>
-                )}
-              </HoverCardContent>
-            </HoverCard>
+            <button
+              type="button"
+              onClick={() => setLocation(directDetailsPath)}
+              className="mt-3 block text-4xl font-black leading-none text-[#17324d] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d4f91]"
+              aria-label="פתיחת רשימת המצטרפים הישירים"
+            >
+              {displayLevels[0].count.toLocaleString("he-IL")}
+            </button>
+            <p className="mt-3 text-xs font-bold text-[#5a4b38]">לחיצה על המספר פותחת רשימת שמות מלאה.</p>
           </Card>
           <Card className="border-[#d8c79f] bg-white/92 p-5">
             <div className="flex items-center justify-between">
               <Network className="h-8 w-8 text-[#2f7d5c]" />
               <p className="text-sm font-bold text-[#5a4b38]">כל קבוצת החברים</p>
             </div>
-            <p className="mt-3 text-4xl font-black">{totalCluster.toLocaleString("he-IL")}</p>
+            <p className="mt-3 text-4xl font-black">{totalRegisteredMembers.toLocaleString("he-IL")}</p>
           </Card>
           <Card className="border-[#d8c79f] bg-white/92 p-5">
             <div className="flex items-center justify-between">
               <Zap className="h-8 w-8 text-[#c28b25]" />
-              <p className="text-sm font-bold text-[#5a4b38]">קרדיט השפעה</p>
+              <p className="text-sm font-bold text-[#5a4b38]">מדד השפעה</p>
             </div>
-            <p className="mt-3 text-4xl font-black">{totalCredit.toLocaleString("he-IL", { maximumFractionDigits: 1 })}</p>
+            <p className="mt-3 text-4xl font-black">
+              {influencePercent.toLocaleString("he-IL", { maximumFractionDigits: 0 })}%
+            </p>
           </Card>
         </section>
-
-        {showDirectDetails && (
-          <Card className="border-[#d8c79f] bg-white/95 p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <List className="h-7 w-7 text-[#1d4f91]" />
-              <div className="text-right">
-                <h2 className="text-2xl font-bold">המצטרפים הישירים שלי</h2>
-                <p className="mt-1 text-sm font-semibold text-[#5a4b38]">
-                  מי שאישרו הצטרפות דרך הקישור האישי שלך.
-                </p>
-              </div>
-            </div>
-            {directSignupNames.length > 0 ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {directSignupNames.map((name, index) => (
-                  <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
-                    <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
-                    <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
-                עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
-              </div>
-            )}
-          </Card>
-        )}
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Card className="border-[#d8c79f] bg-white/95 p-6">
@@ -566,6 +546,41 @@ ${referralUrl}`, [referralUrl]);
           </Card>
         </section>
       </div>
+
+      <Dialog
+        open={showDirectDetails}
+        onOpenChange={(open) => {
+          if (!open) {
+            setLocation(closeDirectDetailsPath);
+          }
+        }}
+      >
+        <DialogContent className="max-h-[82vh] max-w-2xl overflow-y-auto border-[#d8c79f] bg-white text-right" dir="rtl">
+          <DialogHeader className="text-right">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <List className="h-7 w-7 text-[#1d4f91]" />
+              <DialogTitle className="text-2xl font-black text-[#17324d]">המצטרפים הישירים שלי</DialogTitle>
+            </div>
+            <DialogDescription className="leading-7 text-[#5a4b38]">
+              שמות המצטרפים שאישרו הצטרפות דרך הקישור האישי שלך. השם מוצג כשם פרטי ואות ראשונה משם המשפחה.
+            </DialogDescription>
+          </DialogHeader>
+          {directSignupNames.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {directSignupNames.map((name, index) => (
+                <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
+                  <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
+                  <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
+              עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isPersonalLoaderOpen} onOpenChange={setPersonalLoaderOpen}>
         <DialogContent className="max-w-md border-[#d8c79f] bg-[#fbf7ed] text-right" dir="rtl">
