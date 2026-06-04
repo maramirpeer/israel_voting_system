@@ -92,7 +92,10 @@ export default function GroupBuilding() {
   const searchParams = useMemo(() => new URLSearchParams(location.split("?")[1] || window.location.search), [location]);
   const referralCodeFromUrl = useMemo(() => normalizeReferralCode(searchParams.get("ref")), [searchParams]);
   const hasPersonalReferralCode = referralCodeFromUrl.length > 0;
-  const showDirectDetails = hasPersonalReferralCode && searchParams.get("direct") === "1";
+  const isDirectDetailsRequested = hasPersonalReferralCode && searchParams.get("direct") === "1";
+  const [isDirectListOpen, setDirectListOpen] = useState(isDirectDetailsRequested);
+  const directListRef = useRef<HTMLDivElement | null>(null);
+  const showDirectDetails = isDirectDetailsRequested || isDirectListOpen;
   const referralCode = referralCodeFromUrl || fallbackReferralCode;
   const [referralStats, setReferralStats] = useState<ReferralStats | null>(null);
   const referralUrl = useMemo(() => buildReferralUrl(referralCode), [referralCode]);
@@ -136,6 +139,12 @@ ${referralUrl}`, [referralUrl]);
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (isDirectDetailsRequested) {
+      setDirectListOpen(true);
+    }
+  }, [isDirectDetailsRequested]);
 
   useEffect(() => {
     const emailPrefix = personalEmailTypedPrefix.trim().toLowerCase();
@@ -248,6 +257,14 @@ ${referralUrl}`, [referralUrl]);
     window.open(`https://wa.me/?text=${encodeURIComponent(inviteText)}`, "_blank", "noopener,noreferrer");
   };
 
+  const openDirectSignupList = () => {
+    setDirectListOpen(true);
+    setLocation(directDetailsPath);
+    window.setTimeout(() => {
+      directListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 0);
+  };
+
   const loadPersonalGroupPage = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const email = personalEmail.trim();
@@ -339,7 +356,7 @@ ${referralUrl}`, [referralUrl]);
             </div>
             <button
               type="button"
-              onClick={() => setLocation(directDetailsPath)}
+              onClick={openDirectSignupList}
               className="mt-3 block text-4xl font-black leading-none text-[#17324d] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1d4f91]"
               aria-label="פתיחת רשימת המצטרפים הישירים"
             >
@@ -366,31 +383,33 @@ ${referralUrl}`, [referralUrl]);
         </section>
 
         {showDirectDetails && (
-          <Card className="border-[#d8c79f] bg-white/95 p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <List className="h-7 w-7 text-[#1d4f91]" />
-              <div className="text-right">
-                <h2 className="text-2xl font-bold">המצטרפים הישירים שלי</h2>
-                <p className="mt-1 text-sm font-semibold text-[#5a4b38]">
-                  שמות המצטרפים שאישרו הצטרפות דרך הקישור האישי שלך.
-                </p>
+          <div ref={directListRef}>
+            <Card className="border-[#d8c79f] bg-white/95 p-6">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <List className="h-7 w-7 text-[#1d4f91]" />
+                <div className="text-right">
+                  <h2 className="text-2xl font-bold">המצטרפים הישירים שלי</h2>
+                  <p className="mt-1 text-sm font-semibold text-[#5a4b38]">
+                    שמות המצטרפים שאישרו הצטרפות דרך הקישור האישי שלך.
+                  </p>
+                </div>
               </div>
-            </div>
-            {directSignupNames.length > 0 ? (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {directSignupNames.map((name, index) => (
-                  <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
-                    <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
-                    <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
-                עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
-              </div>
-            )}
-          </Card>
+              {directSignupNames.length > 0 ? (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {directSignupNames.map((name, index) => (
+                    <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
+                      <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
+                      <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
+                  עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
+                </div>
+              )}
+            </Card>
+          </div>
         )}
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
