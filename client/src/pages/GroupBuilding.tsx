@@ -119,7 +119,6 @@ ${referralUrl}`, [referralUrl]);
   const totalRegisteredMembers = memberCount ?? 0;
   const directSignupNames = referralStats?.directSignupNames || [];
   const directDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}&direct=1`;
-  const closeDirectDetailsPath = `/group-building?ref=${encodeURIComponent(referralCode)}`;
 
   useEffect(() => {
     let isMounted = true;
@@ -574,41 +573,6 @@ ${referralUrl}`, [referralUrl]);
           </Card>
         </section>
       </div>
-
-      <Dialog
-        open={showDirectDetails}
-        onOpenChange={(open) => {
-          if (!open) {
-            setLocation(closeDirectDetailsPath);
-          }
-        }}
-      >
-        <DialogContent className="max-h-[82vh] max-w-2xl overflow-y-auto border-[#d8c79f] bg-white text-right" dir="rtl">
-          <DialogHeader className="text-right">
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <List className="h-7 w-7 text-[#1d4f91]" />
-              <DialogTitle className="text-2xl font-black text-[#17324d]">המצטרפים הישירים שלי</DialogTitle>
-            </div>
-            <DialogDescription className="leading-7 text-[#5a4b38]">
-              שמות המצטרפים שאישרו הצטרפות דרך הקישור האישי שלך. השם מוצג כשם פרטי ואות ראשונה משם המשפחה.
-            </DialogDescription>
-          </DialogHeader>
-          {directSignupNames.length > 0 ? (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {directSignupNames.map((name, index) => (
-                <div key={`${name}-${index}`} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4">
-                  <p className="text-xs font-bold text-[#5a4b38]">מצטרף ישיר</p>
-                  <p className="mt-1 text-lg font-black text-[#17324d]">{name}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/60 p-4 text-right font-semibold text-[#5a4b38]">
-              עדיין אין מצטרפים ישירים מאושרים דרך הקישור הזה.
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={isPersonalLoaderOpen} onOpenChange={setPersonalLoaderOpen}>
         <DialogContent className="max-w-md border-[#d8c79f] bg-[#fbf7ed] text-right" dir="rtl">
