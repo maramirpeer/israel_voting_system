@@ -89,6 +89,10 @@ export default function GroupBuilding() {
   const [isPersonalLoaderSubmitting, setPersonalLoaderSubmitting] = useState(false);
   const personalEmailInputRef = useRef<HTMLInputElement | null>(null);
   const [memberCount, setMemberCount] = useState<number | null>(null);
+  const [isMemberListOpen, setMemberListOpen] = useState(false);
+  const [memberNames, setMemberNames] = useState<string[]>([]);
+  const [memberNamesMessage, setMemberNamesMessage] = useState("");
+  const [isMemberListLoading, setMemberListLoading] = useState(false);
   const searchParams = useMemo(() => new URLSearchParams(location.split("?")[1] || window.location.search), [location]);
   const referralCodeFromUrl = useMemo(() => normalizeReferralCode(searchParams.get("ref")), [searchParams]);
   const hasPersonalReferralCode = referralCodeFromUrl.length > 0;
@@ -257,6 +261,31 @@ ${referralUrl}`, [referralUrl]);
     }, 0);
   };
 
+  const loadMemberNames = async (open: boolean) => {
+    setMemberListOpen(open);
+    if (!open || memberNames.length > 0) {
+      return;
+    }
+
+    setMemberListLoading(true);
+    setMemberNamesMessage("");
+
+    try {
+      const response = await fetch("/api/member-signups/names");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "טעינת רשימת החברים נכשלה.");
+      }
+
+      setMemberNames(Array.isArray(data.names) ? data.names : []);
+    } catch (error) {
+      setMemberNamesMessage(error instanceof Error ? error.message : "טעינת רשימת החברים נכשלה.");
+    } finally {
+      setMemberListLoading(false);
+    }
+  };
+
   const loadPersonalGroupPage = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const email = personalEmail.trim();
@@ -361,7 +390,15 @@ ${referralUrl}`, [referralUrl]);
               <Network className="h-8 w-8 text-[#2f7d5c]" />
               <p className="text-sm font-bold text-[#5a4b38]">כל קבוצת החברים</p>
             </div>
-            <p className="mt-3 text-4xl font-black">{totalRegisteredMembers.toLocaleString("he-IL")}</p>
+            <button
+              type="button"
+              onClick={() => loadMemberNames(true)}
+              className="mt-3 block text-4xl font-black leading-none text-[#17324d] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2f7d5c]"
+              aria-label="פתיחת רשימת כל חברי הקבוצה"
+            >
+              {totalRegisteredMembers.toLocaleString("he-IL")}
+            </button>
+            <p className="mt-3 text-xs font-bold text-[#5a4b38]">לחיצה על המספר פותחת את רשימת החברים המלאה.</p>
           </Card>
           <Card className="border-[#d8c79f] bg-white/92 p-5">
             <div className="flex items-center justify-between">
@@ -584,6 +621,37 @@ ${referralUrl}`, [referralUrl]);
           </Card>
         </section>
       </div>
+
+      <Dialog open={isMemberListOpen} onOpenChange={loadMemberNames}>
+        <DialogContent className="border-[#d8c79f] bg-[#fbf7ed] text-right sm:max-w-lg" dir="rtl">
+          <DialogHeader className="text-right">
+            <DialogTitle className="text-2xl font-black text-[#17324d]">כל חברי הקבוצה</DialogTitle>
+            <DialogDescription className="leading-7 text-[#5a4b38]">
+              הרשימה מוצגת לפי סדר ההצטרפות ובתצוגה מצומצמת לשמירה על פרטיות החברים.
+            </DialogDescription>
+          </DialogHeader>
+          {isMemberListLoading ? (
+            <div className="flex items-center justify-center gap-2 py-8 font-bold text-[#5a4b38]">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              טוען את רשימת החברים...
+            </div>
+          ) : memberNamesMessage ? (
+            <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700">{memberNamesMessage}</p>
+          ) : memberNames.length > 0 ? (
+            <ol className="max-h-[60vh] space-y-2 overflow-y-auto rounded-md border border-[#eadfca] bg-white/75 p-4">
+              {memberNames.map((name, index) => (
+                <li key={`${name}-${index}`} className="rounded-md bg-[#fbf7ed] px-3 py-2 font-bold text-[#17324d]">
+                  מצטרף מספר {(index + 1).toLocaleString("he-IL")}: {name}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="rounded-md border border-[#eadfca] bg-white/75 p-4 font-semibold text-[#5a4b38]">
+              עדיין אין חברים מאושרים להצגה.
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isPersonalLoaderOpen} onOpenChange={setPersonalLoaderOpen}>
         <DialogContent className="max-w-md border-[#d8c79f] bg-[#fbf7ed] text-right" dir="rtl">

@@ -86,7 +86,6 @@ const foundingMemberName = "אמיר פ";
 const legacyFoundingMemberNames = new Set(["א. פ", "א. פ."]);
 let memberSignupTableReady = false;
 let candidateEnlistmentTableReady = false;
-const publicNamesLimit = 250;
 const memberEmailSuggestionsLimit = 8;
 const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
@@ -471,8 +470,7 @@ async function getPublicMemberNames() {
         })
         .from(memberSignups)
         .where(isNotNull(memberSignups.emailConfirmedAt))
-        .orderBy(memberSignups.id)
-        .limit(publicNamesLimit);
+        .orderBy(memberSignups.id);
 
       return getPublicMemberNamesFromRows(rows);
     } catch (error) {
