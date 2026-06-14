@@ -2,7 +2,7 @@ type EmailPayload = {
   to: string | string[];
   subject: string;
   html: string;
-  text: string;
+  text?: string;
   replyTo?: string;
 };
 
@@ -31,8 +31,11 @@ export async function sendEmail(payload: EmailPayload) {
     to: payload.to,
     subject: payload.subject,
     html: payload.html,
-    text: payload.text,
   };
+
+  if (payload.text) {
+    body.text = payload.text;
+  }
 
   if (payload.replyTo) {
     body.reply_to = payload.replyTo;

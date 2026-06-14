@@ -1333,23 +1333,26 @@ function buildConfirmationEmail(fullName: string, confirmationUrl: string) {
       <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#0f172a">
         <h1 style="color:#1e3a8a">שלום ${safeFullName}, נשאר רק לאשר במייל</h1>
         <p>כדי להשלים את ההצטרפות לגרעין המייסד של קול משותף, יש ללחוץ על הכפתור הבא:</p>
-        <p>
-          <a href="${safeConfirmationUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#1e3a8a;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:bold">
-            אישור ההצטרפות
-          </a>
-        </p>
+        <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin:24px auto">
+          <tr>
+            <td bgcolor="#1e3a8a" style="border-radius:8px;text-align:center">
+              <a href="${safeConfirmationUrl}" target="_blank" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:18px;font-weight:bold;text-decoration:none">
+                אישור ההצטרפות והמשך לפעולה
+              </a>
+            </td>
+          </tr>
+        </table>
         <p>אם הכפתור לא נפתח, אפשר להעתיק את הקישור הבא לדפדפן:</p>
-        <p dir="ltr" style="word-break:break-all">${safeConfirmationUrl}</p>
+        <p dir="ltr" style="word-break:break-all"><a href="${safeConfirmationUrl}" target="_blank" style="color:#1e3a8a">${safeConfirmationUrl}</a></p>
         <p>אם לא ביקשת להצטרף, אפשר להתעלם מהמייל.</p>
       </div>
     `,
-    text: `שלום ${fullName}, כדי להשלים את ההצטרפות לגרעין המייסד של קול משותף יש לפתוח את הקישור הבא: ${confirmationUrl}`,
   };
 }
 
 async function sendConfirmationEmail(to: string, fullName: string, confirmationUrl: string) {
   const message = buildConfirmationEmail(fullName, confirmationUrl);
-  return sendEmail({ to, subject: message.subject, html: message.html, text: message.text });
+  return sendEmail({ to, subject: message.subject, html: message.html });
 }
 
 async function sendMemberLoginEmail(to: string, fullName: string, confirmationUrl: string) {
@@ -1363,11 +1366,20 @@ async function sendMemberLoginEmail(to: string, fullName: string, confirmationUr
       <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#17324d">
         <h2>שלום ${safeFullName},</h2>
         <p>לחצו על הכפתור כדי להיכנס לאתר כחבר/ה מאושר/ת ולהמשיך בפעולה שביקשתם לבצע.</p>
-        <p><a href="${safeConfirmationUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 20px;background:#1d4f91;color:#fff;text-decoration:none;border-radius:8px;font-weight:700">כניסה לקול משותף</a></p>
+        <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin:24px auto">
+          <tr>
+            <td bgcolor="#1d4f91" style="border-radius:8px;text-align:center">
+              <a href="${safeConfirmationUrl}" target="_blank" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:18px;font-weight:bold;text-decoration:none">
+                כניסה לקול משותף והמשך לפעולה
+              </a>
+            </td>
+          </tr>
+        </table>
+        <p>אם הכפתור אינו מופיע, אפשר ללחוץ על הקישור הבא:</p>
+        <p dir="ltr" style="word-break:break-all"><a href="${safeConfirmationUrl}" target="_blank" style="color:#1d4f91">${safeConfirmationUrl}</a></p>
         <p>אם לא ביקשתם להיכנס, אפשר להתעלם מההודעה.</p>
       </div>
     `,
-    text: `שלום ${fullName}, קישור הכניסה שלך לקול משותף: ${confirmationUrl}`,
   });
 }
 
