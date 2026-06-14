@@ -75,6 +75,7 @@ export default function AdminSignups() {
   const [approvingProposal, setApprovingProposal] = useState<string | null>(null);
   const [includingCandidateId, setIncludingCandidateId] = useState<string | number | null>(null);
   const [deletingCandidateId, setDeletingCandidateId] = useState<string | number | null>(null);
+  const [hasLoadedData, setHasLoadedData] = useState(false);
 
   const sortedSubmissions = useMemo(() => {
     return [...submissions].sort((a, b) => {
@@ -114,14 +115,11 @@ export default function AdminSignups() {
       setSubmissions(Array.isArray(data.submissions) ? data.submissions : []);
       setSource(typeof data.source === "string" ? data.source : "");
       setEmailStatus(data.emailStatus && typeof data.emailStatus === "object" ? data.emailStatus : null);
+      setHasLoadedData(true);
       void loadPreliminaryProposals(activeToken);
       void loadCandidateEnlistments(activeToken);
       setMessage("הנתונים נטענו בהצלחה.");
     } catch (error) {
-      setSubmissions([]);
-      setSource("");
-      setEmailStatus(null);
-      setCandidateEnlistments([]);
       setMessage(error instanceof Error ? error.message : "טעינת הנתונים נכשלה.");
     } finally {
       setLoading(false);
@@ -136,9 +134,7 @@ export default function AdminSignups() {
       void loadSubmissions(cleanToken);
     } else {
       window.localStorage.removeItem(tokenStorageKey);
-      setSubmissions([]);
-      setCandidateEnlistments([]);
-      setMessage("מפתח הגישה נמחק מהדפדפן.");
+      setMessage("מפתח הגישה נמחק מהדפדפן. הנתונים נשארו שמורים בשרת והמסך נעול עד להזנת המפתח.");
     }
   };
 
@@ -266,7 +262,7 @@ export default function AdminSignups() {
         throw new Error(data.error || "אישור הדף המקדים נכשל.");
       }
 
-      setMessage("הדף המקדים אושר: נקבעו 1000 תומכים והוא עבר לשלב ההצבעה.");
+      setMessage("הדף המקדים אושר: נקבעו 1,000 תומכים והוא פורסם באתר. ההצבעה היא שלב נפרד.");
       await loadPreliminaryProposals(token);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "אישור הדף המקדים נכשל.");
@@ -411,15 +407,15 @@ export default function AdminSignups() {
         <section className="grid gap-4 md:grid-cols-4">
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <p className="text-sm text-[#5a4b38]">סה"כ טפסים</p>
-            <p className="mt-2 text-3xl font-bold">{submissions.length.toLocaleString("he-IL")}</p>
+            <p className="mt-2 text-3xl font-bold">{hasLoadedData ? submissions.length.toLocaleString("he-IL") : "נעול"}</p>
           </Card>
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <p className="text-sm text-[#5a4b38]">מאושרים במייל</p>
-            <p className="mt-2 text-3xl font-bold">{confirmedCount.toLocaleString("he-IL")}</p>
+            <p className="mt-2 text-3xl font-bold">{hasLoadedData ? confirmedCount.toLocaleString("he-IL") : "נעול"}</p>
           </Card>
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <p className="text-sm text-[#5a4b38]">ממתינים לאישור</p>
-            <p className="mt-2 text-3xl font-bold">{pendingCount.toLocaleString("he-IL")}</p>
+            <p className="mt-2 text-3xl font-bold">{hasLoadedData ? pendingCount.toLocaleString("he-IL") : "נעול"}</p>
           </Card>
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <p className="text-sm text-[#5a4b38]">מקור נתונים</p>
