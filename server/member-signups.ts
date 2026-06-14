@@ -94,6 +94,7 @@ const signupRateLimitWindowMs = 60_000;
 const signupRateLimitMax = 10;
 const signupRateLimits = new Map<string, { count: number; resetAt: number }>();
 const confirmationTokenBytes = 32;
+const confirmationTokenMaxAgeMs = 7 * 24 * 60 * 60 * 1000;
 const referralCreditWeights = [1, 0.5, 0.25];
 const referralLevelLabels = [
   { level: "רמה 1", title: "חברים שהצטרפו ישירות דרכך", weight: "100%" },
@@ -932,12 +933,18 @@ async function markSignupConfirmed(token: string) {
         return null;
       }
 
+      if (
+        !signup.confirmationSentAt ||
+        Date.now() - signup.confirmationSentAt.getTime() > confirmationTokenMaxAgeMs
+      ) {
+        return null;
+      }
+
       const wasAlreadyConfirmed = Boolean(signup.emailConfirmedAt);
       await db
         .update(memberSignups)
         .set({
           emailConfirmedAt: signup.emailConfirmedAt || new Date(),
-          confirmationTokenHash: null,
           updatedAt: new Date(),
         })
         .where(eq(memberSignups.id, signup.id));
@@ -956,9 +963,15 @@ async function markSignupConfirmed(token: string) {
     return null;
   }
 
+  if (
+    !signup.confirmationSentAt ||
+    Date.now() - new Date(signup.confirmationSentAt).getTime() > confirmationTokenMaxAgeMs
+  ) {
+    return null;
+  }
+
   const wasAlreadyConfirmed = Boolean(signup.emailConfirmedAt);
   signup.emailConfirmedAt = signup.emailConfirmedAt || now;
-  signup.confirmationTokenHash = null;
   signup.updatedAt = now;
   await writeLocalStore(store);
 
@@ -1600,7 +1613,13 @@ export function registerMemberSignupRoutes(app: Express) {
       const confirmation = await markSignupConfirmed(token);
 
       if (!confirmation) {
-        res.status(404).send("קישור האישור אינו תקין או שכבר נעשה בו שימוש.");
+        const recoveryQuery = new URLSearchParams({
+          signup: "1",
+          login: "1",
+          linkExpired: "1",
+          returnTo,
+        });
+        res.redirect(302, `/?${recoveryQuery.toString()}`);
         return;
       }
 

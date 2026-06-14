@@ -25,10 +25,16 @@ export default function Home() {
   const [isSignupOpen, setSignupOpen] = useState(() => new URLSearchParams(window.location.search).get("signup") === "1");
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
-  const [isMemberLogin, setMemberLogin] = useState(false);
+  const [isMemberLogin, setMemberLogin] = useState(
+    () => new URLSearchParams(window.location.search).get("login") === "1",
+  );
   const [memberLoginEmail, setMemberLoginEmail] = useState("");
   const [memberLoginEmailSuggestions, setMemberLoginEmailSuggestions] = useState<string[]>([]);
-  const [memberLoginMessage, setMemberLoginMessage] = useState("");
+  const [memberLoginMessage, setMemberLoginMessage] = useState(() =>
+    new URLSearchParams(window.location.search).get("linkExpired") === "1"
+      ? "הקישור הקודם כבר אינו פעיל. הזינו את המייל הרשום ונשלח מיד קישור כניסה חדש."
+      : "",
+  );
   const [isMemberLoginSubmitting, setMemberLoginSubmitting] = useState(false);
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
