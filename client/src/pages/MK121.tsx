@@ -19,7 +19,7 @@ type MK121QuestionAssignment = { ministryId: number; ministryName?: string; dele
 const MK121_QUESTION_ASSIGNMENTS_KEY = "mk121-question-assignments";
 
 const getBillDisplayPriority = (title: string) => {
-  if (title.includes("קולות אבודים")) return 2;
+  if (title.includes("הגנת קול הבוחר") || title.includes("קולות אבודים")) return 2;
   if (title.includes("הגבלת") && title.includes("ראש")) return 0;
   if (title.includes("כל ח״כ חייב") || title.includes("חובת הצבעה")) return 1;
   if (title.includes("זירת מידע")) return 2;
@@ -79,9 +79,9 @@ const demoBills = [
   },
   {
     id: 206,
-    title: "חוק הסדרת מעבר קולות אבודים",
+    title: "הצעת חוק הבחירות לכנסת — הגנת קול הבוחר, התשפ״ו–2026",
     description:
-      "קולות של מפלגה שלא עברה את אחוז החסימה יעברו למפלגה אחרת לפי סיכום ברור ושקוף שנקבע מראש ופורסם לציבור לפני הבחירות. כך מצביעים יוכלו לדעת מראש לאן יעבור קולם במקרה שהמפלגה שבחרו לא תעבור את אחוז החסימה. הסוף לחשש מקול אבוד!",
+      "מטרת החוק היא לצמצם אובדן קולות בבחירות לכנסת, לחזק את חופש הבחירה ולאפשר תמיכה ברשימה חדשה או קטנה בלי חשש שהקול יאבד. כל בוחר יהיה רשאי לסמן, לצד בחירתו הראשית, גם רשימת גיבוי אחת. אם הרשימה הראשית לא תעבור את אחוז החסימה, ייחשב הקול כאילו ניתן לרשימת הגיבוי, ובלבד שרשימת הגיבוי עברה את אחוז החסימה.",
     category: "בחירות ודמוקרטיה",
     status: "voting",
     votes: 15480,
@@ -199,6 +199,7 @@ export default function MK121() {
   const demoUser = user || { id: 1, name: "ישראל ישראלי", email: "demo@example.local" };
   const [, setLocation] = useLocation();
   const initialSubmitTab = new URLSearchParams(window.location.search).get("submit") === "question" ? "question" : "bill";
+  const [submissionTab, setSubmissionTab] = useState<"bill" | "question">(initialSubmitTab);
   const [showSubmissionForm, setShowSubmissionForm] = useState(() => new URLSearchParams(window.location.search).has("submit"));
   const [localBillVotes, setLocalBillVotes] = useState<number[]>([]);
   const [localBillAgainstVotes, setLocalBillAgainstVotes] = useState<number[]>([]);
@@ -567,6 +568,11 @@ export default function MK121() {
     setLocation("/?signup=1");
     return true;
   };
+  const openSubmissionForm = (tab: "bill" | "question") => {
+    if (requireSignupForActivity()) return;
+    setSubmissionTab(tab);
+    setShowSubmissionForm(true);
+  };
 
   // Public access - no authentication required for demo
 
@@ -615,10 +621,7 @@ export default function MK121() {
             </div>
             {cycle && (
               <Button
-                onClick={() => {
-                  if (requireSignupForActivity()) return;
-                  setShowSubmissionForm(true);
-                }}
+                onClick={() => openSubmissionForm("bill")}
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
@@ -746,6 +749,31 @@ export default function MK121() {
 
             {/* Voting Tabs */}
             <Tabs defaultValue="bills" className="w-full mt-8">
+              <div className="mb-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">הצעות החוק והשאילתות הקיימות</h2>
+                  <p className="mt-1 text-sm text-slate-600">חברים מחוברים יכולים להוסיף הצעה חדשה ישירות מכאן.</p>
+                </div>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button
+                    type="button"
+                    onClick={() => openSubmissionForm("bill")}
+                    className="bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    <Plus className="ml-2 h-4 w-4" />
+                    הוספת הצעת חוק
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => openSubmissionForm("question")}
+                    variant="outline"
+                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                  >
+                    <Plus className="ml-2 h-4 w-4" />
+                    הוספת שאילתא
+                  </Button>
+                </div>
+              </div>
               <TabsList className="grid w-full grid-cols-1 mb-8 mt-8">
                 <TabsTrigger value="bills">📋 הצעות חוק ({bills.length})</TabsTrigger>
               </TabsList>
@@ -945,7 +973,7 @@ export default function MK121() {
         <ProposalSubmissionForms
           cycleId={cycle.id}
           userId={demoUser.id}
-          initialTab={initialSubmitTab}
+          initialTab={submissionTab}
           onSuccess={() => {
             setShowSubmissionForm(false);
             billsQuery.refetch();

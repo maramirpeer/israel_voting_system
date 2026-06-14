@@ -1,3 +1,5 @@
+import type { MK121Bill, MK121Question } from "../drizzle/schema";
+
 const now = new Date();
 const hoursFromNow = (hours: number) => new Date(now.getTime() + hours * 60 * 60 * 1000);
 const daysFromNow = (days: number) => new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
@@ -442,7 +444,7 @@ export const demoMK121Cycle = {
   updatedAt: now,
 };
 
-export const demoMK121Bills = [
+export const demoMK121Bills: MK121Bill[] = [
   {
     id: 201,
     cycleId: 1,
@@ -548,9 +550,9 @@ export const demoMK121Bills = [
   {
     id: 207,
     cycleId: 1,
-    title: "חוק הסדרת מעבר קולות אבודים",
+    title: "הצעת חוק הבחירות לכנסת — הגנת קול הבוחר, התשפ״ו–2026",
     description:
-      "קולות של מפלגה שלא עברה את אחוז החסימה יעברו למפלגה אחרת לפי סיכום ברור ושקוף שנקבע מראש ופורסם לציבור לפני הבחירות. כך מצביעים יוכלו לדעת מראש לאן יעבור קולם במקרה שהמפלגה שבחרו לא תעבור את אחוז החסימה. הסוף לחשש מקול אבוד!",
+      "מטרת החוק היא לצמצם אובדן קולות בבחירות לכנסת, לחזק את חופש הבחירה ולאפשר תמיכה ברשימה חדשה או קטנה בלי חשש שהקול יאבד. כל בוחר יהיה רשאי לסמן, לצד בחירתו הראשית, גם רשימת גיבוי אחת. אם הרשימה הראשית לא תעבור את אחוז החסימה, ייחשב הקול כאילו ניתן לרשימת הגיבוי, ובלבד שרשימת הגיבוי עברה את אחוז החסימה.",
     proposedBy: 1,
     category: "בחירות ודמוקרטיה",
     votes: 15480,
@@ -565,7 +567,7 @@ export const demoMK121Bills = [
   },
 ];
 
-export const demoMK121Questions = [
+export const demoMK121Questions: MK121Question[] = [
   {
     id: 301,
     cycleId: 1,
