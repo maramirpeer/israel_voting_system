@@ -569,7 +569,12 @@ export default function MK121() {
     return true;
   };
   const openSubmissionForm = (tab: "bill" | "question") => {
-    if (requireSignupForActivity()) return;
+    if (loading) return;
+    if (!isAuthenticated) {
+      const returnTo = `/mk121?submit=${tab}`;
+      setLocation(`/?signup=1&returnTo=${encodeURIComponent(returnTo)}`);
+      return;
+    }
     setSubmissionTab(tab);
     setShowSubmissionForm(true);
   };

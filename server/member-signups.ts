@@ -4,9 +4,12 @@ import { timingSafeEqual } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { and, count, eq, isNotNull, isNull, like, or } from "drizzle-orm";
-import { getDb } from "./db";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { getDb, upsertUser } from "./db";
 import { candidateEnlistments, memberSignups } from "../drizzle/schema";
 import { getContactEmailTo, isEmailConfigured, sendEmail } from "./email";
+import { getSessionCookieOptions } from "./_core/cookies";
+import { sdk } from "./_core/sdk";
 
 type LocalMemberSignup = {
   id: string;
@@ -113,6 +116,31 @@ function normalize(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function createMemberOpenId(email: string) {
+  return `member:${createHash("sha256").update(email.toLowerCase()).digest("hex").slice(0, 56)}`;
+}
+
+async function signInConfirmedMember(req: Request, res: Response, signup: { fullName: string; email: string }) {
+  const openId = createMemberOpenId(signup.email);
+
+  await upsertUser({
+    openId,
+    name: signup.fullName,
+    email: signup.email,
+    loginMethod: "confirmed-member-email",
+    lastSignedIn: new Date(),
+  });
+
+  const sessionToken = await sdk.createSessionToken(openId, {
+    name: signup.fullName,
+    expiresInMs: ONE_YEAR_MS,
+  });
+  res.cookie(COOKIE_NAME, sessionToken, {
+    ...getSessionCookieOptions(req),
+    maxAge: ONE_YEAR_MS,
+  });
+}
+
 function getPublicDisplayName(fullName: string) {
   const normalizedName = fullName.trim();
 
@@ -212,8 +240,17 @@ function getRequestBaseUrl(req: Request) {
   return `${protocol}://${req.get("host")}`;
 }
 
-function buildConfirmationUrl(req: Request, token: string) {
-  return `${getRequestBaseUrl(req)}/api/member-signups/confirm?token=${encodeURIComponent(token)}`;
+function normalizeReturnTo(value: unknown) {
+  const returnTo = normalize(value);
+  return returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/mk121";
+}
+
+function buildConfirmationUrl(req: Request, token: string, returnTo = "/mk121") {
+  const query = new URLSearchParams({
+    token,
+    returnTo: normalizeReturnTo(returnTo),
+  });
+  return `${getRequestBaseUrl(req)}/api/member-signups/confirm?${query.toString()}`;
 }
 
 function buildReferralCode(signupKey: string) {
@@ -662,6 +699,53 @@ async function getConfirmedReferralByEmail(req: Request, email: string) {
     referralUrl,
     qrImageUrl: buildQrImageUrl(referralUrl),
   };
+}
+
+async function sendConfirmedMemberLogin(req: Request, email: string, returnTo: string) {
+  const normalizedEmail = normalize(email).toLowerCase();
+  const confirmationToken = createConfirmationToken();
+  const confirmationTokenHash = hashToken(confirmationToken);
+  const confirmationUrl = buildConfirmationUrl(req, confirmationToken, returnTo);
+  const now = new Date();
+  const db = await ensureMemberSignupTable().catch((error) => {
+    handleDbUnavailable("member login setup", error);
+    return null;
+  });
+
+  if (!db) {
+    requireSignupStorage("member login");
+  }
+
+  if (db) {
+    const rows = await db
+      .select()
+      .from(memberSignups)
+      .where(and(eq(memberSignups.email, normalizedEmail), isNotNull(memberSignups.emailConfirmedAt)))
+      .limit(1);
+    const signup = rows[0];
+
+    if (!signup) return false;
+
+    await db
+      .update(memberSignups)
+      .set({ confirmationTokenHash, confirmationSentAt: now, updatedAt: now })
+      .where(eq(memberSignups.id, signup.id));
+
+    return sendMemberLoginEmail(signup.email, signup.fullName, confirmationUrl);
+  }
+
+  const store = await readLocalStore();
+  const signup = store.submissions.find(
+    (item) => item.email.toLowerCase() === normalizedEmail && item.emailConfirmedAt,
+  );
+
+  if (!signup) return false;
+
+  signup.confirmationTokenHash = confirmationTokenHash;
+  signup.confirmationSentAt = now.toISOString();
+  signup.updatedAt = now.toISOString();
+  await writeLocalStore(store);
+  return sendMemberLoginEmail(signup.email, signup.fullName, confirmationUrl);
 }
 
 async function saveSignup(input: {
@@ -1255,6 +1339,25 @@ async function sendConfirmationEmail(to: string, fullName: string, confirmationU
   return sendEmail({ to, subject: message.subject, html: message.html, text: message.text });
 }
 
+async function sendMemberLoginEmail(to: string, fullName: string, confirmationUrl: string) {
+  const safeFullName = escapeHtml(fullName);
+  const safeConfirmationUrl = escapeHtml(confirmationUrl);
+
+  return sendEmail({
+    to,
+    subject: "קישור כניסה לקול משותף",
+    html: `
+      <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#17324d">
+        <h2>שלום ${safeFullName},</h2>
+        <p>לחצו על הכפתור כדי להיכנס לאתר כחבר/ה מאושר/ת ולהמשיך בפעולה שביקשתם לבצע.</p>
+        <p><a href="${safeConfirmationUrl}" style="display:inline-block;padding:12px 20px;background:#1d4f91;color:#fff;text-decoration:none;border-radius:8px;font-weight:700">כניסה לקול משותף</a></p>
+        <p>אם לא ביקשתם להיכנס, אפשר להתעלם מההודעה.</p>
+      </div>
+    `,
+    text: `שלום ${fullName}, קישור הכניסה שלך לקול משותף: ${confirmationUrl}`,
+  });
+}
+
 function sendSignupRouteError(res: Response, error: unknown) {
   if (error instanceof SignupStorageUnavailableError) {
     res.status(error.statusCode).json({ error: error.message });
@@ -1461,6 +1564,7 @@ export function registerMemberSignupRoutes(app: Express) {
 
   app.get("/api/member-signups/confirm", async (req: Request, res: Response) => {
     const token = normalize(req.query.token);
+    const returnTo = normalizeReturnTo(req.query.returnTo);
 
     if (!token) {
       res.status(400).send("קישור האישור חסר או אינו תקין.");
@@ -1478,6 +1582,7 @@ export function registerMemberSignupRoutes(app: Express) {
       const publicMemberCount = await getPublicMemberCount();
       const signupKey = confirmation.signup.nationalId || createHash("sha256").update(confirmation.signup.email).digest("hex").slice(0, 32);
       const referral = buildReferralPayload(req, signupKey);
+      await signInConfirmedMember(req, res, confirmation.signup);
 
       if (!confirmation.wasAlreadyConfirmed) {
         await sendWelcomeEmail(confirmation.signup.email, confirmation.signup.fullName, publicMemberCount, referral).catch((error) => {
@@ -1518,7 +1623,7 @@ export function registerMemberSignupRoutes(app: Express) {
               <p>קוד ההזמנה האישי שלך: <strong dir="ltr">${referral.referralCode}</strong></p>
               <p><img src="${escapeHtml(referral.qrImageUrl)}" alt="QR אישי להזמנת חברים" width="180" height="180" /></p>
               <p><a href="${escapeHtml(referral.referralUrl)}">פתיחת עמוד השיתוף האישי</a></p>
-              <p><a href="/">חזרה לאתר</a></p>
+              <p><a href="${escapeHtml(returnTo)}">כניסה לאתר כחבר מאושר והמשך הפעולה</a></p>
             </main>
           </body>
         </html>
@@ -1538,6 +1643,7 @@ export function registerMemberSignupRoutes(app: Express) {
     const email = normalize(req.body.email).toLowerCase();
     const phone = normalize(req.body.phone);
     const note = normalize(req.body.note);
+    const returnTo = normalizeReturnTo(req.body.returnTo);
     const referredByCode = normalizeReferralCode(req.body.referredByCode || req.body.referralCode || req.query.ref);
 
     if (!fullName) {
@@ -1552,10 +1658,16 @@ export function registerMemberSignupRoutes(app: Express) {
 
     try {
       const confirmationToken = createConfirmationToken();
-      const confirmationUrl = buildConfirmationUrl(req, confirmationToken);
+      const confirmationUrl = buildConfirmationUrl(req, confirmationToken, returnTo);
       const { isNewSignup, isAlreadyConfirmed, signupKey } = await saveSignup({ fullName, email, phone, note, confirmationToken, referredByCode });
       const publicMemberCount = await getPublicMemberCount();
       const referral = buildReferralPayload(req, signupKey);
+      const loginEmailSent = isAlreadyConfirmed
+        ? await sendConfirmedMemberLogin(req, email, returnTo).catch((error) => {
+          console.warn("[MemberSignups] Member login email error:", error);
+          return false;
+        })
+        : false;
       const confirmationEmailSent = isAlreadyConfirmed
         ? false
         : await sendConfirmationEmail(email, fullName, confirmationUrl).catch((error) => {
@@ -1563,7 +1675,7 @@ export function registerMemberSignupRoutes(app: Express) {
         return false;
       });
 
-      res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent, ...referral });
+      res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent, loginEmailSent, ...referral });
     } catch (error) {
       sendSignupRouteError(res, error);
     }

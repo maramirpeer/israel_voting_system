@@ -14,6 +14,11 @@ function getCurrentReferralCode() {
   return new URLSearchParams(window.location.search).get("ref") || "";
 }
 
+function getSignupReturnTo() {
+  const returnTo = new URLSearchParams(window.location.search).get("returnTo") || "";
+  return returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/mk121";
+}
+
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
@@ -255,7 +260,11 @@ ${candidateSenderEmail.trim()}`
       const response = await fetch("/api/member-signups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...signupForm, referredByCode: getCurrentReferralCode() }),
+        body: JSON.stringify({
+          ...signupForm,
+          referredByCode: getCurrentReferralCode(),
+          returnTo: getSignupReturnTo(),
+        }),
         signal: controller.signal,
       });
       const data = await response.json();
@@ -273,7 +282,9 @@ ${candidateSenderEmail.trim()}`
         : "";
 
       const message = data.isAlreadyConfirmed
-        ? `הרשומה שלך כבר מאושרת. המד עומד על ${data.count} נרשמים.${personalReferralMessage}`
+        ? data.loginEmailSent
+          ? "ההרשמה שלך כבר מאושרת. שלחנו אליך קישור כניסה; פתיחת הקישור תחזיר אותך ישירות לפעולה שביקשת לבצע."
+          : "ההרשמה שלך כבר מאושרת, אך לא הצלחנו לשלוח כרגע קישור כניסה. אפשר לנסות שוב בעוד רגע."
         : data.confirmationEmailSent
           ? "שלחנו אליך מייל עם קישור לאישור ההצטרפות. ההצטרפות תיספר אחרי לחיצה על הקישור."
           : "הפרטים נשמרו, אבל מייל האישור לא נשלח כרגע. ננסה שוב לאחר חיבור שירות המייל בשרת.";
