@@ -193,6 +193,18 @@ const demoQuestions = [
   },
 ];
 
+function mergeProposalsByTitle<
+  Stored extends { title: string },
+  Baseline extends { title: string },
+>(stored: Stored[], baseline: Baseline[]): Array<Stored | Baseline> {
+  const merged = new Map<string, Stored | Baseline>();
+
+  baseline.forEach((proposal) => merged.set(proposal.title.trim(), proposal));
+  stored.forEach((proposal) => merged.set(proposal.title.trim(), proposal));
+
+  return Array.from(merged.values());
+}
+
 
 export default function MK121() {
   const { user, isAuthenticated, loading } = useAuth();
@@ -333,11 +345,11 @@ export default function MK121() {
 
   const useDemoData = !currentCycleQuery.data || Boolean(currentCycleQuery.error);
   const cycle = currentCycleQuery.data || demoCycle;
-  const bills = [...(useDemoData ? demoBills : billsQuery.data || [])].sort((a, b) => {
+  const bills = mergeProposalsByTitle(billsQuery.data || [], demoBills).sort((a, b) => {
     const priorityDiff = getBillDisplayPriority(a.title) - getBillDisplayPriority(b.title);
     return priorityDiff || (b.votes || 0) - (a.votes || 0);
   });
-  const questions = [...(useDemoData ? demoQuestions : questionsQuery.data || [])].sort(
+  const questions = mergeProposalsByTitle(questionsQuery.data || [], demoQuestions).sort(
     (a, b) => (b.votes || 0) - (a.votes || 0)
   );
 
@@ -483,7 +495,7 @@ export default function MK121() {
       ...current,
       [billId]: (current[billId] || 0) + 1,
     }));
-    if (!useDemoData) {
+    if (billsQuery.data?.some((bill) => bill.id === billId)) {
       voteBillMutation.mutate({ billId, userId: demoUser.id });
     } else {
       toast.success("×”×§×•×œ ×©×œ×š × ×¨×©×!");
@@ -506,7 +518,7 @@ export default function MK121() {
       return;
     }
     setLocalBillAgainstVotes((current) => [...current, billId]);
-    if (!useDemoData) {
+    if (billsQuery.data?.some((bill) => bill.id === billId)) {
       voteBillMutation.mutate({ billId, userId: demoUser.id });
     } else {
       toast.success("×”×§×•×œ ×©×œ×š × ×¨×©×!");
@@ -532,7 +544,7 @@ export default function MK121() {
       ...current,
       [questionId]: (current[questionId] || 0) + 1,
     }));
-    if (!useDemoData) {
+    if (questionsQuery.data?.some((question) => question.id === questionId)) {
       voteQuestionMutation.mutate({ questionId, userId: demoUser.id });
     } else {
       toast.success("הקול שלך נרשם!");
