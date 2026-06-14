@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, Lock, Eye, Users, Shield, Zap, ArrowRight, Megaphone, BarChart3, FileText, BadgeCheck, Send, Copy } from "lucide-react";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useLocation } from "wouter";
 
 function getCurrentReferralCode() {
@@ -27,8 +27,11 @@ export default function Home() {
   const [signupMessage, setSignupMessage] = useState("");
   const [isMemberLogin, setMemberLogin] = useState(false);
   const [memberLoginEmail, setMemberLoginEmail] = useState("");
+  const [memberLoginEmailPrefix, setMemberLoginEmailPrefix] = useState("");
+  const [memberLoginEmailSuggestions, setMemberLoginEmailSuggestions] = useState<string[]>([]);
   const [memberLoginMessage, setMemberLoginMessage] = useState("");
   const [isMemberLoginSubmitting, setMemberLoginSubmitting] = useState(false);
+  const memberLoginEmailRef = useRef<HTMLInputElement | null>(null);
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
@@ -127,6 +130,51 @@ export default function Home() {
       setSignupOpen(true);
     }
   }, []);
+
+  useEffect(() => {
+    const emailPrefix = memberLoginEmailPrefix.trim().toLowerCase();
+
+    if (!isSignupOpen || !isMemberLogin || emailPrefix.length < 2) {
+      setMemberLoginEmailSuggestions([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      fetch(`/api/member-signups/email-suggestions?q=${encodeURIComponent(emailPrefix)}`, {
+        signal: controller.signal,
+      })
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          setMemberLoginEmailSuggestions(Array.isArray(data?.emails) ? data.emails : []);
+        })
+        .catch(() => undefined);
+    }, 160);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [isSignupOpen, isMemberLogin, memberLoginEmailPrefix]);
+
+  useEffect(() => {
+    const typedEmail = memberLoginEmailPrefix.trim().toLowerCase();
+
+    if (!isSignupOpen || !isMemberLogin || typedEmail.length < 2) return;
+
+    const completion = memberLoginEmailSuggestions.find((email) => {
+      const normalizedEmail = email.toLowerCase();
+      return normalizedEmail.startsWith(typedEmail) && normalizedEmail !== typedEmail;
+    });
+
+    if (!completion) return;
+
+    const typedLength = memberLoginEmailPrefix.length;
+    setMemberLoginEmail(completion);
+    window.requestAnimationFrame(() => {
+      memberLoginEmailRef.current?.setSelectionRange(typedLength, completion.length);
+    });
+  }, [isSignupOpen, isMemberLogin, memberLoginEmailPrefix, memberLoginEmailSuggestions]);
   const goToMK121Top = () => {
     setLocation("/mk121");
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -1012,9 +1060,16 @@ ${candidateSenderEmail.trim()}`
                       <Label htmlFor="registered-member-email">אימייל רשום</Label>
                       <Input
                         id="registered-member-email"
+                        ref={memberLoginEmailRef}
                         type="email"
+                        autoComplete="email"
                         value={memberLoginEmail}
-                        onChange={(event) => setMemberLoginEmail(event.target.value)}
+                        onChange={(event) => {
+                          const nextValue = event.target.value;
+                          const selectionStart = event.target.selectionStart ?? nextValue.length;
+                          setMemberLoginEmail(nextValue);
+                          setMemberLoginEmailPrefix(nextValue.slice(0, selectionStart));
+                        }}
                         required
                       />
                     </div>
