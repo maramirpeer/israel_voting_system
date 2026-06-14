@@ -25,6 +25,10 @@ export default function Home() {
   const [isSignupOpen, setSignupOpen] = useState(() => new URLSearchParams(window.location.search).get("signup") === "1");
   const [isSignupSubmitting, setSignupSubmitting] = useState(false);
   const [signupMessage, setSignupMessage] = useState("");
+  const [isMemberLogin, setMemberLogin] = useState(false);
+  const [memberLoginEmail, setMemberLoginEmail] = useState("");
+  const [memberLoginMessage, setMemberLoginMessage] = useState("");
+  const [isMemberLoginSubmitting, setMemberLoginSubmitting] = useState(false);
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
@@ -302,6 +306,35 @@ ${candidateSenderEmail.trim()}`
     } finally {
       window.clearTimeout(timeout);
       setSignupSubmitting(false);
+    }
+  };
+  const handleMemberLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMemberLoginSubmitting(true);
+    setMemberLoginMessage("");
+
+    try {
+      const response = await fetch("/api/member-signups/request-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: memberLoginEmail,
+          returnTo: getSignupReturnTo(),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "שליחת קישור הכניסה נכשלה.");
+      }
+
+      setMemberLoginMessage(
+        "שלחנו אליך קישור כניסה. לאחר פתיחת הקישור תחזור ישירות לפעולה שביקשת לבצע.",
+      );
+    } catch (error) {
+      setMemberLoginMessage(error instanceof Error ? error.message : "שליחת קישור הכניסה נכשלה.");
+    } finally {
+      setMemberLoginSubmitting(false);
     }
   };
 
@@ -964,11 +997,38 @@ ${candidateSenderEmail.trim()}`
               </DialogTrigger>
               <DialogContent className="text-right sm:max-w-xl" dir="rtl">
                 <DialogHeader className="text-right">
-                  <DialogTitle className="text-2xl text-blue-900">טופס הצטרפות לגרעין המייסד</DialogTitle>
+                  <DialogTitle className="text-2xl text-blue-900">
+                    {isMemberLogin ? "כניסה למשתמשים רשומים" : "טופס הצטרפות לגרעין המייסד"}
+                  </DialogTitle>
                   <DialogDescription>
-                    הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אימייל תקין הוא שדה חובה, וההצטרפות תיספר אחרי אישור הקישור במייל.
+                    {isMemberLogin
+                      ? "הזינו את המייל שאושר בהרשמה. נשלח אליכם קישור כניסה מאובטח."
+                      : "הפרטים נשמרים במערכת ומשמשים לספירת נרשמים פוטנציאליים. השם נשמר כראשי תיבות בלבד, אימייל תקין הוא שדה חובה, וההצטרפות תיספר אחרי אישור הקישור במייל."}
                   </DialogDescription>
                 </DialogHeader>
+                {isMemberLogin ? (
+                  <form className="space-y-4" onSubmit={handleMemberLoginSubmit}>
+                    <div className="space-y-2">
+                      <Label htmlFor="registered-member-email">אימייל רשום</Label>
+                      <Input
+                        id="registered-member-email"
+                        type="email"
+                        value={memberLoginEmail}
+                        onChange={(event) => setMemberLoginEmail(event.target.value)}
+                        required
+                      />
+                    </div>
+                    {memberLoginMessage && (
+                      <p className="rounded-md bg-blue-50 p-3 text-sm font-medium text-blue-900">{memberLoginMessage}</p>
+                    )}
+                    <Button type="submit" className="w-full bg-[#2f7d5c] hover:bg-[#286a4f]" disabled={isMemberLoginSubmitting}>
+                      {isMemberLoginSubmitting ? "שולח..." : "שליחת קישור כניסה"}
+                    </Button>
+                    <Button type="button" variant="outline" className="w-full" onClick={() => setMemberLogin(false)}>
+                      משתמש חדש? מעבר להרשמה
+                    </Button>
+                  </form>
+                ) : (
                 <form className="space-y-4" onSubmit={handleSignupSubmit}>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
@@ -1018,7 +1078,11 @@ ${candidateSenderEmail.trim()}`
                   <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800" disabled={isSignupSubmitting}>
                     {isSignupSubmitting ? "שולח..." : "שליחה"}
                   </Button>
+                  <Button type="button" variant="outline" className="w-full border-[#2f7d5c] text-[#2f7d5c]" onClick={() => setMemberLogin(true)}>
+                    כבר רשום? כניסה למערכת
+                  </Button>
                 </form>
+                )}
               </DialogContent>
             </Dialog>
             <Dialog open={isWelcomeOpen} onOpenChange={setWelcomeOpen}>

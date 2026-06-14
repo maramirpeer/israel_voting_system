@@ -90,10 +90,11 @@ export function GlobalSignupButton() {
     setMemberReferralUrl("");
 
     try {
-      const response = await fetch("/api/member-signups/recover-referral", {
+      const returnTo = `${window.location.pathname}${window.location.search}`;
+      const response = await fetch("/api/member-signups/request-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: memberEmail }),
+        body: JSON.stringify({ email: memberEmail, returnTo }),
       });
       const data = await response.json().catch(() => ({}));
 
@@ -101,8 +102,7 @@ export function GlobalSignupButton() {
         throw new Error(data.error || "כניסת חברים נכשלה.");
       }
 
-      setMemberReferralUrl(data.referralUrl || "");
-      setMemberLoginMessage(`נמצאה הרשמה מאושרת. הקוד האישי שלך: ${data.referralCode}.`);
+      setMemberLoginMessage("שלחנו אליך קישור כניסה מאובטח. פתיחת הקישור תחבר אותך למערכת.");
     } catch (error) {
       setMemberLoginMessage(error instanceof Error ? error.message : "כניסת חברים נכשלה.");
     } finally {

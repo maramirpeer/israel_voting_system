@@ -1562,6 +1562,31 @@ export function registerMemberSignupRoutes(app: Express) {
     }
   });
 
+  app.post("/api/member-signups/request-login", async (req: Request, res: Response) => {
+    const email = normalize(req.body.email).toLowerCase();
+    const returnTo = normalizeReturnTo(req.body.returnTo);
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "יש למלא אימייל תקין." });
+      return;
+    }
+
+    try {
+      const loginEmailSent = await sendConfirmedMemberLogin(req, email, returnTo);
+
+      if (!loginEmailSent) {
+        res.status(404).json({
+          error: "לא נמצאה הרשמה מאושרת למייל הזה. אם נרשמת, יש לאשר קודם את הקישור שנשלח במייל.",
+        });
+        return;
+      }
+
+      res.json({ ok: true, loginEmailSent: true });
+    } catch (error) {
+      sendSignupRouteError(res, error);
+    }
+  });
+
   app.get("/api/member-signups/confirm", async (req: Request, res: Response) => {
     const token = normalize(req.query.token);
     const returnTo = normalizeReturnTo(req.query.returnTo);
