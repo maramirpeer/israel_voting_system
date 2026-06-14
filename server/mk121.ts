@@ -1,4 +1,4 @@
-import { eq, and, desc, gt, lt, ne } from "drizzle-orm";
+import { eq, and, desc, gt, lt, or } from "drizzle-orm";
 import {
   mk121Cycles,
   mk121Bills,
@@ -153,7 +153,11 @@ export async function getBillsForCycle(cycleId: number) {
   const db = await getDb();
   if (!db) {
     return demoMK121Bills
-      .filter((bill) => bill.cycleId === cycleId && bill.status !== "archived")
+      .filter(
+        (bill) =>
+          bill.cycleId === cycleId &&
+          (bill.status === "published" || bill.status === "voting" || bill.status === "approved")
+      )
       .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
   }
 
@@ -161,7 +165,16 @@ export async function getBillsForCycle(cycleId: number) {
     const bills = await db
       .select()
       .from(mk121Bills)
-      .where(and(eq(mk121Bills.cycleId, cycleId), ne(mk121Bills.status, "archived")))
+      .where(
+        and(
+          eq(mk121Bills.cycleId, cycleId),
+          or(
+            eq(mk121Bills.status, "published"),
+            eq(mk121Bills.status, "voting"),
+            eq(mk121Bills.status, "approved")
+          )
+        )
+      )
       .orderBy(desc(mk121Bills.votes));
 
     return bills;
@@ -175,7 +188,11 @@ export async function getQuestionsForCycle(cycleId: number) {
   const db = await getDb();
   if (!db) {
     return demoMK121Questions
-      .filter((question) => question.cycleId === cycleId && question.status !== "archived")
+      .filter(
+        (question) =>
+          question.cycleId === cycleId &&
+          (question.status === "published" || question.status === "voting" || question.status === "approved")
+      )
       .sort((a, b) => (b.votes ?? 0) - (a.votes ?? 0));
   }
 
@@ -183,7 +200,16 @@ export async function getQuestionsForCycle(cycleId: number) {
     const questions = await db
       .select()
       .from(mk121Questions)
-      .where(and(eq(mk121Questions.cycleId, cycleId), ne(mk121Questions.status, "archived")))
+      .where(
+        and(
+          eq(mk121Questions.cycleId, cycleId),
+          or(
+            eq(mk121Questions.status, "published"),
+            eq(mk121Questions.status, "voting"),
+            eq(mk121Questions.status, "approved")
+          )
+        )
+      )
       .orderBy(desc(mk121Questions.votes));
 
     return questions;
@@ -403,7 +429,7 @@ export async function supportBill(billId: number, userId: number): Promise<boole
         .update(mk121Bills)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 1000 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "published" : "preliminary",
         })
         .where(eq(mk121Bills.id, billId));
     }
@@ -434,7 +460,7 @@ export async function removeBillSupport(billId: number, userId: number): Promise
         .update(mk121Bills)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 1000 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "published" : "preliminary",
         })
         .where(eq(mk121Bills.id, billId));
     }
@@ -481,7 +507,7 @@ export async function supportQuestion(questionId: number, userId: number): Promi
         .update(mk121Questions)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 1000 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "published" : "preliminary",
         })
         .where(eq(mk121Questions.id, questionId));
     }
@@ -516,7 +542,7 @@ export async function removeQuestionSupport(questionId: number, userId: number):
         .update(mk121Questions)
         .set({
           supporters: newSupportCount,
-          status: newSupportCount >= 1000 ? "voting" : "preliminary",
+          status: newSupportCount >= 1000 ? "published" : "preliminary",
         })
         .where(eq(mk121Questions.id, questionId));
     }
@@ -793,17 +819,31 @@ export async function approvePreliminaryProposalForAdmin(type: "bill" | "questio
 
   try {
     if (type === "bill") {
+      const proposal = await db
+        .select({ id: mk121Bills.id })
+        .from(mk121Bills)
+        .where(and(eq(mk121Bills.id, id), eq(mk121Bills.status, "preliminary")))
+        .limit(1);
+      if (!proposal.length) return false;
+
       await db
         .update(mk121Bills)
-        .set({ supporters: 1000, status: "voting" })
-        .where(eq(mk121Bills.id, id));
+        .set({ supporters: 1000, status: "published" })
+        .where(and(eq(mk121Bills.id, id), eq(mk121Bills.status, "preliminary")));
       return true;
     }
 
+    const proposal = await db
+      .select({ id: mk121Questions.id })
+      .from(mk121Questions)
+      .where(and(eq(mk121Questions.id, id), eq(mk121Questions.status, "preliminary")))
+      .limit(1);
+    if (!proposal.length) return false;
+
     await db
       .update(mk121Questions)
-      .set({ supporters: 1000, status: "voting" })
-      .where(eq(mk121Questions.id, id));
+      .set({ supporters: 1000, status: "published" })
+      .where(and(eq(mk121Questions.id, id), eq(mk121Questions.status, "preliminary")));
     return true;
   } catch (error) {
     console.error("[MK121] Error approving preliminary proposal:", error);

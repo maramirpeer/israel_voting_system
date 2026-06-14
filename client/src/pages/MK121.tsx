@@ -819,8 +819,8 @@ export default function MK121() {
                             <h3 className="text-xl font-bold text-slate-900">{bill.title}</h3>
                             <div className="mt-2 flex gap-2 flex-row-reverse">
                               {bill.status && (
-                                <Badge className={bill.status === 'preliminary' ? 'bg-purple-100 text-purple-700' : bill.status === 'voting' ? 'bg-blue-100 text-blue-700' : bill.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
-                                  {bill.status === 'preliminary' ? '📋 דף מקדים' : bill.status === 'voting' ? '🗳️ הצבעה' : bill.status === 'approved' ? '✅ אושר' : '📁 ארכיון'}
+                                <Badge className={bill.status === 'preliminary' ? 'bg-purple-100 text-purple-700' : bill.status === 'published' ? 'bg-amber-100 text-amber-800' : bill.status === 'voting' ? 'bg-blue-100 text-blue-700' : bill.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                                  {bill.status === 'preliminary' ? '📋 דף מקדים' : bill.status === 'published' ? '🌐 פורסם' : bill.status === 'voting' ? '🗳️ הצבעה' : bill.status === 'approved' ? '✅ אושר' : '📁 ארכיון'}
                                 </Badge>
                               )}
                               {bill.category && (

@@ -547,7 +547,10 @@ export default function AdminSignups() {
         <section className="grid gap-4 lg:grid-cols-2">
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">דפים מקדימים - הצעות חוק</h2>
+              <div>
+                <h2 className="text-xl font-bold">דפים מקדימים - הצעות חוק</h2>
+                <p className="mt-1 text-xs text-[#5a4b38]">אישור מדמה הגעה ל-1,000 חברים ומפרסם את ההצעה באתר. ההצבעה היא שלב נפרד.</p>
+              </div>
               <Button variant="outline" size="sm" onClick={() => loadPreliminaryProposals()} disabled={!token}>
                 רענון
               </Button>
@@ -568,7 +571,7 @@ export default function AdminSignups() {
                       className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
                     >
                       <CheckCircle2 className="h-4 w-4" />
-                      אישור
+                      אישור והעלאה
                     </Button>
                   </div>
                 </div>
@@ -579,7 +582,10 @@ export default function AdminSignups() {
 
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">דפים מקדימים - שאילתות</h2>
+              <div>
+                <h2 className="text-xl font-bold">דפים מקדימים - שאילתות</h2>
+                <p className="mt-1 text-xs text-[#5a4b38]">אישור מדמה הגעה ל-1,000 חברים ומפרסם את השאילתא באתר. ההצבעה היא שלב נפרד.</p>
+              </div>
               <Button variant="outline" size="sm" onClick={() => loadPreliminaryProposals()} disabled={!token}>
                 רענון
               </Button>
@@ -600,7 +606,7 @@ export default function AdminSignups() {
                       className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
                     >
                       <CheckCircle2 className="h-4 w-4" />
-                      אישור
+                      אישור והעלאה
                     </Button>
                   </div>
                 </div>

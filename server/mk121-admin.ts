@@ -52,6 +52,6 @@ export function registerMK121AdminRoutes(app: Express) {
       return;
     }
 
-    res.json({ ok: true, type, id, supporters: 1000, status: "voting" });
+    res.json({ ok: true, type, id, supporters: 1000, status: "published" });
   });
 }

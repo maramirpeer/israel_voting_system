@@ -81,7 +81,7 @@ export async function ensureMK121Tables() {
       \`category\` varchar(100),
       \`votes\` int DEFAULT 0,
       \`isWinner\` boolean DEFAULT false,
-      \`status\` enum('preliminary','voting','approved','archived') NOT NULL DEFAULT 'preliminary',
+      \`status\` enum('preliminary','published','voting','approved','archived') NOT NULL DEFAULT 'preliminary',
       \`supporters\` int DEFAULT 0,
       \`quorumMet\` boolean DEFAULT false,
       \`createdCycleNumber\` int NOT NULL,
@@ -103,7 +103,7 @@ export async function ensureMK121Tables() {
       \`urgency\` enum('low','medium','high') NOT NULL DEFAULT 'medium',
       \`votes\` int DEFAULT 0,
       \`isWinner\` boolean DEFAULT false,
-      \`status\` enum('preliminary','voting','approved','archived') NOT NULL DEFAULT 'preliminary',
+      \`status\` enum('preliminary','published','voting','approved','archived') NOT NULL DEFAULT 'preliminary',
       \`supporters\` int DEFAULT 0,
       \`quorumMet\` boolean DEFAULT false,
       \`createdCycleNumber\` int NOT NULL,
@@ -150,6 +150,16 @@ export async function ensureMK121Tables() {
       PRIMARY KEY (\`id\`),
       UNIQUE KEY \`mk121QuestionSupporters_question_user_unique\` (\`questionId\`, \`userId\`)
     )
+  `);
+  await db.execute(`
+    ALTER TABLE \`mk121Bills\`
+      MODIFY COLUMN \`status\` enum('preliminary','published','voting','approved','archived')
+      NOT NULL DEFAULT 'preliminary'
+  `);
+  await db.execute(`
+    ALTER TABLE \`mk121Questions\`
+      MODIFY COLUMN \`status\` enum('preliminary','published','voting','approved','archived')
+      NOT NULL DEFAULT 'preliminary'
   `);
   await db.execute(`
     INSERT IGNORE INTO \`mk121Cycles\`
