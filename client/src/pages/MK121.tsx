@@ -601,7 +601,7 @@ export default function MK121() {
 
   const endDate = cycle?.endDate ? toDate(cycle.endDate) || new Date() : new Date();
   const timeRemaining = cycle && endDate
-    ? Math.ceil((endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    ? Math.max(0, Math.ceil((endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
 
   return (

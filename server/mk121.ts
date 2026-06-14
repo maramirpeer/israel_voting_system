@@ -1,4 +1,4 @@
-import { eq, and, desc, gt, lt, or } from "drizzle-orm";
+import { eq, and, desc, lt, or } from "drizzle-orm";
 import {
   mk121Cycles,
   mk121Bills,
@@ -12,19 +12,64 @@ import {
 import { getDb } from "./db";
 import { demoMK121Bills, demoMK121Cycle, demoMK121Questions, demoMinistries } from "./demoData";
 
+function getCurrentQuarter(now = new Date()) {
+  const year = now.getUTCFullYear();
+  const quarterIndex = Math.floor(now.getUTCMonth() / 3);
+  const startDate = new Date(Date.UTC(year, quarterIndex * 3, 1));
+  const endDate = new Date(Date.UTC(year, quarterIndex * 3 + 3, 0, 23, 59, 59));
+  const seasonNames = ["חורף", "אביב", "קיץ", "סתיו"] as const;
+
+  return {
+    cycleNumber: year * 10 + quarterIndex + 1,
+    seasonName: seasonNames[quarterIndex],
+    startDate,
+    endDate,
+  };
+}
+
 export async function getCurrentCycle() {
   const db = await getDb();
   if (!db) return demoMK121Cycle;
 
   try {
     const now = new Date();
-    const cycle = await db
+    const quarter = getCurrentQuarter(now);
+    const activeCycle = await db
       .select()
       .from(mk121Cycles)
-      .where(and(eq(mk121Cycles.status, "active"), lt(mk121Cycles.startDate, now), gt(mk121Cycles.endDate, now)))
+      .where(eq(mk121Cycles.status, "active"))
       .limit(1);
 
-    return cycle[0] || null;
+    if (activeCycle[0]) {
+      const cycle = activeCycle[0];
+      const datesMatch =
+        cycle.startDate.getTime() === quarter.startDate.getTime() &&
+        cycle.endDate.getTime() === quarter.endDate.getTime();
+
+      if (!datesMatch || cycle.cycleNumber !== quarter.cycleNumber || cycle.seasonName !== quarter.seasonName) {
+        await db
+          .update(mk121Cycles)
+          .set(quarter)
+          .where(eq(mk121Cycles.id, cycle.id));
+
+        return { ...cycle, ...quarter };
+      }
+
+      return cycle;
+    }
+
+    await db.insert(mk121Cycles).values({
+      ...quarter,
+      status: "active",
+    });
+
+    const createdCycle = await db
+      .select()
+      .from(mk121Cycles)
+      .where(eq(mk121Cycles.cycleNumber, quarter.cycleNumber))
+      .limit(1);
+
+    return createdCycle[0] || null;
   } catch (error) {
     console.error("[MK121] Error getting current cycle:", error);
     return null;
