@@ -540,7 +540,7 @@ async function getConfirmedMemberEmailSuggestions(query: string) {
       const rows = await db
         .select({ email: memberSignups.email })
         .from(memberSignups)
-        .where(and(isNotNull(memberSignups.emailConfirmedAt), like(memberSignups.email, `%${normalizedQuery}%`)))
+        .where(and(isNotNull(memberSignups.emailConfirmedAt), like(memberSignups.email, `${normalizedQuery}%`)))
         .orderBy(memberSignups.email)
         .limit(memberEmailSuggestionsLimit);
 
@@ -554,7 +554,7 @@ async function getConfirmedMemberEmailSuggestions(query: string) {
   return Array.from(
     new Set(
       store.submissions
-        .filter((signup) => signup.emailConfirmedAt && signup.email.toLowerCase().includes(normalizedQuery))
+        .filter((signup) => signup.emailConfirmedAt && signup.email.toLowerCase().startsWith(normalizedQuery))
         .map((signup) => signup.email.toLowerCase()),
     ),
   )

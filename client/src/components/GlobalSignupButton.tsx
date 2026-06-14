@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { LogIn, UserPlus } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 function getCurrentReferralCode() {
   return new URLSearchParams(window.location.search).get("ref") || "";
@@ -19,9 +19,7 @@ export function GlobalSignupButton() {
   const [memberLoginMessage, setMemberLoginMessage] = useState("");
   const [memberReferralUrl, setMemberReferralUrl] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
-  const [memberEmailTypedPrefix, setMemberEmailTypedPrefix] = useState("");
   const [memberEmailSuggestions, setMemberEmailSuggestions] = useState<string[]>([]);
-  const memberEmailInputRef = useRef<HTMLInputElement | null>(null);
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -34,7 +32,7 @@ export function GlobalSignupButton() {
   };
 
   useEffect(() => {
-    const emailPrefix = memberEmailTypedPrefix.trim().toLowerCase();
+    const emailPrefix = memberEmail.trim().toLowerCase();
 
     if (!isMemberLoginOpen || emailPrefix.length < 2) {
       setMemberEmailSuggestions([]);
@@ -58,30 +56,7 @@ export function GlobalSignupButton() {
       window.clearTimeout(timeout);
       controller.abort();
     };
-  }, [isMemberLoginOpen, memberEmailTypedPrefix]);
-
-  useEffect(() => {
-    const typedEmail = memberEmailTypedPrefix.trim().toLowerCase();
-
-    if (!isMemberLoginOpen || typedEmail.length < 2) {
-      return;
-    }
-
-    const completion = memberEmailSuggestions.find((email) => {
-      const normalizedEmail = email.toLowerCase();
-      return normalizedEmail.startsWith(typedEmail) && normalizedEmail !== typedEmail;
-    });
-
-    if (!completion) {
-      return;
-    }
-
-    const typedLength = memberEmailTypedPrefix.length;
-    setMemberEmail(completion);
-    window.requestAnimationFrame(() => {
-      memberEmailInputRef.current?.setSelectionRange(typedLength, completion.length);
-    });
-  }, [isMemberLoginOpen, memberEmailTypedPrefix, memberEmailSuggestions]);
+  }, [isMemberLoginOpen, memberEmail]);
 
   const handleMemberLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -185,24 +160,36 @@ export function GlobalSignupButton() {
             </DialogDescription>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleMemberLogin}>
-            <div className="space-y-2">
+            <div className="relative space-y-2">
               <Label htmlFor="member-login-email">אימייל רשום</Label>
               <Input
                 id="member-login-email"
-                ref={memberEmailInputRef}
-                type="text"
-                inputMode="email"
-                autoComplete="off"
+                type="email"
+                autoComplete="email"
                 value={memberEmail}
                 onChange={(event) => {
-                  const nextValue = event.target.value;
-                  const selectionStart = event.target.selectionStart ?? nextValue.length;
-                  const typedPrefix = nextValue.slice(0, selectionStart);
-                  setMemberEmail(nextValue);
-                  setMemberEmailTypedPrefix(typedPrefix);
+                  setMemberEmail(event.target.value);
+                  setMemberLoginMessage("");
                 }}
                 required
               />
+              {memberEmailSuggestions.length > 0 && (
+                <div className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-md border border-slate-200 bg-white text-left shadow-lg" dir="ltr">
+                  {memberEmailSuggestions.map((email) => (
+                    <button
+                      key={email}
+                      type="button"
+                      className="block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-blue-50"
+                      onClick={() => {
+                        setMemberEmail(email);
+                        setMemberEmailSuggestions([]);
+                      }}
+                    >
+                      {email}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {memberLoginMessage && <p className="rounded-md bg-[#eef6ef] p-3 text-sm font-medium text-[#17324d]">{memberLoginMessage}</p>}
             {memberReferralUrl && (
