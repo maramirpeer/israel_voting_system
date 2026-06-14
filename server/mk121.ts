@@ -851,6 +851,44 @@ export async function approvePreliminaryProposalForAdmin(type: "bill" | "questio
   }
 }
 
+export async function deletePreliminaryProposalForAdmin(type: "bill" | "question", id: number) {
+  const db = await getDb();
+  if (!db) {
+    return false;
+  }
+
+  try {
+    if (type === "bill") {
+      const proposal = await db
+        .select({ id: mk121Bills.id })
+        .from(mk121Bills)
+        .where(and(eq(mk121Bills.id, id), eq(mk121Bills.status, "preliminary")))
+        .limit(1);
+      if (!proposal.length) return false;
+
+      await db
+        .delete(mk121Bills)
+        .where(and(eq(mk121Bills.id, id), eq(mk121Bills.status, "preliminary")));
+      return true;
+    }
+
+    const proposal = await db
+      .select({ id: mk121Questions.id })
+      .from(mk121Questions)
+      .where(and(eq(mk121Questions.id, id), eq(mk121Questions.status, "preliminary")))
+      .limit(1);
+    if (!proposal.length) return false;
+
+    await db
+      .delete(mk121Questions)
+      .where(and(eq(mk121Questions.id, id), eq(mk121Questions.status, "preliminary")));
+    return true;
+  } catch (error) {
+    console.error("[MK121] Error deleting preliminary proposal:", error);
+    return false;
+  }
+}
+
 // Ministry functions
 export async function getMinistriesList() {
   const db = await getDb();

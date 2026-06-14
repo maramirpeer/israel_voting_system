@@ -73,6 +73,7 @@ export default function AdminSignups() {
   const [preliminaryQuestions, setPreliminaryQuestions] = useState<PreliminaryProposal[]>([]);
   const [candidateEnlistments, setCandidateEnlistments] = useState<CandidateEnlistment[]>([]);
   const [approvingProposal, setApprovingProposal] = useState<string | null>(null);
+  const [deletingProposal, setDeletingProposal] = useState<string | null>(null);
   const [includingCandidateId, setIncludingCandidateId] = useState<string | number | null>(null);
   const [deletingCandidateId, setDeletingCandidateId] = useState<string | number | null>(null);
   const [hasLoadedData, setHasLoadedData] = useState(false);
@@ -268,6 +269,39 @@ export default function AdminSignups() {
       setMessage(error instanceof Error ? error.message : "אישור הדף המקדים נכשל.");
     } finally {
       setApprovingProposal(null);
+    }
+  };
+
+  const deletePreliminaryProposal = async (type: "bill" | "question", proposal: PreliminaryProposal) => {
+    if (!token) {
+      setMessage("יש להזין מפתח גישה.");
+      return;
+    }
+
+    if (!window.confirm(`למחוק את הדף המקדים "${proposal.title}"?`)) {
+      return;
+    }
+
+    const proposalKey = `${type}-${proposal.id}`;
+    setDeletingProposal(proposalKey);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/admin/mk121/preliminary-proposals/${type}/${proposal.id}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": token },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "מחיקת הדף המקדים נכשלה.");
+      }
+
+      setMessage("הדף המקדים נמחק.");
+      await loadPreliminaryProposals(token);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "מחיקת הדף המקדים נכשלה.");
+    } finally {
+      setDeletingProposal(null);
     }
   };
 
@@ -554,20 +588,30 @@ export default function AdminSignups() {
             <div className="space-y-3">
               {preliminaryBills.map((proposal) => (
                 <div key={proposal.id} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/70 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-bold">{proposal.title}</h3>
-                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
-                      <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
-                    </div>
+                  <div className="min-w-0">
+                    <h3 className="break-words font-bold">{proposal.title}</h3>
+                    <p className="mt-1 max-h-24 overflow-y-auto break-words text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
+                    <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2 border-t border-[#eadfca] pt-3">
                     <Button
                       size="sm"
                       onClick={() => approvePreliminaryProposal("bill", proposal.id)}
-                      disabled={approvingProposal === `bill-${proposal.id}`}
-                      className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
+                      disabled={approvingProposal === `bill-${proposal.id}` || deletingProposal === `bill-${proposal.id}`}
+                      className="whitespace-nowrap gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
                     >
                       <CheckCircle2 className="h-4 w-4" />
                       אישור והעלאה
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deletePreliminaryProposal("bill", proposal)}
+                      disabled={deletingProposal === `bill-${proposal.id}` || approvingProposal === `bill-${proposal.id}`}
+                      className="whitespace-nowrap gap-2 border-red-200 text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {deletingProposal === `bill-${proposal.id}` ? "מוחק..." : "מחיקה"}
                     </Button>
                   </div>
                 </div>
@@ -589,20 +633,30 @@ export default function AdminSignups() {
             <div className="space-y-3">
               {preliminaryQuestions.map((proposal) => (
                 <div key={proposal.id} className="rounded-md border border-[#eadfca] bg-[#fbf7ed]/70 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-bold">{proposal.title}</h3>
-                      <p className="mt-1 line-clamp-2 text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
-                      <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
-                    </div>
+                  <div className="min-w-0">
+                    <h3 className="break-words font-bold">{proposal.title}</h3>
+                    <p className="mt-1 max-h-24 overflow-y-auto break-words text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
+                    <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2 border-t border-[#eadfca] pt-3">
                     <Button
                       size="sm"
                       onClick={() => approvePreliminaryProposal("question", proposal.id)}
-                      disabled={approvingProposal === `question-${proposal.id}`}
-                      className="gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
+                      disabled={approvingProposal === `question-${proposal.id}` || deletingProposal === `question-${proposal.id}`}
+                      className="whitespace-nowrap gap-2 bg-[#2f7d5c] hover:bg-[#286a4f]"
                     >
                       <CheckCircle2 className="h-4 w-4" />
                       אישור והעלאה
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => deletePreliminaryProposal("question", proposal)}
+                      disabled={deletingProposal === `question-${proposal.id}` || approvingProposal === `question-${proposal.id}`}
+                      className="whitespace-nowrap gap-2 border-red-200 text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {deletingProposal === `question-${proposal.id}` ? "מוחק..." : "מחיקה"}
                     </Button>
                   </div>
                 </div>
