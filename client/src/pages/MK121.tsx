@@ -30,8 +30,8 @@ const getBillDisplayPriority = (title: string) => {
 const demoCycle = {
   id: 1,
   seasonName: "אביב 2026",
-  startDate: new Date("2026-04-01").toISOString(),
-  endDate: new Date("2026-06-30").toISOString(),
+  startDate: new Date("2026-03-21").toISOString(),
+  endDate: new Date("2026-06-20T23:59:59Z").toISOString(),
 };
 
 const demoBills = [

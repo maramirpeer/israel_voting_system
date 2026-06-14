@@ -12,18 +12,47 @@ import {
 import { getDb } from "./db";
 import { demoMK121Bills, demoMK121Cycle, demoMK121Questions, demoMinistries } from "./demoData";
 
-function getCurrentQuarter(now = new Date()) {
+function getCurrentSeason(now = new Date()) {
   const year = now.getUTCFullYear();
-  const quarterIndex = Math.floor(now.getUTCMonth() / 3);
-  const startDate = new Date(Date.UTC(year, quarterIndex * 3, 1));
-  const endDate = new Date(Date.UTC(year, quarterIndex * 3 + 3, 0, 23, 59, 59));
-  const seasonNames = ["חורף", "אביב", "קיץ", "סתיו"] as const;
+  const timestamp = now.getTime();
+  const springStart = Date.UTC(year, 2, 21);
+  const summerStart = Date.UTC(year, 5, 21);
+  const autumnStart = Date.UTC(year, 8, 23);
+  const winterStart = Date.UTC(year, 11, 21);
 
+  if (timestamp >= springStart && timestamp < summerStart) {
+    return {
+      cycleNumber: year * 10 + 1,
+      seasonName: "אביב" as const,
+      startDate: new Date(springStart),
+      endDate: new Date(Date.UTC(year, 5, 20, 23, 59, 59)),
+    };
+  }
+
+  if (timestamp >= summerStart && timestamp < autumnStart) {
+    return {
+      cycleNumber: year * 10 + 2,
+      seasonName: "קיץ" as const,
+      startDate: new Date(summerStart),
+      endDate: new Date(Date.UTC(year, 8, 22, 23, 59, 59)),
+    };
+  }
+
+  if (timestamp >= autumnStart && timestamp < winterStart) {
+    return {
+      cycleNumber: year * 10 + 3,
+      seasonName: "סתיו" as const,
+      startDate: new Date(autumnStart),
+      endDate: new Date(Date.UTC(year, 11, 20, 23, 59, 59)),
+    };
+  }
+
+  const winterYear = timestamp >= winterStart ? year : year - 1;
   return {
-    cycleNumber: year * 10 + quarterIndex + 1,
-    seasonName: seasonNames[quarterIndex],
-    startDate,
-    endDate,
+    cycleNumber: winterYear * 10 + 4,
+    seasonName: "חורף" as const,
+    startDate: new Date(Date.UTC(winterYear, 11, 21)),
+    endDate: new Date(Date.UTC(winterYear + 1, 2, 20, 23, 59, 59)),
   };
 }
 
@@ -33,7 +62,7 @@ export async function getCurrentCycle() {
 
   try {
     const now = new Date();
-    const quarter = getCurrentQuarter(now);
+    const season = getCurrentSeason(now);
     const activeCycle = await db
       .select()
       .from(mk121Cycles)
@@ -43,30 +72,30 @@ export async function getCurrentCycle() {
     if (activeCycle[0]) {
       const cycle = activeCycle[0];
       const datesMatch =
-        cycle.startDate.getTime() === quarter.startDate.getTime() &&
-        cycle.endDate.getTime() === quarter.endDate.getTime();
+        cycle.startDate.getTime() === season.startDate.getTime() &&
+        cycle.endDate.getTime() === season.endDate.getTime();
 
-      if (!datesMatch || cycle.cycleNumber !== quarter.cycleNumber || cycle.seasonName !== quarter.seasonName) {
+      if (!datesMatch || cycle.cycleNumber !== season.cycleNumber || cycle.seasonName !== season.seasonName) {
         await db
           .update(mk121Cycles)
-          .set(quarter)
+          .set(season)
           .where(eq(mk121Cycles.id, cycle.id));
 
-        return { ...cycle, ...quarter };
+        return { ...cycle, ...season };
       }
 
       return cycle;
     }
 
     await db.insert(mk121Cycles).values({
-      ...quarter,
+      ...season,
       status: "active",
     });
 
     const createdCycle = await db
       .select()
       .from(mk121Cycles)
-      .where(eq(mk121Cycles.cycleNumber, quarter.cycleNumber))
+      .where(eq(mk121Cycles.cycleNumber, season.cycleNumber))
       .limit(1);
 
     return createdCycle[0] || null;
