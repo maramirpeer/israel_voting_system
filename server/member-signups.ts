@@ -1321,7 +1321,7 @@ function buildConfirmationEmail(fullName: string, confirmationUrl: string) {
         <h1 style="color:#1e3a8a">שלום ${safeFullName}, נשאר רק לאשר במייל</h1>
         <p>כדי להשלים את ההצטרפות לגרעין המייסד של קול משותף, יש ללחוץ על הכפתור הבא:</p>
         <p>
-          <a href="${safeConfirmationUrl}" style="display:inline-block;background:#1e3a8a;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:bold">
+          <a href="${safeConfirmationUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#1e3a8a;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:bold">
             אישור ההצטרפות
           </a>
         </p>
@@ -1350,7 +1350,7 @@ async function sendMemberLoginEmail(to: string, fullName: string, confirmationUr
       <div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.7;color:#17324d">
         <h2>שלום ${safeFullName},</h2>
         <p>לחצו על הכפתור כדי להיכנס לאתר כחבר/ה מאושר/ת ולהמשיך בפעולה שביקשתם לבצע.</p>
-        <p><a href="${safeConfirmationUrl}" style="display:inline-block;padding:12px 20px;background:#1d4f91;color:#fff;text-decoration:none;border-radius:8px;font-weight:700">כניסה לקול משותף</a></p>
+        <p><a href="${safeConfirmationUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:12px 20px;background:#1d4f91;color:#fff;text-decoration:none;border-radius:8px;font-weight:700">כניסה לקול משותף</a></p>
         <p>אם לא ביקשתם להיכנס, אפשר להתעלם מההודעה.</p>
       </div>
     `,
@@ -1627,32 +1627,7 @@ export function registerMemberSignupRoutes(app: Express) {
         });
       }
 
-      res.send(`
-        <!doctype html>
-        <html lang="he" dir="rtl">
-          <head>
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>ההצטרפות אושרה</title>
-            <style>
-              body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, sans-serif; background: #fbf7ed; color: #17324d; }
-              main { max-width: 620px; padding: 32px; text-align: center; line-height: 1.7; }
-              a { color: #1d4f91; font-weight: 700; }
-            </style>
-          </head>
-          <body>
-            <main>
-              <h1>ההצטרפות אושרה</h1>
-              <p>תודה, ${escapeHtml(confirmation.signup.fullName)}. הצטרפת לגרעין המייסד של קול משותף.</p>
-              <p>מספר הנרשמים המוצג עכשיו הוא <strong>${publicMemberCount.toLocaleString("he-IL")}</strong>.</p>
-              <p>קוד ההזמנה האישי שלך: <strong dir="ltr">${referral.referralCode}</strong></p>
-              <p><img src="${escapeHtml(referral.qrImageUrl)}" alt="QR אישי להזמנת חברים" width="180" height="180" /></p>
-              <p><a href="${escapeHtml(referral.referralUrl)}">פתיחת עמוד השיתוף האישי</a></p>
-              <p><a href="${escapeHtml(returnTo)}">כניסה לאתר כחבר מאושר והמשך הפעולה</a></p>
-            </main>
-          </body>
-        </html>
-      `);
+      res.redirect(302, returnTo);
     } catch (error) {
       sendSignupRouteError(res, error);
     }
