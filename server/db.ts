@@ -5,6 +5,7 @@ import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let usersTableReady = false;
+let mk121TablesReady = false;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
@@ -44,6 +45,120 @@ export async function ensureUsersTable() {
   `);
 
   usersTableReady = true;
+  return db;
+}
+
+export async function ensureMK121Tables() {
+  const db = await getDb();
+
+  if (!db || mk121TablesReady) {
+    return db;
+  }
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121Cycles\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`cycleNumber\` int NOT NULL,
+      \`seasonName\` varchar(32) NOT NULL,
+      \`startDate\` timestamp NOT NULL,
+      \`endDate\` timestamp NOT NULL,
+      \`status\` enum('active','completed','archived') NOT NULL DEFAULT 'active',
+      \`winningBillId\` int,
+      \`winningQuestionId\` int,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (\`id\`),
+      UNIQUE KEY \`mk121Cycles_cycleNumber_unique\` (\`cycleNumber\`)
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121Bills\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`cycleId\` int NOT NULL,
+      \`title\` varchar(255) NOT NULL,
+      \`description\` text NOT NULL,
+      \`proposedBy\` int NOT NULL,
+      \`category\` varchar(100),
+      \`votes\` int DEFAULT 0,
+      \`isWinner\` boolean DEFAULT false,
+      \`status\` enum('preliminary','voting','approved','archived') NOT NULL DEFAULT 'preliminary',
+      \`supporters\` int DEFAULT 0,
+      \`quorumMet\` boolean DEFAULT false,
+      \`createdCycleNumber\` int NOT NULL,
+      \`archivedAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (\`id\`)
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121Questions\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`cycleId\` int NOT NULL,
+      \`title\` varchar(255) NOT NULL,
+      \`description\` text NOT NULL,
+      \`targetMinistry\` varchar(255),
+      \`ministryId\` int,
+      \`proposedBy\` int NOT NULL,
+      \`urgency\` enum('low','medium','high') NOT NULL DEFAULT 'medium',
+      \`votes\` int DEFAULT 0,
+      \`isWinner\` boolean DEFAULT false,
+      \`status\` enum('preliminary','voting','approved','archived') NOT NULL DEFAULT 'preliminary',
+      \`supporters\` int DEFAULT 0,
+      \`quorumMet\` boolean DEFAULT false,
+      \`createdCycleNumber\` int NOT NULL,
+      \`archivedAt\` timestamp NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (\`id\`)
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121BillVotes\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`billId\` int NOT NULL,
+      \`userId\` int NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      PRIMARY KEY (\`id\`)
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121QuestionVotes\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`questionId\` int NOT NULL,
+      \`userId\` int NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      PRIMARY KEY (\`id\`)
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121BillSupporters\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`billId\` int NOT NULL,
+      \`userId\` int NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      PRIMARY KEY (\`id\`),
+      UNIQUE KEY \`mk121BillSupporters_bill_user_unique\` (\`billId\`, \`userId\`)
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS \`mk121QuestionSupporters\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`questionId\` int NOT NULL,
+      \`userId\` int NOT NULL,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      PRIMARY KEY (\`id\`),
+      UNIQUE KEY \`mk121QuestionSupporters_question_user_unique\` (\`questionId\`, \`userId\`)
+    )
+  `);
+  await db.execute(`
+    INSERT IGNORE INTO \`mk121Cycles\`
+      (\`id\`, \`cycleNumber\`, \`seasonName\`, \`startDate\`, \`endDate\`, \`status\`)
+    VALUES
+      (1, 1, 'קיץ', DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 YEAR), 'active')
+  `);
+
+  mk121TablesReady = true;
   return db;
 }
 

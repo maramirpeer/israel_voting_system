@@ -97,7 +97,6 @@ export function ProposalSubmissionForms({
       title: billTitle,
       description: billDescription,
       category: billCategory || undefined,
-      userId,
     });
   };
 
@@ -118,7 +117,6 @@ export function ProposalSubmissionForms({
       description: questionDescription,
       targetMinistry: questionTarget,
       urgency: "medium",
-      userId,
     });
   };
 

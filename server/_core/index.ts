@@ -7,7 +7,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
-import { ensureUsersTable } from "../db";
+import { ensureMK121Tables, ensureUsersTable } from "../db";
 import { serveStatic, setupVite } from "./vite";
 import { registerMemberSignupRoutes } from "../member-signups";
 import { registerKnessetMemberRoutes } from "../knesset-members";
@@ -35,6 +35,7 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 
 async function startServer() {
   await ensureUsersTable();
+  await ensureMK121Tables();
 
   const app = express();
   const server = createServer(app);
