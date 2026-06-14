@@ -120,14 +120,14 @@ function createMemberOpenId(email: string) {
   return `member:${createHash("sha256").update(email.toLowerCase()).digest("hex").slice(0, 56)}`;
 }
 
-async function signInConfirmedMember(req: Request, res: Response, signup: { fullName: string; email: string }) {
+async function signInMember(req: Request, res: Response, signup: { fullName: string; email: string }) {
   const openId = createMemberOpenId(signup.email);
 
   await upsertUser({
     openId,
     name: signup.fullName,
     email: signup.email,
-    loginMethod: "confirmed-member-email",
+    loginMethod: "member-signup",
     lastSignedIn: new Date(),
   });
 
@@ -1607,7 +1607,7 @@ export function registerMemberSignupRoutes(app: Express) {
       const publicMemberCount = await getPublicMemberCount();
       const signupKey = confirmation.signup.nationalId || createHash("sha256").update(confirmation.signup.email).digest("hex").slice(0, 32);
       const referral = buildReferralPayload(req, signupKey);
-      await signInConfirmedMember(req, res, confirmation.signup);
+      await signInMember(req, res, confirmation.signup);
 
       if (!confirmation.wasAlreadyConfirmed) {
         await sendWelcomeEmail(confirmation.signup.email, confirmation.signup.fullName, publicMemberCount, referral).catch((error) => {
@@ -1687,6 +1687,12 @@ export function registerMemberSignupRoutes(app: Express) {
       const { isNewSignup, isAlreadyConfirmed, signupKey } = await saveSignup({ fullName, email, phone, note, confirmationToken, referredByCode });
       const publicMemberCount = await getPublicMemberCount();
       const referral = buildReferralPayload(req, signupKey);
+      const signedIn = !isAlreadyConfirmed;
+
+      if (signedIn) {
+        await signInMember(req, res, { fullName, email });
+      }
+
       const loginEmailSent = isAlreadyConfirmed
         ? await sendConfirmedMemberLogin(req, email, returnTo).catch((error) => {
           console.warn("[MemberSignups] Member login email error:", error);
@@ -1700,7 +1706,17 @@ export function registerMemberSignupRoutes(app: Express) {
         return false;
       });
 
-      res.json({ ok: true, count: publicMemberCount, isNewSignup, isAlreadyConfirmed, confirmationEmailSent, loginEmailSent, ...referral });
+      res.json({
+        ok: true,
+        count: publicMemberCount,
+        isNewSignup,
+        isAlreadyConfirmed,
+        signedIn,
+        returnTo,
+        confirmationEmailSent,
+        loginEmailSent,
+        ...referral,
+      });
     } catch (error) {
       sendSignupRouteError(res, error);
     }

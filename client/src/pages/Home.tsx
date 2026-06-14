@@ -308,6 +308,13 @@ ${candidateSenderEmail.trim()}`
         setMemberCount(data.count);
       }
 
+      if (data.signedIn && typeof data.returnTo === "string") {
+        setSignupForm({ fullName: "", phone: "", email: "", note: "" });
+        setSignupOpen(false);
+        window.location.href = data.returnTo;
+        return;
+      }
+
       const personalReferralMessage = data.referralUrl && data.referralCode
         ? ` הקוד האישי שלך: ${data.referralCode}. עמוד השיתוף האישי שלך: ${data.referralUrl}`
         : "";
