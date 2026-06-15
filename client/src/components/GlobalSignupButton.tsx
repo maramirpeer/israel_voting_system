@@ -106,6 +106,12 @@ export function GlobalSignupButton() {
         throw new Error(data.error || "השליחה נכשלה");
       }
 
+      if (data.signedIn) {
+        setForm({ fullName: "", phone: "", email: "", note: "" });
+        window.location.href = "/?signupSuccess=1";
+        return;
+      }
+
       const personalReferralMessage = data.referralUrl && data.referralCode
         ? ` הקוד האישי שלך: ${data.referralCode}. עמוד השיתוף האישי שלך: ${data.referralUrl}`
         : "";

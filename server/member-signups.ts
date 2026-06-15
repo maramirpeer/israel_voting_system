@@ -1658,7 +1658,7 @@ export function registerMemberSignupRoutes(app: Express) {
         });
       }
 
-      res.redirect(302, returnTo);
+      res.redirect(302, confirmation.wasAlreadyConfirmed ? "/?loginSuccess=1" : "/?signupSuccess=1");
     } catch (error) {
       sendSignupRouteError(res, error);
     }

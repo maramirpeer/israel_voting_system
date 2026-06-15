@@ -36,6 +36,12 @@ export default function Home() {
       : "",
   );
   const [isMemberLoginSubmitting, setMemberLoginSubmitting] = useState(false);
+  const [isLoginSuccessOpen, setLoginSuccessOpen] = useState(
+    () => new URLSearchParams(window.location.search).get("loginSuccess") === "1",
+  );
+  const [isSignupSuccessOpen, setSignupSuccessOpen] = useState(
+    () => new URLSearchParams(window.location.search).get("signupSuccess") === "1",
+  );
   const [isWelcomeOpen, setWelcomeOpen] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [isPartyContractOpen, setPartyContractOpen] = useState(false);
@@ -86,6 +92,22 @@ export default function Home() {
   const KolMeshutafLink = ({ className = "" }: { className?: string }) => (
     <SignupTextLink className={className}>קול משותף</SignupTextLink>
   );
+
+  const finishLoginSuccess = () => {
+    setLoginSuccessOpen(false);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("loginSuccess");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const finishSignupSuccess = () => {
+    setSignupSuccessOpen(false);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("signupSuccess");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -314,10 +336,10 @@ ${candidateSenderEmail.trim()}`
         setMemberCount(data.count);
       }
 
-      if (data.signedIn && typeof data.returnTo === "string") {
+      if (data.signedIn) {
         setSignupForm({ fullName: "", phone: "", email: "", note: "" });
         setSignupOpen(false);
-        window.location.href = data.returnTo;
+        window.location.href = "/?signupSuccess=1";
         return;
       }
 
@@ -380,6 +402,48 @@ ${candidateSenderEmail.trim()}`
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#fbf7ed]" dir="rtl">
+      <Dialog
+        open={isLoginSuccessOpen}
+        onOpenChange={(open) => {
+          if (!open) finishLoginSuccess();
+        }}
+      >
+        <DialogContent className="text-center sm:max-w-md" dir="rtl" showCloseButton={false}>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+            <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
+          </div>
+          <DialogHeader className="text-center sm:text-center">
+            <DialogTitle className="text-2xl text-[#17324d]">ההתחברות הצליחה</DialogTitle>
+            <DialogDescription className="text-base leading-7">
+              ברוכים הבאים. כעת אפשר להמשיך לדף הראשי.
+            </DialogDescription>
+          </DialogHeader>
+          <Button type="button" className="w-full bg-[#2f7d5c] hover:bg-[#286a4f]" onClick={finishLoginSuccess}>
+            מעבר לדף הראשי
+          </Button>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isSignupSuccessOpen}
+        onOpenChange={(open) => {
+          if (!open) finishSignupSuccess();
+        }}
+      >
+        <DialogContent className="text-center sm:max-w-md" dir="rtl" showCloseButton={false}>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+            <CheckCircle2 className="h-9 w-9" aria-hidden="true" />
+          </div>
+          <DialogHeader className="text-center sm:text-center">
+            <DialogTitle className="text-2xl text-[#17324d]">ברכות, הצטרפת לקול משותף!</DialogTitle>
+            <DialogDescription className="text-base leading-7">
+              ההצטרפות הושלמה בהצלחה. ברוכים הבאים לגרעין המייסד.
+            </DialogDescription>
+          </DialogHeader>
+          <Button type="button" className="w-full bg-[#2f7d5c] hover:bg-[#286a4f]" onClick={finishSignupSuccess}>
+            המשך לדף הראשי
+          </Button>
+        </DialogContent>
+      </Dialog>
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 bg-cover bg-center opacity-18"
