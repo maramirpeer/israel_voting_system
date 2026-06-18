@@ -491,13 +491,10 @@ ${candidateSenderEmail.trim()}`
         <main className="relative z-10">
           <section className="container flex min-h-[calc(100vh-4rem)] flex-col justify-center gap-8 py-10">
             <div className="mx-auto max-w-4xl text-center">
-              <p className="mb-4 inline-flex rounded-lg border border-[#d8e2ef] bg-white/80 px-3 py-1 text-sm font-bold text-[#0f9f8f]">
-                כלי אזרחי אחד. שתי זירות השפעה.
-              </p>
               <h1 className="text-5xl font-black leading-tight text-[#14213d] sm:text-7xl">
-                הציבור לא רק בוחר.
+                הציבור לא רק בוחר
                 <br />
-                הוא משתתף.
+                הוא משתתף
               </h1>
               <p className="mx-auto mt-6 max-w-3xl text-xl font-semibold leading-9 text-[#52627a]">
                 קול משותף מחבר אזרחים לכנסת ולממשלה בין בחירות: הצעות חוק, שאילתות, הצבעות והאצלת קול.
