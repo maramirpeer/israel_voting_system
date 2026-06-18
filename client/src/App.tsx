@@ -19,7 +19,6 @@ import AdminSignups from "./pages/AdminSignups";
 import GateFifty from "./pages/GateFifty";
 import Contact from "./pages/Contact";
 import CandidateContract from "./pages/CandidateContract";
-import { Analytics } from "./pages/Analytics";
 import GroupBuilding from "./pages/GroupBuilding";
 
 function Router() {
@@ -41,7 +40,6 @@ function Router() {
       <Route path={"/mk121/vote-routing"} component={MK121VoteRouting} />
       <Route path={"/mk121/threshold"} component={MK121Threshold} />
       <Route path={"/mk121"} component={MK121} />
-      <Route path={"/analytics"} component={Analytics} />
       <Route path={"/admin/signups"} component={AdminSignups} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

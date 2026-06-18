@@ -476,11 +476,6 @@ ${candidateSenderEmail.trim()}`
             </nav>
 
             <div className="flex items-center gap-2">
-              {isAuthenticated && (
-                <Button type="button" variant="outline" onClick={() => setLocation("/analytics")} className="hidden sm:inline-flex">
-                  ניתוח
-                </Button>
-              )}
               <Button type="button" onClick={() => setSignupOpen(true)}>
                 הצטרפות
               </Button>
@@ -684,9 +679,6 @@ ${candidateSenderEmail.trim()}`
               </Button>
               <Button onClick={goToGovernanceTop} variant="outline" className="border-[#2f7d5c] text-[#1d4f91]">
                 ממשלה משתפת
-              </Button>
-              <Button onClick={() => setLocation("/analytics")} variant="outline" className="border-[#c8a96a] text-[#4a3722]">
-                📊 ניתוח
               </Button>
             </div>
           )}
