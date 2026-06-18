@@ -489,8 +489,8 @@ ${candidateSenderEmail.trim()}`
         </header>
 
         <main className="relative z-10">
-          <section className="container grid min-h-[calc(100vh-4rem)] items-center gap-8 py-10 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="max-w-3xl text-right">
+          <section className="container flex min-h-[calc(100vh-4rem)] flex-col justify-center gap-8 py-10">
+            <div className="mx-auto max-w-4xl text-center">
               <p className="mb-4 inline-flex rounded-lg border border-[#d8e2ef] bg-white/80 px-3 py-1 text-sm font-bold text-[#0f9f8f]">
                 כלי אזרחי אחד. שתי זירות השפעה.
               </p>
@@ -499,11 +499,11 @@ ${candidateSenderEmail.trim()}`
                 <br />
                 הוא משתתף.
               </h1>
-              <p className="mt-6 max-w-2xl text-xl font-semibold leading-9 text-[#52627a]">
+              <p className="mx-auto mt-6 max-w-3xl text-xl font-semibold leading-9 text-[#52627a]">
                 קול משותף מחבר אזרחים לכנסת ולממשלה בין בחירות: הצעות חוק, שאילתות, הצבעות והאצלת קול.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row-reverse sm:justify-end">
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row-reverse">
                 <Button type="button" size="lg" onClick={() => setSignupOpen(true)}>
                   הצטרפות לקול משותף
                 </Button>
@@ -513,25 +513,23 @@ ${candidateSenderEmail.trim()}`
               </div>
             </div>
 
-            <Card className="p-5 text-right shadow-xl">
-              <div className="grid gap-3">
-                <button type="button" onClick={goToMK121Top} className="rounded-lg border border-[#d8e2ef] bg-white p-5 text-right hover:border-[#2454d6]">
-                  <Megaphone className="mb-4 h-7 w-7 text-[#2454d6]" />
+            <div className="grid gap-4 text-right md:grid-cols-3">
+              <button type="button" onClick={goToMK121Top} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#2454d6] hover:shadow-md">
+                <Megaphone className="mb-4 h-7 w-7 text-[#2454d6]" />
                   <h2 className="text-2xl font-black text-[#14213d]">ח"כ 121</h2>
                   <p className="mt-2 leading-7 text-[#52627a]">ערוץ להצעות חוק אזרחיות מול הכנסת.</p>
-                </button>
-                <button type="button" onClick={goToGovernanceTop} className="rounded-lg border border-[#d8e2ef] bg-white p-5 text-right hover:border-[#0f9f8f]">
-                  <BarChart3 className="mb-4 h-7 w-7 text-[#0f9f8f]" />
+              </button>
+              <button type="button" onClick={goToGovernanceTop} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#0f9f8f] hover:shadow-md">
+                <BarChart3 className="mb-4 h-7 w-7 text-[#0f9f8f]" />
                   <h2 className="text-2xl font-black text-[#14213d]">ממשלה משתפת</h2>
                   <p className="mt-2 leading-7 text-[#52627a]">ערוץ לשאילתות ולהחלטות מול משרדי הממשלה.</p>
-                </button>
-                <button type="button" onClick={goToCandidateContractTop} className="rounded-lg border border-[#d8e2ef] bg-white p-5 text-right hover:border-[#f5b841]">
-                  <FileText className="mb-4 h-7 w-7 text-[#f5b841]" />
+              </button>
+              <button type="button" onClick={goToCandidateContractTop} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#f5b841] hover:shadow-md">
+                <FileText className="mb-4 h-7 w-7 text-[#f5b841]" />
                   <h2 className="text-2xl font-black text-[#14213d]">חוזה למועמדים</h2>
                   <p className="mt-2 leading-7 text-[#52627a]">התחייבות פומבית לקידום מנגנון השתתפות.</p>
-                </button>
-              </div>
-            </Card>
+              </button>
+            </div>
           </section>
 
           <section className="border-y border-[#d8e2ef] bg-white/74 py-8">
