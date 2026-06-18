@@ -533,9 +533,8 @@ ${candidateSenderEmail.trim()}`
           </section>
 
           <section className="border-y border-[#d8e2ef] bg-white/74 py-8">
-            <div className="container grid gap-4 text-right md:grid-cols-4">
+            <div className="container grid gap-4 text-right md:grid-cols-3">
               {[
-                ["חברים", memberCount ? memberCount.toLocaleString("he-IL") : "מצטרפים"],
                 ["מודל", "הצבעה או האצלה"],
                 ["מוקד", "כנסת וממשלה"],
                 ["עיקרון", "שקיפות ואחריות"],
