@@ -522,8 +522,11 @@ ${candidateSenderEmail.trim()}`
                   <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">להצבעות לגבי החלטות ממשלתיות.</p>
               </button>
               <button type="button" onClick={goToGroupBuildingTop} className="mx-auto min-h-32 w-full rounded-lg border border-[#d8e2ef] bg-white p-5 text-center shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2 md:max-w-2xl">
-                <Users className="mx-auto mb-4 h-7 w-7 text-[#f5b841]" />
-                  <h2 className="text-2xl font-black text-[#14213d]">בניין קבוצת קול משותף</h2>
+                <img
+                  src="/assets/group-building-card.png"
+                  alt="בניין קבוצת קול משותף"
+                  className="mx-auto mb-4 h-24 w-full max-w-lg object-contain"
+                />
                   <p className="mt-2 leading-7 text-[#52627a]">הזמנה להפיץ, לצרף חברים ולהגדיל את ההשפעה של הקול המשותף.</p>
               </button>
             </div>
