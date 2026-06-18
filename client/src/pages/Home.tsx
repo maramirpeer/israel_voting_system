@@ -19,6 +19,8 @@ function getSignupReturnTo() {
   return returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/mk121";
 }
 
+const USE_COMPACT_HOME = true;
+
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
@@ -399,6 +401,227 @@ ${candidateSenderEmail.trim()}`
       setMemberLoginSubmitting(false);
     }
   };
+
+  if (USE_COMPACT_HOME) {
+    return (
+      <div className="relative min-h-screen overflow-hidden bg-[#f6f8fb]" dir="rtl">
+        <Dialog
+          open={isLoginSuccessOpen}
+          onOpenChange={(open) => {
+            if (!open) finishLoginSuccess();
+          }}
+        >
+          <DialogContent className="text-center sm:max-w-md" dir="rtl" showCloseButton={false}>
+            <CheckCircle2 className="mx-auto h-12 w-12 text-[#0f9f8f]" aria-hidden="true" />
+            <DialogHeader className="text-center sm:text-center">
+              <DialogTitle className="text-2xl text-[#14213d]">ההתחברות הצליחה</DialogTitle>
+              <DialogDescription>ברוכים הבאים. אפשר להמשיך.</DialogDescription>
+            </DialogHeader>
+            <Button type="button" className="w-full" onClick={finishLoginSuccess}>
+              המשך
+            </Button>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={isSignupSuccessOpen}
+          onOpenChange={(open) => {
+            if (!open) finishSignupSuccess();
+          }}
+        >
+          <DialogContent className="text-center sm:max-w-md" dir="rtl" showCloseButton={false}>
+            <CheckCircle2 className="mx-auto h-12 w-12 text-[#0f9f8f]" aria-hidden="true" />
+            <DialogHeader className="text-center sm:text-center">
+              <DialogTitle className="text-2xl text-[#14213d]">הצטרפת לקול משותף</DialogTitle>
+              <DialogDescription>ההצטרפות הושלמה בהצלחה.</DialogDescription>
+            </DialogHeader>
+            <Button type="button" className="w-full" onClick={finishSignupSuccess}>
+              המשך
+            </Button>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isWelcomeOpen} onOpenChange={setWelcomeOpen}>
+          <DialogContent className="text-right sm:max-w-md" dir="rtl">
+            <DialogHeader className="text-right">
+              <DialogTitle className="text-2xl text-[#14213d]">הפרטים התקבלו</DialogTitle>
+              <DialogDescription className="leading-7">{welcomeMessage}</DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+
+        <header className="sticky top-0 z-40 border-b border-[#d8e2ef] bg-white/86 backdrop-blur-xl">
+          <div className="container flex min-h-16 items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#14213d] text-white">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  className="text-lg font-black text-[#14213d]"
+                >
+                  קול משותף
+                </button>
+                <p className="text-xs font-bold text-[#0f9f8f]">דמוקרטיה מחוברת</p>
+              </div>
+            </div>
+
+            <nav className="hidden items-center gap-5 text-sm font-bold text-[#52627a] md:flex">
+              <button type="button" onClick={goToMK121Top} className="hover:text-[#2454d6]">ח"כ 121</button>
+              <button type="button" onClick={goToGovernanceTop} className="hover:text-[#2454d6]">ממשלה משתפת</button>
+              <button type="button" onClick={goToGateFiftyTop} className="hover:text-[#2454d6]">שער ה-50</button>
+              <button type="button" onClick={goToContactTop} className="hover:text-[#2454d6]">קשר</button>
+            </nav>
+
+            <div className="flex items-center gap-2">
+              {isAuthenticated && (
+                <Button type="button" variant="outline" onClick={() => setLocation("/analytics")} className="hidden sm:inline-flex">
+                  ניתוח
+                </Button>
+              )}
+              <Button type="button" onClick={() => setSignupOpen(true)}>
+                הצטרפות
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <main className="relative z-10">
+          <section className="container grid min-h-[calc(100vh-4rem)] items-center gap-8 py-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="max-w-3xl text-right">
+              <p className="mb-4 inline-flex rounded-lg border border-[#d8e2ef] bg-white/80 px-3 py-1 text-sm font-bold text-[#0f9f8f]">
+                כלי אזרחי אחד. שתי זירות השפעה.
+              </p>
+              <h1 className="text-5xl font-black leading-tight text-[#14213d] sm:text-7xl">
+                הציבור לא רק בוחר.
+                <br />
+                הוא משתתף.
+              </h1>
+              <p className="mt-6 max-w-2xl text-xl font-semibold leading-9 text-[#52627a]">
+                קול משותף מחבר אזרחים לכנסת ולממשלה בין בחירות: הצעות חוק, שאילתות, הצבעות והאצלת קול.
+              </p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row-reverse sm:justify-end">
+                <Button type="button" size="lg" onClick={() => setSignupOpen(true)}>
+                  הצטרפות לקול משותף
+                </Button>
+                <Button type="button" size="lg" variant="outline" onClick={goToGroupBuildingTop}>
+                  בניין הקבוצה
+                </Button>
+              </div>
+            </div>
+
+            <Card className="p-5 text-right shadow-xl">
+              <div className="grid gap-3">
+                <button type="button" onClick={goToMK121Top} className="rounded-lg border border-[#d8e2ef] bg-white p-5 text-right hover:border-[#2454d6]">
+                  <Megaphone className="mb-4 h-7 w-7 text-[#2454d6]" />
+                  <h2 className="text-2xl font-black text-[#14213d]">ח"כ 121</h2>
+                  <p className="mt-2 leading-7 text-[#52627a]">ערוץ להצעות חוק אזרחיות מול הכנסת.</p>
+                </button>
+                <button type="button" onClick={goToGovernanceTop} className="rounded-lg border border-[#d8e2ef] bg-white p-5 text-right hover:border-[#0f9f8f]">
+                  <BarChart3 className="mb-4 h-7 w-7 text-[#0f9f8f]" />
+                  <h2 className="text-2xl font-black text-[#14213d]">ממשלה משתפת</h2>
+                  <p className="mt-2 leading-7 text-[#52627a]">ערוץ לשאילתות ולהחלטות מול משרדי הממשלה.</p>
+                </button>
+                <button type="button" onClick={goToCandidateContractTop} className="rounded-lg border border-[#d8e2ef] bg-white p-5 text-right hover:border-[#f5b841]">
+                  <FileText className="mb-4 h-7 w-7 text-[#f5b841]" />
+                  <h2 className="text-2xl font-black text-[#14213d]">חוזה למועמדים</h2>
+                  <p className="mt-2 leading-7 text-[#52627a]">התחייבות פומבית לקידום מנגנון השתתפות.</p>
+                </button>
+              </div>
+            </Card>
+          </section>
+
+          <section className="border-y border-[#d8e2ef] bg-white/74 py-8">
+            <div className="container grid gap-4 text-right md:grid-cols-4">
+              {[
+                ["חברים", memberCount ? memberCount.toLocaleString("he-IL") : "מצטרפים"],
+                ["מודל", "הצבעה או האצלה"],
+                ["מוקד", "כנסת וממשלה"],
+                ["עיקרון", "שקיפות ואחריות"],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-lg border border-[#d8e2ef] bg-white p-4">
+                  <p className="text-sm font-bold text-[#0f9f8f]">{label}</p>
+                  <p className="mt-1 text-2xl font-black text-[#14213d]">{value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </main>
+
+        <Dialog open={isSignupOpen} onOpenChange={setSignupOpen}>
+          <DialogContent className="text-right sm:max-w-lg" dir="rtl">
+            <DialogHeader className="text-right">
+              <DialogTitle className="text-2xl text-[#14213d]">
+                {isMemberLogin ? "כניסת חברים" : "הצטרפות לקול משותף"}
+              </DialogTitle>
+              <DialogDescription>
+                {isMemberLogin ? "נשלח קישור כניסה למייל הרשום." : "נשמור את הפרטים ונשלח אישור הצטרפות."}
+              </DialogDescription>
+            </DialogHeader>
+
+            {isMemberLogin ? (
+              <form className="space-y-4" onSubmit={handleMemberLoginSubmit}>
+                <div className="space-y-2">
+                  <Label htmlFor="member-login-email">מייל</Label>
+                  <Input
+                    id="member-login-email"
+                    type="email"
+                    value={memberLoginEmail}
+                    onChange={(event) => setMemberLoginEmail(event.target.value)}
+                    list="member-login-email-suggestions"
+                    required
+                  />
+                  <datalist id="member-login-email-suggestions">
+                    {memberLoginEmailSuggestions.map((email) => (
+                      <option key={email} value={email} />
+                    ))}
+                  </datalist>
+                </div>
+                {memberLoginMessage && <p className="rounded-lg bg-[#e8eef8] p-3 text-sm text-[#14213d]">{memberLoginMessage}</p>}
+                <Button type="submit" className="w-full" disabled={isMemberLoginSubmitting}>
+                  {isMemberLoginSubmitting ? "שולח..." : "שליחת קישור כניסה"}
+                </Button>
+                <Button type="button" variant="ghost" className="w-full" onClick={() => setMemberLogin(false)}>
+                  להצטרפות חדשה
+                </Button>
+              </form>
+            ) : (
+              <form className="space-y-4" onSubmit={handleSignupSubmit}>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-full-name">שם מלא</Label>
+                  <Input id="signup-full-name" value={signupForm.fullName} onChange={(event) => updateSignupForm("fullName", event.target.value)} required />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">מייל</Label>
+                    <Input id="signup-email" type="email" value={signupForm.email} onChange={(event) => updateSignupForm("email", event.target.value)} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-phone">טלפון</Label>
+                    <Input id="signup-phone" value={signupForm.phone} onChange={(event) => updateSignupForm("phone", event.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-note">הערה</Label>
+                  <Textarea id="signup-note" value={signupForm.note} onChange={(event) => updateSignupForm("note", event.target.value)} rows={3} />
+                </div>
+                {signupMessage && <p className="rounded-lg bg-[#e8eef8] p-3 text-sm text-[#14213d]">{signupMessage}</p>}
+                <Button type="submit" className="w-full" disabled={isSignupSubmitting}>
+                  {isSignupSubmitting ? "שולח..." : "הצטרפות"}
+                </Button>
+                <Button type="button" variant="ghost" className="w-full" onClick={() => setMemberLogin(true)}>
+                  כבר חבר/ה? כניסה
+                </Button>
+              </form>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#fbf7ed]" dir="rtl">

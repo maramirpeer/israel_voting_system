@@ -29,6 +29,16 @@ type LocalMemberSignup = {
   updatedAt: string;
 };
 
+type LocalCandidateEnlistment = {
+  id: string;
+  fullName: string;
+  nationalId: string;
+  email: string;
+  includedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 type PublicMemberSignup = {
   fullName: string;
   nationalId?: string;
@@ -37,6 +47,7 @@ type PublicMemberSignup = {
 
 type SignupStore = {
   submissions: LocalMemberSignup[];
+  candidateEnlistments: LocalCandidateEnlistment[];
 };
 
 type AdminMemberSignup = {
@@ -206,9 +217,12 @@ async function readLocalStore(): Promise<SignupStore> {
   try {
     const raw = await readFile(dataFile, "utf8");
     const parsed = JSON.parse(raw) as SignupStore;
-    return { submissions: Array.isArray(parsed.submissions) ? parsed.submissions : [] };
+    return {
+      submissions: Array.isArray(parsed.submissions) ? parsed.submissions : [],
+      candidateEnlistments: Array.isArray(parsed.candidateEnlistments) ? parsed.candidateEnlistments : [],
+    };
   } catch {
-    return { submissions: [] };
+    return { submissions: [], candidateEnlistments: [] };
   }
 }
 
@@ -910,7 +924,35 @@ async function saveCandidateEnlistment(input: { fullName: string; nationalId: st
     }
   }
 
-  throw new SignupStorageUnavailableError("candidate enlistment write");
+  const now = new Date().toISOString();
+  const store = await readLocalStore();
+  const existingIndex = store.candidateEnlistments.findIndex((candidate) => {
+    return candidate.email.toLowerCase() === input.email.toLowerCase() || candidate.nationalId === input.nationalId;
+  });
+
+  if (existingIndex >= 0) {
+    store.candidateEnlistments[existingIndex] = {
+      ...store.candidateEnlistments[existingIndex],
+      fullName: input.fullName,
+      nationalId: input.nationalId,
+      email: input.email,
+      updatedAt: now,
+    };
+    await writeLocalStore(store);
+    return { isNewEnlistment: false };
+  }
+
+  store.candidateEnlistments.push({
+    id: randomUUID(),
+    fullName: input.fullName,
+    nationalId: input.nationalId,
+    email: input.email,
+    includedAt: null,
+    createdAt: now,
+    updatedAt: now,
+  });
+  await writeLocalStore(store);
+  return { isNewEnlistment: true };
 }
 
 async function markSignupConfirmed(token: string) {
@@ -1098,7 +1140,8 @@ async function getAdminCandidateEnlistments() {
     }
   }
 
-  throw new SignupStorageUnavailableError("admin candidate enlistments read");
+  const store = await readLocalStore();
+  return { source: "local", enlistments: store.candidateEnlistments as AdminCandidateEnlistment[] };
 }
 
 async function includeCandidateEnlistment(id: string) {
@@ -1142,7 +1185,18 @@ async function includeCandidateEnlistment(id: string) {
     }
   }
 
-  throw new SignupStorageUnavailableError("admin candidate include");
+  const store = await readLocalStore();
+  const candidate = store.candidateEnlistments.find((item) => item.id === id);
+
+  if (!candidate) {
+    return false;
+  }
+
+  const now = new Date().toISOString();
+  candidate.includedAt = candidate.includedAt || now;
+  candidate.updatedAt = now;
+  await writeLocalStore(store);
+  return true;
 }
 
 async function deleteCandidateEnlistment(id: string) {
@@ -1180,7 +1234,15 @@ async function deleteCandidateEnlistment(id: string) {
     }
   }
 
-  throw new SignupStorageUnavailableError("admin candidate delete");
+  const store = await readLocalStore();
+  const nextCandidateEnlistments = store.candidateEnlistments.filter((candidate) => candidate.id !== id);
+
+  if (nextCandidateEnlistments.length === store.candidateEnlistments.length) {
+    return false;
+  }
+
+  await writeLocalStore({ ...store, candidateEnlistments: nextCandidateEnlistments });
+  return true;
 }
 
 async function getPublicCandidateEnlistments() {
@@ -1208,7 +1270,16 @@ async function getPublicCandidateEnlistments() {
     }
   }
 
-  throw new SignupStorageUnavailableError("public candidate enlistments read");
+  const store = await readLocalStore();
+  return store.candidateEnlistments
+    .filter((candidate) => candidate.includedAt)
+    .sort((first, second) => {
+      return new Date(first.includedAt || 0).getTime() - new Date(second.includedAt || 0).getTime();
+    })
+    .map((candidate) => ({
+      fullName: candidate.fullName,
+      includedAt: candidate.includedAt,
+    }));
 }
 
 async function deleteAdminSignup(id: string) {
@@ -1249,7 +1320,7 @@ async function deleteAdminSignup(id: string) {
     return false;
   }
 
-  await writeLocalStore({ submissions: nextSubmissions });
+  await writeLocalStore({ ...store, submissions: nextSubmissions });
   return true;
 }
 
