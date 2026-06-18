@@ -505,15 +505,15 @@ ${candidateSenderEmail.trim()}`
             </div>
 
             <div className="grid gap-4 text-right md:grid-cols-2">
-              <button type="button" onClick={goToMK121Top} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#2454d6] hover:shadow-md">
-                <Megaphone className="mb-4 h-7 w-7 text-[#2454d6]" />
-                  <h2 className="text-2xl font-black text-[#14213d]">ח"כ 121</h2>
-                  <p className="mt-2 leading-7 text-[#52627a]">ערוץ להצעות חוק אזרחיות מול הכנסת.</p>
+              <button type="button" onClick={goToMK121Top} className="min-h-48 rounded-lg border-2 border-[#2454d6]/30 bg-[#f8fbff] p-6 text-center shadow-md shadow-[#2454d6]/10 transition hover:border-[#2454d6] hover:bg-white hover:shadow-lg">
+                <Megaphone className="mx-auto mb-4 h-8 w-8 text-[#2454d6]" />
+                  <h2 className="text-3xl font-black text-[#14213d]">ח"כ 121</h2>
+                  <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">ערוץ להצעות חוק אזרחיות מול הכנסת.</p>
               </button>
-              <button type="button" onClick={goToGovernanceTop} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#0f9f8f] hover:shadow-md">
-                <BarChart3 className="mb-4 h-7 w-7 text-[#0f9f8f]" />
-                  <h2 className="text-2xl font-black text-[#14213d]">ממשלה משתפת</h2>
-                  <p className="mt-2 leading-7 text-[#52627a]">ערוץ לשאילתות ולהחלטות מול משרדי הממשלה.</p>
+              <button type="button" onClick={goToGovernanceTop} className="min-h-48 rounded-lg border-2 border-[#0f9f8f]/30 bg-[#f7fffd] p-6 text-center shadow-md shadow-[#0f9f8f]/10 transition hover:border-[#0f9f8f] hover:bg-white hover:shadow-lg">
+                <BarChart3 className="mx-auto mb-4 h-8 w-8 text-[#0f9f8f]" />
+                  <h2 className="text-3xl font-black text-[#14213d]">ממשלה משתפת</h2>
+                  <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">ערוץ לשאילתות ולהחלטות מול משרדי הממשלה.</p>
               </button>
               <button type="button" onClick={goToGroupBuildingTop} className="mx-auto min-h-32 w-full rounded-lg border border-[#d8e2ef] bg-white p-5 text-center shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2 md:max-w-2xl">
                 <Users className="mx-auto mb-4 h-7 w-7 text-[#f5b841]" />
