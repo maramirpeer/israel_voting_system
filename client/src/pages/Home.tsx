@@ -502,18 +502,9 @@ ${candidateSenderEmail.trim()}`
               <p className="mx-auto mt-6 max-w-3xl text-xl font-semibold leading-9 text-[#52627a]">
                 קול משותף מחבר אזרחים לכנסת ולממשלה בין בחירות: הצעות חוק, שאילתות, הצבעות והאצלת קול.
               </p>
-
-              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row-reverse">
-                <Button type="button" size="lg" onClick={() => setSignupOpen(true)}>
-                  הצטרפות לקול משותף
-                </Button>
-                <Button type="button" size="lg" variant="outline" onClick={goToGroupBuildingTop}>
-                  בניין הקבוצה
-                </Button>
-              </div>
             </div>
 
-            <div className="grid gap-4 text-right md:grid-cols-3">
+            <div className="grid gap-4 text-right md:grid-cols-2">
               <button type="button" onClick={goToMK121Top} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#2454d6] hover:shadow-md">
                 <Megaphone className="mb-4 h-7 w-7 text-[#2454d6]" />
                   <h2 className="text-2xl font-black text-[#14213d]">ח"כ 121</h2>
@@ -524,10 +515,10 @@ ${candidateSenderEmail.trim()}`
                   <h2 className="text-2xl font-black text-[#14213d]">ממשלה משתפת</h2>
                   <p className="mt-2 leading-7 text-[#52627a]">ערוץ לשאילתות ולהחלטות מול משרדי הממשלה.</p>
               </button>
-              <button type="button" onClick={goToCandidateContractTop} className="min-h-44 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#f5b841] hover:shadow-md">
-                <FileText className="mb-4 h-7 w-7 text-[#f5b841]" />
-                  <h2 className="text-2xl font-black text-[#14213d]">חוזה למועמדים</h2>
-                  <p className="mt-2 leading-7 text-[#52627a]">התחייבות פומבית לקידום מנגנון השתתפות.</p>
+              <button type="button" onClick={goToGroupBuildingTop} className="min-h-36 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2">
+                <Users className="mb-4 h-7 w-7 text-[#f5b841]" />
+                  <h2 className="text-2xl font-black text-[#14213d]">בניין קבוצת קול משותף</h2>
+                  <p className="mt-2 leading-7 text-[#52627a]">הזמנה להפיץ, לצרף חברים ולבנות את בסיס ההשתתפות.</p>
               </button>
             </div>
           </section>
