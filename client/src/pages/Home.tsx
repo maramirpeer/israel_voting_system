@@ -515,8 +515,8 @@ ${candidateSenderEmail.trim()}`
                   <h2 className="text-2xl font-black text-[#14213d]">ממשלה משתפת</h2>
                   <p className="mt-2 leading-7 text-[#52627a]">ערוץ לשאילתות ולהחלטות מול משרדי הממשלה.</p>
               </button>
-              <button type="button" onClick={goToGroupBuildingTop} className="min-h-36 rounded-lg border border-[#d8e2ef] bg-white p-5 text-right shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2">
-                <Users className="mb-4 h-7 w-7 text-[#f5b841]" />
+              <button type="button" onClick={goToGroupBuildingTop} className="mx-auto min-h-32 w-full rounded-lg border border-[#d8e2ef] bg-white p-5 text-center shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2 md:max-w-2xl">
+                <Users className="mx-auto mb-4 h-7 w-7 text-[#f5b841]" />
                   <h2 className="text-2xl font-black text-[#14213d]">בניין קבוצת קול משותף</h2>
                   <p className="mt-2 leading-7 text-[#52627a]">הזמנה להפיץ, לצרף חברים ולבנות את בסיס ההשתתפות.</p>
               </button>
