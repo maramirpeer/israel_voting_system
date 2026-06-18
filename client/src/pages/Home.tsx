@@ -513,7 +513,7 @@ ${candidateSenderEmail.trim()}`
               <button type="button" onClick={goToGovernanceTop} className="min-h-48 rounded-lg border-2 border-[#0f9f8f]/30 bg-[#f7fffd] p-6 text-center shadow-md shadow-[#0f9f8f]/10 transition hover:border-[#0f9f8f] hover:bg-white hover:shadow-lg">
                 <BarChart3 className="mx-auto mb-4 h-8 w-8 text-[#0f9f8f]" />
                   <h2 className="text-3xl font-black text-[#14213d]">ממשלה משתפת</h2>
-                  <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">הצבעות מול החלטות הממשלה.</p>
+                  <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">להצבעות לגבי החלטות ממשלתיות.</p>
               </button>
               <button type="button" onClick={goToGroupBuildingTop} className="mx-auto min-h-32 w-full rounded-lg border border-[#d8e2ef] bg-white p-5 text-center shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2 md:max-w-2xl">
                 <Users className="mx-auto mb-4 h-7 w-7 text-[#f5b841]" />
