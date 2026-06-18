@@ -505,29 +505,26 @@ ${candidateSenderEmail.trim()}`
             </div>
 
             <div className="grid gap-4 text-right md:grid-cols-2">
-              <button type="button" onClick={goToMK121Top} className="min-h-48 rounded-lg border-2 border-[#2454d6]/30 bg-[#f8fbff] p-6 text-center shadow-md shadow-[#2454d6]/10 transition hover:border-[#2454d6] hover:bg-white hover:shadow-lg">
+              <button type="button" onClick={goToMK121Top} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4">
                 <img
                   src="/assets/mk121-card.png"
                   alt="ח&quot;כ 121"
-                  className="mx-auto mb-4 h-20 w-full max-w-md object-contain"
+                  className="mx-auto w-full max-w-md object-contain"
                 />
-                  <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">ערוץ להצעות חוק אזרחיות מול הכנסת.</p>
               </button>
-              <button type="button" onClick={goToGovernanceTop} className="min-h-48 rounded-lg border-2 border-[#0f9f8f]/30 bg-[#f7fffd] p-6 text-center shadow-md shadow-[#0f9f8f]/10 transition hover:border-[#0f9f8f] hover:bg-white hover:shadow-lg">
+              <button type="button" onClick={goToGovernanceTop} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f8f] focus-visible:ring-offset-4">
                 <img
                   src="/assets/governance-card.png"
                   alt="ממשלה משתפת"
-                  className="mx-auto mb-4 h-20 w-full max-w-md object-contain"
+                  className="mx-auto w-full max-w-md object-contain"
                 />
-                  <p className="mt-3 text-lg font-semibold leading-8 text-[#52627a]">להצבעות לגבי החלטות ממשלתיות.</p>
               </button>
-              <button type="button" onClick={goToGroupBuildingTop} className="mx-auto min-h-32 w-full rounded-lg border border-[#d8e2ef] bg-white p-5 text-center shadow-sm transition hover:border-[#f5b841] hover:shadow-md md:col-span-2 md:max-w-2xl">
+              <button type="button" onClick={goToGroupBuildingTop} className="mx-auto w-full rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b841] focus-visible:ring-offset-4 md:col-span-2 md:max-w-2xl">
                 <img
                   src="/assets/group-building-card.png"
                   alt="בניין קבוצת קול משותף"
-                  className="mx-auto mb-4 h-24 w-full max-w-lg object-contain"
+                  className="mx-auto w-full max-w-lg object-contain"
                 />
-                  <p className="mt-2 leading-7 text-[#52627a]">הזמנה להפיץ, לצרף חברים ולהגדיל את ההשפעה של הקול המשותף.</p>
               </button>
             </div>
           </section>
