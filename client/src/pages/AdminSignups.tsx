@@ -29,6 +29,7 @@ type PreliminaryProposal = {
   id: number;
   title: string;
   description: string;
+  status?: string;
   supporters: number | null;
   createdAt: string;
 };
@@ -151,13 +152,13 @@ export default function AdminSignups() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data.error || "טעינת הדפים המקדימים נכשלה.");
+        throw new Error(data.error || "טעינת הצעות ח״כ 121 נכשלה.");
       }
 
       setPreliminaryBills(Array.isArray(data.bills) ? data.bills : []);
       setPreliminaryQuestions(Array.isArray(data.questions) ? data.questions : []);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "טעינת הדפים המקדימים נכשלה.");
+      setMessage(error instanceof Error ? error.message : "טעינת הצעות ח״כ 121 נכשלה.");
     }
   };
 
@@ -278,7 +279,7 @@ export default function AdminSignups() {
       return;
     }
 
-    if (!window.confirm(`למחוק את הדף המקדים "${proposal.title}"?`)) {
+    if (!window.confirm(`למחוק את ההצעה "${proposal.title}"?`)) {
       return;
     }
 
@@ -293,13 +294,13 @@ export default function AdminSignups() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data.error || "מחיקת הדף המקדים נכשלה.");
+        throw new Error(data.error || "מחיקת ההצעה נכשלה.");
       }
 
-      setMessage("הדף המקדים נמחק.");
+      setMessage("ההצעה נמחקה.");
       await loadPreliminaryProposals(token);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "מחיקת הדף המקדים נכשלה.");
+      setMessage(error instanceof Error ? error.message : "מחיקת ההצעה נכשלה.");
     } finally {
       setDeletingProposal(null);
     }
@@ -578,8 +579,8 @@ export default function AdminSignups() {
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold">דפים מקדימים - הצעות חוק</h2>
-                <p className="mt-1 text-xs text-[#5a4b38]">אישור מדמה הגעה ל-1,000 חברים ומפרסם את ההצעה באתר. ההצבעה היא שלב נפרד.</p>
+                <h2 className="text-xl font-bold">ח״כ 121 - הצעות חוק</h2>
+                <p className="mt-1 text-xs text-[#5a4b38]">כאן מופיעות גם הצעות מקדימות וגם הצעות שכבר פורסמו. אפשר למחוק הצעות ניסיון.</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => loadPreliminaryProposals()} disabled={!token}>
                 רענון
@@ -591,7 +592,9 @@ export default function AdminSignups() {
                   <div className="min-w-0">
                     <h3 className="break-words font-bold">{proposal.title}</h3>
                     <p className="mt-1 max-h-24 overflow-y-auto break-words text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
-                    <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
+                    <p className="mt-2 text-xs font-bold text-[#7a5b00]">
+                      {(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים · {proposal.status || "ללא סטטוס"}
+                    </p>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2 border-t border-[#eadfca] pt-3">
                     <Button
@@ -616,15 +619,15 @@ export default function AdminSignups() {
                   </div>
                 </div>
               ))}
-              {!preliminaryBills.length && <p className="text-sm text-[#5a4b38]">אין הצעות חוק בדף המקדים כרגע.</p>}
+              {!preliminaryBills.length && <p className="text-sm text-[#5a4b38]">אין הצעות חוק כרגע.</p>}
             </div>
           </Card>
 
           <Card className="border-[#d8c79f] bg-white/90 p-5">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold">דפים מקדימים - שאילתות</h2>
-                <p className="mt-1 text-xs text-[#5a4b38]">אישור מדמה הגעה ל-1,000 חברים ומפרסם את השאילתא באתר. ההצבעה היא שלב נפרד.</p>
+                <h2 className="text-xl font-bold">ח״כ 121 - שאילתות</h2>
+                <p className="mt-1 text-xs text-[#5a4b38]">כאן מופיעות גם שאילתות מקדימות וגם שאילתות שכבר פורסמו. אפשר למחוק ניסיונות.</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => loadPreliminaryProposals()} disabled={!token}>
                 רענון
@@ -636,7 +639,9 @@ export default function AdminSignups() {
                   <div className="min-w-0">
                     <h3 className="break-words font-bold">{proposal.title}</h3>
                     <p className="mt-1 max-h-24 overflow-y-auto break-words text-sm leading-6 text-[#5a4b38]">{proposal.description}</p>
-                    <p className="mt-2 text-xs font-bold text-[#7a5b00]">{(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים</p>
+                    <p className="mt-2 text-xs font-bold text-[#7a5b00]">
+                      {(proposal.supporters || 0).toLocaleString("he-IL")}/1000 תומכים · {proposal.status || "ללא סטטוס"}
+                    </p>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2 border-t border-[#eadfca] pt-3">
                     <Button
@@ -661,7 +666,7 @@ export default function AdminSignups() {
                   </div>
                 </div>
               ))}
-              {!preliminaryQuestions.length && <p className="text-sm text-[#5a4b38]">אין שאילתות בדף המקדים כרגע.</p>}
+              {!preliminaryQuestions.length && <p className="text-sm text-[#5a4b38]">אין שאילתות כרגע.</p>}
             </div>
           </Card>
         </section>

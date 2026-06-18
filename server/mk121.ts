@@ -870,12 +870,10 @@ export async function getPreliminaryProposalsForAdmin() {
     const bills = await db
       .select()
       .from(mk121Bills)
-      .where(eq(mk121Bills.status, "preliminary"))
       .orderBy(desc(mk121Bills.createdAt));
     const questions = await db
       .select()
       .from(mk121Questions)
-      .where(eq(mk121Questions.status, "preliminary"))
       .orderBy(desc(mk121Questions.createdAt));
 
     return { bills, questions };
@@ -936,26 +934,30 @@ export async function deletePreliminaryProposalForAdmin(type: "bill" | "question
       const proposal = await db
         .select({ id: mk121Bills.id })
         .from(mk121Bills)
-        .where(and(eq(mk121Bills.id, id), eq(mk121Bills.status, "preliminary")))
+        .where(eq(mk121Bills.id, id))
         .limit(1);
       if (!proposal.length) return false;
 
+      await db.delete(mk121BillVotes).where(eq(mk121BillVotes.billId, id));
+      await db.delete(mk121BillSupporters).where(eq(mk121BillSupporters.billId, id));
       await db
         .delete(mk121Bills)
-        .where(and(eq(mk121Bills.id, id), eq(mk121Bills.status, "preliminary")));
+        .where(eq(mk121Bills.id, id));
       return true;
     }
 
     const proposal = await db
       .select({ id: mk121Questions.id })
       .from(mk121Questions)
-      .where(and(eq(mk121Questions.id, id), eq(mk121Questions.status, "preliminary")))
+      .where(eq(mk121Questions.id, id))
       .limit(1);
     if (!proposal.length) return false;
 
+    await db.delete(mk121QuestionVotes).where(eq(mk121QuestionVotes.questionId, id));
+    await db.delete(mk121QuestionSupporters).where(eq(mk121QuestionSupporters.questionId, id));
     await db
       .delete(mk121Questions)
-      .where(and(eq(mk121Questions.id, id), eq(mk121Questions.status, "preliminary")));
+      .where(eq(mk121Questions.id, id));
     return true;
   } catch (error) {
     console.error("[MK121] Error deleting preliminary proposal:", error);
