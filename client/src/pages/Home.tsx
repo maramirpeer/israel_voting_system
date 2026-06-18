@@ -525,21 +525,6 @@ ${candidateSenderEmail.trim()}`
               </button>
             </div>
           </section>
-
-          <section className="border-y border-[#d8e2ef] bg-white/74 py-8">
-            <div className="container grid gap-4 text-right md:grid-cols-3">
-              {[
-                ["מודל", "הצבעה או האצלה"],
-                ["מוקד", "כנסת וממשלה"],
-                ["עיקרון", "שקיפות ואחריות"],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-lg border border-[#d8e2ef] bg-white p-4">
-                  <p className="text-sm font-bold text-[#0f9f8f]">{label}</p>
-                  <p className="mt-1 text-2xl font-black text-[#14213d]">{value}</p>
-                </div>
-              ))}
-            </div>
-          </section>
         </main>
 
         <Dialog open={isSignupOpen} onOpenChange={setSignupOpen}>
