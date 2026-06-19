@@ -497,18 +497,12 @@ ${candidateSenderEmail.trim()}`
             </div>
 
             <div className="grid gap-4 text-right md:grid-cols-2">
-              <button type="button" onClick={goToMK121Top} className="relative rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4">
+              <button type="button" onClick={goToMK121Top} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4">
                 <img
                   src="/assets/mk121-card.png"
                   alt="ח&quot;כ 121"
                   className="mx-auto w-full max-w-md object-contain"
                 />
-                <span
-                  dir="rtl"
-                  className="pointer-events-none absolute left-[36%] right-[13%] top-1/2 -translate-y-1/2 text-center text-[clamp(1.75rem,4vw,3.4rem)] font-black leading-none text-white drop-shadow-[3px_5px_0_rgba(0,0,0,0.55)]"
-                >
-                  ח״כ 121
-                </span>
               </button>
               <button type="button" onClick={goToGovernanceTop} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f8f] focus-visible:ring-offset-4">
                 <img
