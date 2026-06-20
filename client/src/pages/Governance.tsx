@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { trpc } from "@/lib/trpc";
-import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home, FileText } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ThumbsUp, ThumbsDown, Home } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -87,30 +87,6 @@ const buildRejectedVoteRecord = (decision: any, fallbackVotesFor: number, fallba
     },
   ];
 };
-
-const knessetBillArchive = [
-  {
-    id: 1,
-    title: "חובת פרסום יומן פגישות של רגולטורים",
-    ministry: "משרד האוצר",
-    transferredAt: "אביב 2026",
-    votes: 42180,
-  },
-  {
-    id: 2,
-    title: "החזר אוטומטי על איחור חמור בתחבורה ציבורית",
-    ministry: "משרד הפנים, החברה והרווחה",
-    transferredAt: "אביב 2026",
-    votes: 43890,
-  },
-  {
-    id: 3,
-    title: "כל ח״כ חייב להצביע",
-    ministry: "ח״כ 121",
-    transferredAt: "אביב 2026",
-    votes: 45620,
-  },
-];
 
 const localDemoMinistries = [
   { id: 8, name: "משרד האוצר", description: "ניהול תקציב המדינה, מדיניות כלכלית, מיסוי והשקעות." },
@@ -703,41 +679,6 @@ export default function Governance() {
                     </ResponsiveContainer>
                   </div>
                 </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-white border-amber-200 text-right">
-              <div className="mb-5 flex items-center justify-between gap-4 flex-row-reverse">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-                  <FileText className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-900">ארכיון הצעות חוק שעברו לכנסת להצבעה</h3>
-                  <p className="text-sm text-slate-600">הצעות שעברו את רף התמיכה הציבורית ונשלחו למסלול הצבעה בכנסת.</p>
-                </div>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-3">
-                {knessetBillArchive.map((bill) => (
-                  <div key={bill.id} className="rounded-lg border border-amber-100 bg-amber-50/60 p-4">
-                    <Badge className="mb-3 bg-amber-100 text-amber-800 border-amber-200">עבר לכנסת</Badge>
-                    <h4 className="min-h-12 text-base font-bold leading-6 text-slate-900">{bill.title}</h4>
-                    <div className="mt-4 space-y-2 text-sm text-slate-700">
-                      <div className="flex justify-between gap-3">
-                        <span className="text-slate-500">מקור</span>
-                        <span className="font-medium">{bill.ministry}</span>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <span className="text-slate-500">מועד העברה</span>
-                        <span className="font-medium">{bill.transferredAt}</span>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <span className="text-slate-500">תמיכה ציבורית</span>
-                        <span className="font-bold text-amber-800">{bill.votes.toLocaleString("he-IL")}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </Card>
 
