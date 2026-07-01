@@ -758,34 +758,34 @@ export default function MK121() {
 
               <div className="rounded-xl border-r-4 border-purple-600 bg-white p-6">
                 <h3 className="text-xl font-bold text-purple-900 mb-4">איך זה עובד?</h3>
-                <ol className="space-y-3 text-slate-700">
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">1.</span> אזרח מציע הצעה חדשה</span>
+                <ol className="space-y-3 text-right text-slate-700" dir="rtl">
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">1</div>
+                    <span className="flex-1 text-right"><span className="font-bold">1.</span> אזרח מציע הצעה חדשה</span>
                   </li>
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">2.</span> ההצעה נוצרת כ"דף מקדים" בשלב צבירת התמיכה</span>
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">2</div>
+                    <span className="flex-1 text-right"><span className="font-bold">2.</span> ההצעה נוצרת כ"דף מקדים" בשלב צבירת התמיכה</span>
                   </li>
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">3.</span> אזרחים אחרים תומכים בהצעה</span>
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 text-purple-600 font-bold">3</div>
+                    <span className="flex-1 text-right"><span className="font-bold">3.</span> אזרחים אחרים תומכים בהצעה</span>
                   </li>
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">4.</span> כשמגיעים ל-1000 תומכים, ההצעה עולה לסדר היום הרשמי</span>
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 font-bold">4</div>
+                    <span className="flex-1 text-right"><span className="font-bold">4.</span> כשמגיעים ל-1000 תומכים, ההצעה עולה לסדר היום הרשמי</span>
                   </li>
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">5.</span> בשלב ההצבעה, אזרחים מצביעים על הצעת החוק</span>
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 text-blue-600 font-bold">5</div>
+                    <span className="flex-1 text-right"><span className="font-bold">5.</span> בשלב ההצבעה, אזרחים מצביעים על הצעת החוק</span>
                   </li>
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">6.</span> אם ההצעה המנצחת עברה את הרף, היא מקודמת בכנסת</span>
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 text-green-600 font-bold">6</div>
+                    <span className="flex-1 text-right"><span className="font-bold">6.</span> אם ההצעה המנצחת עברה את הרף, היא מקודמת בכנסת</span>
                   </li>
-                  <li className="flex items-start gap-3 justify-end">
-                    <span><span className="font-bold">7.</span> אם לא עברה את הרף, היא עוברת למחזור הבא</span>
+                  <li className="flex items-start gap-3">
                     <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0 text-yellow-600 font-bold">7</div>
+                    <span className="flex-1 text-right"><span className="font-bold">7.</span> אם לא עברה את הרף, היא עוברת למחזור הבא</span>
                   </li>
                 </ol>
               </div>

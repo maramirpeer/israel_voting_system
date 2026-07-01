@@ -311,6 +311,17 @@
     min-width: 0;
   }
 
+  .site-content-with-floating-actions {
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding-bottom: 7rem;
+  }
+
+  @media (min-width: 640px) {
+    .site-content-with-floating-actions {
+      padding-left: 11.5rem;
+    }
+  }
   @media (min-width: 640px) {
     .container {
       padding-left: 1.5rem; /* 24px - tablet padding */

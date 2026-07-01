@@ -62,7 +62,9 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <GlobalSignupButton />
-          <Router />
+          <div className="site-content-with-floating-actions">
+            <Router />
+          </div>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
