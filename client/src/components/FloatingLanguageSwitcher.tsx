@@ -20,14 +20,36 @@ declare global {
   }
 }
 
-function setCookie(name: string, value: string) {
-  const maxAge = 60 * 60 * 24 * 365;
-  document.cookie = `${name}=${value};path=/;max-age=${maxAge}`;
-
+function getCookieDomains() {
   const hostname = window.location.hostname;
-  if (hostname.includes(".")) {
-    document.cookie = `${name}=${value};path=/;domain=.${hostname};max-age=${maxAge}`;
+  const domains = [""];
+
+  if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
+    domains.push(hostname);
+
+    const parts = hostname.split(".");
+    if (parts.length > 2) {
+      domains.push(parts.slice(1).join("."));
+    }
   }
+
+  return Array.from(new Set(domains));
+}
+
+function writeTranslateCookie(value: string) {
+  const maxAge = 60 * 60 * 24 * 365;
+
+  getCookieDomains().forEach((domain) => {
+    const domainPart = domain ? `;domain=.${domain}` : "";
+    document.cookie = `googtrans=${value};path=/${domainPart};max-age=${maxAge}`;
+  });
+}
+
+function clearTranslateCookie() {
+  getCookieDomains().forEach((domain) => {
+    const domainPart = domain ? `;domain=.${domain}` : "";
+    document.cookie = `googtrans=;path=/${domainPart};expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  });
 }
 
 function getCurrentLanguage(): LanguageCode {
@@ -64,6 +86,15 @@ function initializeGoogleTranslate() {
   );
 }
 
+function triggerGoogleTranslate(language: LanguageCode) {
+  const combo = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+  if (!combo) return false;
+
+  combo.value = language === "he" ? "" : language;
+  combo.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+}
+
 function ensureGoogleTranslateScript() {
   window.googleTranslateElementInit = initializeGoogleTranslate;
 
@@ -92,14 +123,25 @@ export function FloatingLanguageSwitcher() {
   const selectLanguage = (language: LanguageCode) => {
     setCurrentLanguage(language);
     applyDocumentDirection(language);
-    setCookie("googtrans", language === "he" ? "/he/he" : `/he/${language}`);
-    window.location.reload();
+
+    if (language === "he") {
+      clearTranslateCookie();
+    } else {
+      writeTranslateCookie(`/he/${language}`);
+    }
+
+    if (!triggerGoogleTranslate(language)) {
+      window.location.reload();
+      return;
+    }
+
+    window.setTimeout(() => window.location.reload(), 250);
   };
 
   return (
     <>
-      <div id="google_translate_element" className="hidden" aria-hidden="true" />
-      <div className="notranslate fixed bottom-4 right-4 z-40" translate="no">
+      <div id="google_translate_element" aria-hidden="true" />
+      <div className="notranslate fixed bottom-4 right-4 z-[9999]" translate="no">
         <div className="flex items-center gap-1 rounded-lg border border-white/70 bg-white/95 p-1 text-sm font-black text-[#14213d] shadow-xl backdrop-blur">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[#eef6ff] text-[#2454d6]" aria-hidden="true">
             <Globe2 className="h-4 w-4" />
