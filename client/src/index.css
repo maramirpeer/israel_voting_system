@@ -326,3 +326,17 @@
     }
   }
 }
+
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-menu-frame,
+.goog-te-gadget,
+.goog-logo-link,
+#google_translate_element {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
