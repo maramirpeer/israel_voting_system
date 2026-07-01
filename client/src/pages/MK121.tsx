@@ -709,15 +709,18 @@ export default function MK121() {
                 <Button variant="link" onClick={() => setLocation("/mk121/threshold")} className="h-auto p-0 text-blue-700">(קרא עוד)</Button>.
                 הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. ערוץ זה מיועד להצעות חוק אזרחיות בלבד; שאילתות ציבוריות מנוהלות במסגרת ממשלה משתפת.
               </p>
-              <div className="mb-4 rounded-lg border border-blue-200 bg-white p-4">
-                <h3 className="mb-3 text-lg font-bold text-slate-900">איך הקול מנותב?</h3>
-                <div className="grid gap-3">
-                  <div className="rounded-md border border-blue-200 bg-blue-50 p-4">
-                    <p className="mb-2 text-base font-extrabold text-blue-800">הצעות חוק</p>
-                    <p className="text-sm leading-6 text-slate-700">
-                      אפשר להצביע ישירות או להאציל למומחה משפטי.
-                    </p>
-                  </div>
+              <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4">
+                <h3 className="mb-3 text-lg font-bold text-slate-900">{"\u05d0\u05d9\u05da \u05d4\u05e7\u05d5\u05dc \u05de\u05e0\u05d5\u05ea\u05d1?"}</h3>
+                <div className="space-y-3 text-sm leading-7 text-slate-700">
+                  <p>
+                    {"\u05db\u05dc \u05d4\u05e7\u05d5\u05dc\u05d5\u05ea \u05e9\u05d5\u05d5\u05d9\u05dd: \u05dc\u05db\u05dc \u05d0\u05d6\u05e8\u05d7 \u05d9\u05e9 \u05e7\u05d5\u05dc \u05d0\u05d7\u05d3, \u05d5\u05d4\u05e7\u05d5\u05dc \u05d4\u05d6\u05d4 \u05e0\u05e1\u05e4\u05e8 \u05d1\u05d0\u05d5\u05ea\u05d4 \u05de\u05d9\u05d3\u05d4 \u05db\u05de\u05d5 \u05db\u05dc \u05e7\u05d5\u05dc \u05d0\u05d7\u05e8."}
+                  </p>
+                  <p>
+                    {"\u05d1\u05db\u05dc \u05d4\u05e6\u05d1\u05e2\u05d4 \u05d4\u05d0\u05d6\u05e8\u05d7 \u05d9\u05db\u05d5\u05dc \u05dc\u05d1\u05d7\u05d5\u05e8 \u05d0\u05dd \u05dc\u05d4\u05e6\u05d1\u05d9\u05e2 \u05d1\u05e2\u05e6\u05de\u05d5, \u05d0\u05d5 \u05dc\u05d4\u05d0\u05e6\u05d9\u05dc \u05d0\u05ea \u05e7\u05d5\u05dc\u05d5 \u05dc\u05d0\u05d3\u05dd \u05d0\u05d7\u05e8 \u05e9\u05d4\u05d5\u05d0 \u05e1\u05d5\u05de\u05da \u05e2\u05dc\u05d9\u05d5. \u05de\u05d9 \u05e9\u05e7\u05d9\u05d1\u05dc \u05d4\u05d0\u05e6\u05dc\u05d4 \u05de\u05e9\u05ea\u05de\u05e9 \u05d1\u05e7\u05d5\u05dc\u05d5\u05ea \u05e9\u05d4\u05d5\u05e4\u05e7\u05d3\u05d5 \u05d1\u05d9\u05d3\u05d9\u05d5 \u05e8\u05e7 \u05d1\u05de\u05e1\u05d2\u05e8\u05ea \u05d4\u05d4\u05e6\u05d1\u05e2\u05d4 \u05d4\u05e8\u05dc\u05d5\u05d5\u05e0\u05d8\u05d9\u05ea."}
+                  </p>
+                  <p>
+                    {"\u05d4\u05d0\u05e6\u05dc\u05d4 \u05d0\u05d9\u05e0\u05d4 \u05d5\u05d9\u05ea\u05d5\u05e8 \u05e7\u05d1\u05d5\u05e2 \u05e2\u05dc \u05d4\u05e7\u05d5\u05dc. \u05dc\u05e4\u05e0\u05d9 \u05db\u05dc \u05d4\u05e6\u05d1\u05e2\u05d4, \u05d5\u05d1\u05db\u05dc \u05e8\u05d2\u05e2 \u05e9\u05d4\u05de\u05e2\u05e8\u05db\u05ea \u05de\u05d0\u05e4\u05e9\u05e8\u05ea \u05d6\u05d0\u05ea, \u05d4\u05d0\u05d6\u05e8\u05d7 \u05d9\u05db\u05d5\u05dc \u05dc\u05d4\u05d7\u05d6\u05d9\u05e8 \u05d0\u05ea \u05e7\u05d5\u05dc\u05d5 \u05dc\u05e8\u05e9\u05d5\u05ea\u05d5 \u05d4\u05d1\u05dc\u05e2\u05d3\u05d9\u05ea \u05d5\u05dc\u05d4\u05e6\u05d1\u05d9\u05e2 \u05d1\u05e2\u05e6\u05de\u05d5."}
+                  </p>
                 </div>
               </div>
             </Card>
