@@ -496,48 +496,27 @@ ${candidateSenderEmail.trim()}`
               </p>
             </div>
 
-            <div className="grid gap-4 text-right md:grid-cols-3">
-              <button
-                type="button"
-                onClick={goToMK121Top}
-                className="group flex min-h-36 flex-col justify-between rounded-lg border border-[#7dd3fc]/70 bg-[#123f95] p-5 text-right text-white shadow-[0_14px_30px_rgba(18,63,149,0.22)] transition hover:-translate-y-0.5 hover:bg-[#174cae] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
-              >
-                <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-white/12 text-cyan-100 ring-1 ring-white/25">
-                  <Shield className="h-7 w-7" />
-                </span>
-                <span className="mt-5 block w-full">
-                  <span className="block text-2xl font-black leading-tight">{"\u05d7\u05d1\u05e8 \u05db\u05e0\u05e1\u05ea 121"}</span>
-                  <span className="mt-2 block text-sm font-semibold leading-6 text-cyan-100">{"\u05e2\u05e8\u05d5\u05e5 \u05d0\u05d6\u05e8\u05d7\u05d9 \u05dc\u05db\u05e0\u05e1\u05ea"}</span>
-                </span>
-                <ArrowRight className="mt-4 h-6 w-6 text-cyan-100 transition group-hover:translate-x-1" />
+            <div className="grid gap-4 text-right md:grid-cols-2">
+              <button type="button" onClick={goToMK121Top} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4">
+                <img
+                  src="/assets/mk121-card.png"
+                  alt="ח&quot;כ 121"
+                  className="mx-auto w-full max-w-md object-contain"
+                />
               </button>
-              <button
-                type="button"
-                onClick={goToGovernanceTop}
-                className="group flex min-h-36 flex-col justify-between rounded-lg border border-[#7dd3fc]/70 bg-[#123f95] p-5 text-right text-white shadow-[0_14px_30px_rgba(18,63,149,0.22)] transition hover:-translate-y-0.5 hover:bg-[#174cae] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
-              >
-                <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-white/12 text-cyan-100 ring-1 ring-white/25">
-                  <Users className="h-7 w-7" />
-                </span>
-                <span className="mt-5 block w-full">
-                  <span className="block text-2xl font-black leading-tight">{"\u05de\u05de\u05e9\u05dc\u05d4 \u05de\u05e9\u05ea\u05e4\u05ea"}</span>
-                  <span className="mt-2 block text-sm font-semibold leading-6 text-cyan-100">{"\u05e2\u05e8\u05d5\u05e5 \u05d0\u05d6\u05e8\u05d7\u05d9 \u05dc\u05de\u05de\u05e9\u05dc\u05d4"}</span>
-                </span>
-                <ArrowRight className="mt-4 h-6 w-6 text-cyan-100 transition group-hover:translate-x-1" />
+              <button type="button" onClick={goToGovernanceTop} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f8f] focus-visible:ring-offset-4">
+                <img
+                  src="/assets/governance-card.png"
+                  alt="ממשלה משתפת"
+                  className="mx-auto w-full max-w-md object-contain"
+                />
               </button>
-              <button
-                type="button"
-                onClick={goToGroupBuildingTop}
-                className="group flex min-h-36 flex-col justify-between rounded-lg border border-[#7dd3fc]/70 bg-[#123f95] p-5 text-right text-white shadow-[0_14px_30px_rgba(18,63,149,0.22)] transition hover:-translate-y-0.5 hover:bg-[#174cae] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
-              >
-                <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-white/12 text-cyan-100 ring-1 ring-white/25">
-                  <Megaphone className="h-7 w-7" />
-                </span>
-                <span className="mt-5 block w-full">
-                  <span className="block text-2xl font-black leading-tight">{"\u05d1\u05e0\u05d9\u05d9\u05ea \u05e7\u05d1\u05d5\u05e6\u05ea \u05e7\u05d5\u05dc \u05de\u05e9\u05d5\u05ea\u05e3"}</span>
-                  <span className="mt-2 block text-sm font-semibold leading-6 text-cyan-100">{"\u05d4\u05e6\u05d8\u05e8\u05e4\u05d5\u05ea \u05d5\u05d4\u05e8\u05d7\u05d1\u05ea \u05de\u05e2\u05d2\u05dc \u05d4\u05de\u05e9\u05ea\u05ea\u05e4\u05d9\u05dd"}</span>
-                </span>
-                <ArrowRight className="mt-4 h-6 w-6 text-cyan-100 transition group-hover:translate-x-1" />
+              <button type="button" onClick={goToGroupBuildingTop} className="mx-auto w-full rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b841] focus-visible:ring-offset-4 md:col-span-2 md:max-w-2xl">
+                <img
+                  src="/assets/group-building-card.png"
+                  alt="בניין קבוצת קול משותף"
+                  className="mx-auto w-full max-w-lg object-contain"
+                />
               </button>
             </div>
           </section>
