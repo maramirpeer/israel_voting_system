@@ -546,6 +546,18 @@ ${candidateSenderEmail.trim()}`
                 </button>
               ))}
             </div>
+
+            <div className="rounded-3xl border border-[#bfe4de] bg-white/92 p-7 text-right shadow-[0_16px_45px_rgba(20,33,61,0.06)]">
+              <h2 className="text-2xl font-black text-[#14213d]">ממשלה משתפת</h2>
+              <div className="mt-4 space-y-4 text-base font-semibold leading-8 text-[#52627a] sm:text-lg">
+                <p>
+                  הציבור יוכל להטיל וטו על החלטות משרדי הממשלה. השר יוכל להמשיך בהחלטתו, אך יהיה מחויב לנמק אותה בפומבי.
+                </p>
+                <p>
+                  בנוסף, אחת לשלושה חודשים יבחר הציבור שאילתה לכל שר, והוא יהיה מחויב להשיב עליה בתשאול משודר.
+                </p>
+              </div>
+            </div>
           </section>
         </main>
 

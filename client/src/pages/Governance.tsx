@@ -469,6 +469,18 @@ export default function Governance() {
       </header>
 
       <main className="container py-8">
+        <Card className="mb-8 border-[#bfe4de] bg-white p-6 text-right shadow-sm">
+          <h2 className="text-2xl font-bold text-slate-900">ממשלה משתפת</h2>
+          <div className="mt-4 space-y-3 text-base leading-8 text-slate-700">
+            <p>
+              הציבור יוכל להטיל וטו על החלטות משרדי הממשלה. השר יוכל להמשיך בהחלטתו, אך יהיה מחויב לנמק אותה בפומבי.
+            </p>
+            <p>
+              בנוסף, אחת לשלושה חודשים יבחר הציבור שאילתה לכל שר, והוא יהיה מחויב להשיב עליה בתשאול משודר.
+            </p>
+          </div>
+        </Card>
+
         <div className="mb-8 grid gap-3 md:grid-cols-2">
           <Button
             onClick={() => {
