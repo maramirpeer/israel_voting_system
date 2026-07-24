@@ -472,6 +472,8 @@ ${candidateSenderEmail.trim()}`
               <button type="button" onClick={goToMK121Top} className="hover:text-[#2454d6]">ח"כ 121</button>
               <button type="button" onClick={goToGovernanceTop} className="hover:text-[#2454d6]">ממשלה משתפת</button>
               <button type="button" onClick={goToGateFiftyTop} className="hover:text-[#2454d6]">שער ה-50</button>
+              <button type="button" onClick={goToGroupBuildingTop} className="hover:text-[#2454d6]">בניית הקבוצה</button>
+              <button type="button" onClick={goToCandidateContractTop} className="hover:text-[#2454d6]">חוזה למועמדי הכנסת הבאה</button>
               <button type="button" onClick={goToContactTop} className="hover:text-[#2454d6]">צור קשר</button>
             </nav>
 

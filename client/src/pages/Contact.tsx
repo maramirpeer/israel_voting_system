@@ -1,4 +1,4 @@
-import { ArrowRight, Mail, MessageSquare, Send } from "lucide-react";
+import { ArrowRight, Mail, MessageSquare, Phone, Send, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 const contactEmail = "sharedemocracy.team@gmail.com";
+const contactName = "אמיר פאר";
+const contactPhone = "054-760-0128";
 
 export default function Contact() {
   const [, setLocation] = useLocation();
@@ -138,6 +140,19 @@ export default function Contact() {
           </Card>
 
           <div className="space-y-5">
+            <Card className="border-[#d8c79f] bg-white/82 p-6 shadow-sm">
+              <UserRound className="mb-4 h-9 w-9 text-[#2f7d5c]" />
+              <h2 className="text-2xl font-bold text-[#17324d]">איש קשר</h2>
+              <p className="mt-3 text-lg font-bold text-[#17324d]">{contactName}</p>
+              <a
+                className="mt-2 inline-flex items-center gap-2 text-lg font-bold text-[#1d4f91] hover:underline"
+                href="tel:+972547600128"
+                dir="ltr"
+              >
+                <Phone className="h-5 w-5" />
+                {contactPhone}
+              </a>
+            </Card>
             <Card className="border-[#d8c79f] bg-white/82 p-6 shadow-sm">
               <Mail className="mb-4 h-9 w-9 text-[#2f7d5c]" />
               <h2 className="text-2xl font-bold text-[#17324d]">אימייל</h2>
