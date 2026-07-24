@@ -555,6 +555,18 @@ ${candidateSenderEmail.trim()}`
                 </p>
               </div>
             </div>
+
+            <div className="rounded-3xl border border-[#c7d7ff] bg-white/92 p-7 text-right shadow-[0_16px_45px_rgba(20,33,61,0.06)]">
+              <h2 className="text-2xl font-black text-[#14213d]">ח״כ 121</h2>
+              <div className="mt-4 space-y-4 text-base font-semibold leading-8 text-[#52627a] sm:text-lg">
+                <p>
+                  ח״כ 121 הוא הערוץ האזרחי לכנסת: הציבור מציע הצעות חוק, מצביע עליהן ובוחר את ההצעה שיקדם בכל מחזור.
+                </p>
+                <p>
+                  כאשר מתקיים רף ההשתתפות הציבורית, ח״כ 121 מצביע בכנסת בהתאם להכרעת הציבור ומביא את ההצעה הנבחרת לדיון.
+                </p>
+              </div>
+            </div>
           </section>
         </main>
 
