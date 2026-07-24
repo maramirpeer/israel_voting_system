@@ -501,47 +501,44 @@ ${candidateSenderEmail.trim()}`
                 {
                   label: 'ח"כ 121',
                   description: "הערוץ האזרחי לכנסת",
-                  icon: Megaphone,
+                  image: "/assets/mk121-card.png",
                   action: goToMK121Top,
                   accent: "#2454d6",
-                  iconBackground: "bg-[#eaf0ff]",
                 },
                 {
                   label: "ממשלה משתפת",
                   description: "הערוץ האזרחי לממשלה",
-                  icon: BarChart3,
+                  image: "/assets/governance-card.png",
                   action: goToGovernanceTop,
                   accent: "#0f9f8f",
-                  iconBackground: "bg-[#e5f8f5]",
                 },
                 {
                   label: "בניית קבוצה",
                   description: "מצרפים חברים לקול משותף",
-                  icon: Users,
+                  image: "/assets/group-building-card.png",
                   action: goToGroupBuildingTop,
                   accent: "#d99513",
-                  iconBackground: "bg-[#fff5d9]",
                 },
-              ].map(({ label, description, icon: Icon, action, accent, iconBackground }) => (
+              ].map(({ label, description, image, action, accent }) => (
                 <button
                   key={label}
                   type="button"
                   onClick={action}
-                  className="group relative min-h-56 overflow-hidden rounded-3xl border border-[#d8e2ef] bg-white/92 p-7 text-right shadow-[0_16px_45px_rgba(20,33,61,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(20,33,61,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
+                  className="group relative aspect-[11/14] overflow-hidden rounded-[2rem] text-center shadow-[0_16px_45px_rgba(20,33,61,0.12)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(20,33,61,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
                 >
-                  <span
+                  <img
+                    src={image}
+                    alt=""
                     aria-hidden="true"
-                    className="absolute inset-x-0 top-0 h-1.5"
-                    style={{ backgroundColor: accent }}
+                    className="absolute inset-0 h-full w-full object-fill"
                   />
-                  <span className={`mb-7 flex h-14 w-14 items-center justify-center rounded-2xl ${iconBackground}`}>
-                    <Icon className="h-7 w-7" style={{ color: accent }} />
-                  </span>
-                  <span className="block text-2xl font-black text-[#14213d]">{label}</span>
-                  <span className="mt-2 block text-base font-semibold leading-7 text-[#66758b]">{description}</span>
-                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-black" style={{ color: accent }}>
-                    כניסה לערוץ
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                  <span className="absolute inset-x-[10%] top-[43%] flex flex-col items-center">
+                    <span className="block text-2xl font-black text-[#14213d] sm:text-3xl">{label}</span>
+                    <span className="mt-3 block text-base font-semibold leading-7 text-[#52627a] sm:text-lg">{description}</span>
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-black" style={{ color: accent }}>
+                      כניסה לערוץ
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                    </span>
                   </span>
                 </button>
               ))}
