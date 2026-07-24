@@ -705,7 +705,10 @@ export default function MK121() {
             <Card className="p-6 mb-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 text-right">
               <h2 className="text-2xl font-bold text-slate-900 mb-3">מה זה ח"כ 121?</h2>
               <p className="text-slate-700 mb-4">
-                כל 3 חודשים ינסה ח"כ 121 ליצור את הקול העונתי, במידה ויצביעו מינימום של 37,500 אזרחים לכל הפחות{" "}
+                ח"כ 121 ישתתף בכל הצבעה במליאת הכנסת כאצבע הצבעה נוספת, בתנאי שלפחות 40,000 אזרחים השתתפו בהצבעה הציבורית בנושא. הצבעתו תיקבע בהתאם להכרעת הציבור.
+              </p>
+              <p className="text-slate-700 mb-4">
+                כל 3 חודשים ינסה ח"כ 121 ליצור את הקול העונתי, במידה ויצביעו מינימום של 40,000 אזרחים לכל הפחות{" "}
                 <Button variant="link" onClick={() => setLocation("/mk121/threshold")} className="h-auto p-0 text-blue-700">(קרא עוד)</Button>.
                 הצעת החוק שקיבלה את מירב הקולות תעלה להצבעה במליאה הישר לקריאה ראשונה. ערוץ זה מיועד להצעות חוק אזרחיות בלבד; שאילתות ציבוריות מנוהלות במסגרת ממשלה משתפת.
               </p>
@@ -741,7 +744,7 @@ export default function MK121() {
                   </p>
                 </div>
                 <div className="rounded-lg border-2 border-blue-200 bg-white p-5">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">37,500</div>
+                  <div className="text-3xl font-bold text-blue-600 mb-2">40,000</div>
                   <h3 className="text-lg font-bold text-blue-900 mb-2">קולות מינימום</h3>
                   <p className="text-sm leading-6 text-slate-600">
                     בשלב ההצבעה, הצעה זוכה צריכה לפחות 1/120 מהמצביעים כדי להתקדם.
@@ -825,7 +828,7 @@ export default function MK121() {
               {/* Bills Tab */}
               <TabsContent value="bills" className="space-y-4">
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm text-blue-700 text-right">
-                  <strong>🗳️ דרישה מינימאלית:</strong> כל הצעת חוק צריכה לפחות 37,500 קולות{" "}
+                  <strong>🗳️ דרישה מינימאלית:</strong> כל הצעת חוק צריכה לפחות 40,000 קולות{" "}
                   <Button variant="link" onClick={() => setLocation("/mk121/threshold")} className="h-auto p-0 text-blue-700">(קרא עוד)</Button>{" "}
                   כדי לעבור לדיון הרשמי (1/120 מהמצביעים)
                 </div>

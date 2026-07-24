@@ -797,6 +797,10 @@ ${candidateSenderEmail.trim()}`
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3 justify-end">
                   <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
+                  <span className="flex-1 text-right text-[#4a3722]">ח"כ 121 ישתתף בכל הצבעה במליאת הכנסת כאצבע הצבעה נוספת, בתנאי שלפחות 40,000 אזרחים השתתפו בהצבעה הציבורית בנושא. הצבעתו תיקבע בהתאם להכרעת הציבור.</span>
+                </div>
+                <div className="flex items-start gap-3 justify-end">
+                  <CheckCircle2 className="w-5 h-5 text-[#2f7d5c] flex-shrink-0 mt-0.5" />
                   <span className="flex-1 text-right text-[#4a3722]">כל 3 חודשים נבחרי הציבור יצביעו ישירות בקריאה ראשונה על הצעת החוק הנבחרת.</span>
                 </div>
                 <div className="flex items-start gap-3 justify-end">

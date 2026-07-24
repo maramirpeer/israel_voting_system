@@ -21,20 +21,20 @@ export default function MK121Threshold() {
 
       <main className="container py-8">
         <Card className="mx-auto max-w-3xl p-6 bg-white border-blue-200">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900">למה 37,500 קולות?</h2>
+          <h2 className="mb-4 text-2xl font-bold text-slate-900">למה 40,000 קולות?</h2>
           <p className="mb-4 leading-7 text-slate-700">
-            הרף נועד לדמות את משקלו של מנדט ציבורי אחד. החישוב הוא מספר הבוחרים בבחירות האחרונות חלקי
-            120, כמספר חברי הכנסת.
+            רף ההשתתפות נועד להבטיח שהצבעתו של ח"כ 121 כאצבע הצבעה נוספת במליאה תתבסס על השתתפות
+            ציבורית רחבה ומשמעותית.
           </p>
           <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-center">
-            <p className="text-sm font-bold text-blue-700">הנוסחה</p>
+            <p className="text-sm font-bold text-blue-700">רף ההשתתפות</p>
             <p className="mt-2 text-xl font-bold text-slate-900">
-              מספר הבוחרים בבחירות האחרונות / 120 = כ-37,500
+              לפחות 40,000 אזרחים בהצבעה הציבורית
             </p>
           </div>
           <p className="mt-4 leading-7 text-slate-700">
-            לכן הצעת חוק או קול עונתי שמגיעים לרף הזה מייצגים תמיכה ציבורית בסדר גודל שמצדיק העברה
-            למסלול דיון רשמי.
+            כאשר הרף מתקיים, הצבעתו של ח"כ 121 תיקבע בהתאם להכרעת הציבור ותתווסף להצבעה במליאת
+            הכנסת.
           </p>
         </Card>
       </main>
