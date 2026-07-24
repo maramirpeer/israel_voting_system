@@ -61,7 +61,8 @@ export default function MK121VoteRouting() {
 
   const hasDelegate = billAssignment.type !== "direct" && Boolean(billAssignment.name);
   const useDemoData = !currentCycleQuery.data || Boolean(currentCycleQuery.error);
-  const bills = [...(useDemoData ? demoBills : (billsQuery.data as MK121Bill[] | undefined) || [])].sort((a, b) => {
+  const activeBills = (billsQuery.data as MK121Bill[] | undefined) || [];
+  const bills = [...(useDemoData || (!billsQuery.isLoading && activeBills.length === 0) ? demoBills : activeBills)].sort((a, b) => {
     const priorityDiff = getBillDisplayPriority(a.title) - getBillDisplayPriority(b.title);
     return priorityDiff || (b.votes || 0) - (a.votes || 0);
   });
@@ -130,6 +131,11 @@ export default function MK121VoteRouting() {
             כל הצעת חוק מציגה את מצב ההצבעה הנוכחי שלה, ואפשר להעביר אותה בין הצבעה ישירה לבין הצבעה מואצלת.
           </p>
           <div className="space-y-3">
+            {billsQuery.isLoading && !useDemoData && (
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-slate-600">
+                טוען הצעות חוק פעילות...
+              </div>
+            )}
             {bills.map((bill) => {
               const isDirect = !hasDelegate || Boolean(billDirectOverrides[String(bill.id)]);
               const status = isDirect ? "בחירה ישירה" : `מואצל אל ${billAssignment.name}`;
