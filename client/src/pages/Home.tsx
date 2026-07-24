@@ -496,28 +496,55 @@ ${candidateSenderEmail.trim()}`
               </p>
             </div>
 
-            <div className="grid gap-4 text-right md:grid-cols-2">
-              <button type="button" onClick={goToMK121Top} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4">
-                <img
-                  src="/assets/mk121-card.png"
-                  alt="ח&quot;כ 121"
-                  className="mx-auto w-full max-w-md object-contain"
-                />
-              </button>
-              <button type="button" onClick={goToGovernanceTop} className="rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0f9f8f] focus-visible:ring-offset-4">
-                <img
-                  src="/assets/governance-card.png"
-                  alt="ממשלה משתפת"
-                  className="mx-auto w-full max-w-md object-contain"
-                />
-              </button>
-              <button type="button" onClick={goToGroupBuildingTop} className="mx-auto w-full rounded-lg bg-transparent p-0 text-center transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b841] focus-visible:ring-offset-4 md:col-span-2 md:max-w-2xl">
-                <img
-                  src="/assets/group-building-card.png"
-                  alt="בניין קבוצת קול משותף"
-                  className="mx-auto w-full max-w-lg object-contain"
-                />
-              </button>
+            <div className="grid gap-5 text-right md:grid-cols-3">
+              {[
+                {
+                  label: 'ח"כ 121',
+                  description: "הערוץ האזרחי לכנסת",
+                  icon: Megaphone,
+                  action: goToMK121Top,
+                  accent: "#2454d6",
+                  iconBackground: "bg-[#eaf0ff]",
+                },
+                {
+                  label: "ממשלה משתפת",
+                  description: "הערוץ האזרחי לממשלה",
+                  icon: BarChart3,
+                  action: goToGovernanceTop,
+                  accent: "#0f9f8f",
+                  iconBackground: "bg-[#e5f8f5]",
+                },
+                {
+                  label: "בניית קבוצה",
+                  description: "מצרפים חברים לקול משותף",
+                  icon: Users,
+                  action: goToGroupBuildingTop,
+                  accent: "#d99513",
+                  iconBackground: "bg-[#fff5d9]",
+                },
+              ].map(({ label, description, icon: Icon, action, accent, iconBackground }) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={action}
+                  className="group relative min-h-56 overflow-hidden rounded-3xl border border-[#d8e2ef] bg-white/92 p-7 text-right shadow-[0_16px_45px_rgba(20,33,61,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(20,33,61,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-0 h-1.5"
+                    style={{ backgroundColor: accent }}
+                  />
+                  <span className={`mb-7 flex h-14 w-14 items-center justify-center rounded-2xl ${iconBackground}`}>
+                    <Icon className="h-7 w-7" style={{ color: accent }} />
+                  </span>
+                  <span className="block text-2xl font-black text-[#14213d]">{label}</span>
+                  <span className="mt-2 block text-base font-semibold leading-7 text-[#66758b]">{description}</span>
+                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-black" style={{ color: accent }}>
+                    כניסה לערוץ
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                  </span>
+                </button>
+              ))}
             </div>
           </section>
         </main>
