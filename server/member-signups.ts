@@ -1729,7 +1729,19 @@ export function registerMemberSignupRoutes(app: Express) {
         });
       }
 
-      res.redirect(302, confirmation.wasAlreadyConfirmed ? "/?loginSuccess=1" : "/?signupSuccess=1");
+      if (confirmation.wasAlreadyConfirmed) {
+        const loginDestination = new URL(returnTo, getRequestBaseUrl(req));
+        loginDestination.searchParams.set("loginSuccess", "1");
+
+        if (loginDestination.pathname === "/group-building") {
+          loginDestination.searchParams.set("ref", referral.referralCode);
+        }
+
+        res.redirect(302, `${loginDestination.pathname}${loginDestination.search}${loginDestination.hash}`);
+        return;
+      }
+
+      res.redirect(302, "/?signupSuccess=1");
     } catch (error) {
       sendSignupRouteError(res, error);
     }

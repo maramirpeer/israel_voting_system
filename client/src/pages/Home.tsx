@@ -383,7 +383,7 @@ ${candidateSenderEmail.trim()}`
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: memberLoginEmail,
-          returnTo: getSignupReturnTo(),
+          returnTo: "/group-building",
         }),
       });
       const data = await response.json().catch(() => ({}));
@@ -393,7 +393,7 @@ ${candidateSenderEmail.trim()}`
       }
 
       setMemberLoginMessage(
-        "שלחנו אליך קישור כניסה. לאחר פתיחת הקישור תחזור ישירות לפעולה שביקשת לבצע.",
+        "שלחנו אליך קישור כניסה. לאחר פתיחת הקישור תיכנס ישירות לבניין הקבוצה האישי שלך.",
       );
     } catch (error) {
       setMemberLoginMessage(error instanceof Error ? error.message : "שליחת קישור הכניסה נכשלה.");

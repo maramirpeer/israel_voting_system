@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BadgeCheck, Copy, Home, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, RotateCcw, Send, Share2, Shield, Users, Vote, Zap } from "lucide-react";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { BadgeCheck, Copy, FilePlus2, Home, Landmark, Link2, List, Loader2, LogIn, MessageCircle, Network, QrCode, RotateCcw, Send, Share2, Shield, Users, Vote, Zap } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 
@@ -79,6 +80,7 @@ type ReferralStats = {
 };
 
 export default function GroupBuilding() {
+  const { isAuthenticated } = useAuth();
   const [location, setLocation] = useLocation();
   const [statusMessage, setStatusMessage] = useState("");
   const [isPersonalLoaderOpen, setPersonalLoaderOpen] = useState(false);
@@ -368,6 +370,36 @@ ${referralUrl}`, [referralUrl]);
             )}
           </div>
         </Card>
+
+        {isAuthenticated && hasPersonalReferralCode && (
+          <Card className="border-[#b9ccef] bg-[linear-gradient(135deg,#eef4ff_0%,#ffffff_55%,#eef8f2_100%)] p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-black text-[#2f7d5c]">מחובר כחבר</p>
+                <h2 className="mt-1 text-2xl font-black text-[#17324d]">פעולות לחברים</h2>
+              </div>
+              <BadgeCheck className="h-9 w-9 text-[#2f7d5c]" />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Button onClick={() => setLocation("/mk121?submit=bill")} className="gap-2 bg-[#1d4f91] hover:bg-[#173f74]">
+                <FilePlus2 className="h-4 w-4" />
+                הוספת הצעת חוק
+              </Button>
+              <Button onClick={() => setLocation("/mk121/vote-routing")} variant="outline" className="gap-2 border-[#8ba8dc] bg-white/80">
+                <Vote className="h-4 w-4" />
+                הכוונת הקול
+              </Button>
+              <Button onClick={() => setLocation("/mk121")} variant="outline" className="gap-2 border-[#8ba8dc] bg-white/80">
+                <Landmark className="h-4 w-4" />
+                ח״כ 121
+              </Button>
+              <Button onClick={() => setLocation("/governance")} variant="outline" className="gap-2 border-[#8bc7b4] bg-white/80">
+                <Users className="h-4 w-4" />
+                ממשלה משתפת
+              </Button>
+            </div>
+          </Card>
+        )}
 
         <section className="grid gap-4 md:grid-cols-3">
           <Card className="border-[#d8c79f] bg-white/92 p-5">
