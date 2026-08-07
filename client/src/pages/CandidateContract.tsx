@@ -33,7 +33,10 @@ export default function CandidateContract() {
             <h1 className="text-4xl font-black leading-tight text-[#17324d] sm:text-6xl">
               חוזה ציבורי בין מועמד/ת לכנסת לבין ציבור הבוחרים
             </h1>
-            <p className="mt-6 text-xl font-semibold leading-9 text-[#4a3722]">
+            <p className="mt-6 rounded-xl border-r-4 border-[#2f7d5c] bg-white/80 px-5 py-4 text-2xl font-black leading-9 text-[#17324d] shadow-sm">
+              לא מצביעים למועמדים שלא מתחייבים על כינון קול משותף!
+            </p>
+            <p className="mt-4 text-xl font-semibold leading-9 text-[#4a3722]">
               נוסח מלא להתחייבות ציבורית של מועמדים לכנסת לקידום מנגנון השתתפות ציבורית שקוף, אחראי ורציף.
             </p>
           </div>
