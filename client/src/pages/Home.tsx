@@ -19,7 +19,7 @@ function getSignupReturnTo() {
   return returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/mk121";
 }
 
-const USE_COMPACT_HOME = false;
+const USE_COMPACT_HOME = true;
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
