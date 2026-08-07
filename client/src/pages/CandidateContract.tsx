@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const KolMeshutafText = ({ className = "" }: { className?: string }) => (
-  <span className={`font-bold ${className}`}>קול משותף</span>
+  <a href="/" className={`font-bold underline-offset-4 hover:underline ${className}`}>קול משותף</a>
 );
 
 export default function CandidateContract() {
@@ -58,7 +58,7 @@ export default function CandidateContract() {
             <div>
               <h3 className="mb-2 text-xl font-bold text-slate-900">התחייבות מרכזית</h3>
               <p>
-                אם אבחר לכנסת, אני מתחייב/ת להצביע בעד הצעת חוק שתסדיר את הקמת מנגנון
+                אם אבחר לכנסת, אני מתחייב/ת להצביע בעד הצעת חוק שתסדיר את הקמת
                 <KolMeshutafText className="mx-1 text-[#17324d]" /> - מנגנון ציבורי, שקוף, ישיר,
                 דינמי ומואצל, שיאפשר לציבור להשתתף באופן רציף ומשמעותי בתהליך קבלת ההחלטות.
               </p>
