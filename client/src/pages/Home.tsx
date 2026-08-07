@@ -542,21 +542,21 @@ ${candidateSenderEmail.trim()}`
                 {
                   label: 'ח"כ 121',
                   description: "הערוץ האזרחי לכנסת",
-                  image: "/assets/mk121-card.png",
+                  image: "/assets/shared-channel-button.png",
                   action: goToMK121Top,
                   accent: "#2454d6",
                 },
                 {
                   label: "ממשלה משתפת",
                   description: "הערוץ האזרחי לממשלה",
-                  image: "/assets/governance-card.png",
+                  image: "/assets/shared-channel-button.png",
                   action: goToGovernanceTop,
                   accent: "#0f9f8f",
                 },
                 {
                   label: "בניית קבוצה",
                   description: "מצרפים חברים לקול משותף",
-                  image: "/assets/group-building-card.png",
+                  image: "/assets/shared-channel-button.png",
                   action: goToGroupBuildingTop,
                   accent: "#d99513",
                 },
@@ -565,18 +565,22 @@ ${candidateSenderEmail.trim()}`
                   key={label}
                   type="button"
                   onClick={action}
-                  className="group relative aspect-[11/14] overflow-hidden rounded-[2rem] text-center shadow-[0_16px_45px_rgba(20,33,61,0.12)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(20,33,61,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
+                  className="group relative aspect-[11/8] overflow-hidden rounded-[2rem] border border-white/70 bg-[#18272d] text-center shadow-[0_18px_50px_rgba(20,33,61,0.2)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_65px_rgba(17,91,190,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
+                  style={{ borderColor: `${accent}66` }}
                 >
                   <img
                     src={image}
                     alt=""
                     aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-fill"
+                    className="absolute inset-0 h-full w-full scale-[1.2] object-cover transition duration-500 group-hover:scale-[1.24]"
                   />
-                  <span className="absolute inset-x-[10%] top-[43%] flex flex-col items-center">
-                    <span className="block text-2xl font-black text-[#14213d] sm:text-3xl">{label}</span>
-                    <span className="mt-3 block text-base font-semibold leading-7 text-[#52627a] sm:text-lg">{description}</span>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-black" style={{ color: accent }}>
+                  <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,18,24,0.02)_0%,rgba(9,18,24,0.08)_48%,rgba(9,18,24,0.88)_100%)]" />
+                  <span className="absolute inset-x-[8%] top-[39%] flex -translate-y-1/2 flex-col items-center">
+                    <span className="block text-2xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,44,138,0.85)] sm:text-3xl">{label}</span>
+                  </span>
+                  <span className="absolute inset-x-[8%] bottom-[7%] flex flex-col items-center">
+                    <span className="block text-base font-semibold leading-7 text-white/95 sm:text-lg">{description}</span>
+                    <span className="mt-2 inline-flex items-center gap-2 text-sm font-black text-[#7fefff]">
                       כניסה לערוץ
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                     </span>
