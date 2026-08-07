@@ -404,7 +404,39 @@ ${candidateSenderEmail.trim()}`
 
   if (USE_COMPACT_HOME) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-[#f6f8fb]" dir="rtl">
+      <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(145deg,#f7fbff_0%,#eefaf7_42%,#fff9ea_100%)]" dir="rtl">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-36 top-20 h-[32rem] w-[32rem] rounded-full bg-[#0f9f8f]/10 blur-3xl" />
+          <div className="absolute -left-40 top-[30rem] h-[34rem] w-[34rem] rounded-full bg-[#2454d6]/10 blur-3xl" />
+          <div className="absolute bottom-[-12rem] right-[24%] h-[30rem] w-[30rem] rounded-full bg-[#f5b841]/12 blur-3xl" />
+          <svg className="absolute inset-x-0 top-20 h-[42rem] w-full opacity-45" viewBox="0 0 1440 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M78 178C254 68 392 88 526 202C664 320 780 310 914 198C1064 72 1214 90 1372 190" stroke="url(#community-line-a)" strokeWidth="2" strokeDasharray="7 12" />
+            <path d="M136 478C298 362 436 382 570 478C704 574 842 570 982 464C1110 368 1240 374 1340 452" stroke="url(#community-line-b)" strokeWidth="2" strokeDasharray="6 13" />
+            <path d="M320 130C360 250 424 344 570 478M1120 128C1086 252 1040 360 982 464M526 202C562 282 630 342 720 350M914 198C874 278 812 334 720 350" stroke="#7bbcb5" strokeOpacity=".48" strokeWidth="1.5" />
+            <g fill="#ffffff" strokeWidth="4">
+              <circle cx="78" cy="178" r="13" stroke="#0f9f8f" />
+              <circle cx="320" cy="130" r="17" stroke="#d99513" />
+              <circle cx="526" cy="202" r="15" stroke="#2454d6" />
+              <circle cx="720" cy="350" r="23" stroke="#0f9f8f" />
+              <circle cx="914" cy="198" r="15" stroke="#2454d6" />
+              <circle cx="1120" cy="128" r="17" stroke="#d99513" />
+              <circle cx="1372" cy="190" r="13" stroke="#0f9f8f" />
+              <circle cx="136" cy="478" r="12" stroke="#2454d6" />
+              <circle cx="570" cy="478" r="15" stroke="#0f9f8f" />
+              <circle cx="982" cy="464" r="15" stroke="#d99513" />
+              <circle cx="1340" cy="452" r="12" stroke="#2454d6" />
+            </g>
+            <defs>
+              <linearGradient id="community-line-a" x1="78" y1="178" x2="1372" y2="190" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#0f9f8f" /><stop offset=".5" stopColor="#2454d6" /><stop offset="1" stopColor="#d99513" />
+              </linearGradient>
+              <linearGradient id="community-line-b" x1="136" y1="478" x2="1340" y2="452" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#2454d6" /><stop offset=".5" stopColor="#0f9f8f" /><stop offset="1" stopColor="#d99513" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.72)_34%,rgba(255,255,255,0.22)_68%,transparent_100%)]" />
+        </div>
         <Dialog
           open={isLoginSuccessOpen}
           onOpenChange={(open) => {
@@ -450,7 +482,7 @@ ${candidateSenderEmail.trim()}`
           </DialogContent>
         </Dialog>
 
-        <header className="sticky top-0 z-40 border-b border-[#d8e2ef] bg-white/86 backdrop-blur-xl">
+        <header className="sticky top-0 z-40 border-b border-white/70 bg-white/72 shadow-[0_8px_30px_rgba(20,33,61,0.06)] backdrop-blur-xl">
           <div className="container flex min-h-16 items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#14213d] text-white">
@@ -488,6 +520,13 @@ ${candidateSenderEmail.trim()}`
         <main className="relative z-10">
           <section className="container flex min-h-[calc(100vh-4rem)] flex-col justify-center gap-8 py-10">
             <div className="mx-auto max-w-4xl text-center">
+              <div aria-hidden="true" className="mx-auto mb-5 flex w-fit items-center gap-2 rounded-full border border-white/90 bg-white/72 px-4 py-2 shadow-[0_10px_30px_rgba(15,159,143,0.12)] backdrop-blur-md">
+                <span className="h-3 w-3 rounded-full bg-[#2454d6] ring-4 ring-[#2454d6]/10" />
+                <span className="h-px w-8 bg-gradient-to-l from-[#2454d6] to-[#0f9f8f]" />
+                <span className="h-4 w-4 rounded-full bg-[#0f9f8f] ring-4 ring-[#0f9f8f]/10" />
+                <span className="h-px w-8 bg-gradient-to-l from-[#0f9f8f] to-[#d99513]" />
+                <span className="h-3 w-3 rounded-full bg-[#d99513] ring-4 ring-[#d99513]/10" />
+              </div>
               <h1 className="text-5xl font-black leading-tight text-[#14213d] sm:text-7xl">
                 הציבור לא רק בוחר,
                 <br />
