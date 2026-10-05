@@ -535,17 +535,22 @@ ${candidateSenderEmail.trim()}`
               <p className="mx-auto mt-6 max-w-3xl text-xl font-semibold leading-9 text-[#52627a]">
                 קול משותף מחבר את האזרחים לכנסת ולממשלה בצורת הצעות חוק , שאילתות וקול בוחן להחלטות ממשלה.
                 <br />
-                <strong className="font-black text-[#14213d]">מצביעים פעם בארבע שנים — משפיעים כל הזמן.</strong>
+                <strong className="inline-block text-[1.32rem] font-black leading-9 text-[#c1121f] sm:text-2xl">מצביעים פעם בארבע שנים — משפיעים כל הזמן.</strong>
                 <br />
                 ״קול משותף״ הוא ערוץ מעורבות רציף בין הציבור לכנסת: מביאים את חכמת הרבים להחלטות ומרסנים מהלכים שרוב הציבור מתנגד להם.
                 <br />
-                <strong className="font-black text-[#14213d]">בבחירות הקרובות מצביעים רק למי שמתחייב לכונן את ״קול משותף״ בכנסת.</strong>
+                <strong className="inline-block text-[1.32rem] font-black leading-9 text-[#c1121f] sm:text-2xl">בבחירות הקרובות מצביעים רק למי שמתחייב לכונן את ״קול משותף״ בכנסת.</strong>
                 <br />
                 קולות האזרחים שווים ויפעלו בצורה ישירה או מואצלת- בהתאם לבחירה של כל אזרח.
               </p>
             </div>
 
-            <div className="grid gap-5 text-right md:grid-cols-3">
+            <div className="space-y-5 text-right">
+              <div className="text-center">
+                <p className="text-sm font-black uppercase tracking-[0.28em] text-[#0f9f8f]">שני ערוצי המעורבות</p>
+                <p className="mt-2 text-base font-bold text-[#52627a]">ח״כ 121 לכנסת וממשלה משתפת למשרדי הממשלה</p>
+              </div>
+              <div className="grid gap-5 md:grid-cols-2">
               {[
                 {
                   label: 'ח"כ 121',
@@ -553,6 +558,7 @@ ${candidateSenderEmail.trim()}`
                   image: "/assets/shared-channel-button.png",
                   action: goToMK121Top,
                   accent: "#2454d6",
+                  badge: "ערוץ מעורבות לכנסת",
                 },
                 {
                   label: "ממשלה משתפת",
@@ -560,20 +566,14 @@ ${candidateSenderEmail.trim()}`
                   image: "/assets/shared-channel-button.png",
                   action: goToGovernanceTop,
                   accent: "#0f9f8f",
+                  badge: "ערוץ מעורבות לממשלה",
                 },
-                {
-                  label: "בניית קבוצה",
-                  description: "מצרפים חברים לקול משותף",
-                  image: "/assets/shared-channel-button.png",
-                  action: goToGroupBuildingTop,
-                  accent: "#d99513",
-                },
-              ].map(({ label, description, image, action, accent }) => (
+              ].map(({ label, description, image, action, accent, badge }) => (
                 <button
                   key={label}
                   type="button"
                   onClick={action}
-                  className="group relative aspect-[11/8] overflow-hidden rounded-[2rem] border border-white/70 bg-[#18272d] text-center shadow-[0_18px_50px_rgba(20,33,61,0.2)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_65px_rgba(17,91,190,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
+                  className="group relative aspect-[13/7] overflow-hidden rounded-[2.25rem] border-2 border-white/70 bg-[#18272d] text-center shadow-[0_22px_60px_rgba(20,33,61,0.24)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_75px_rgba(17,91,190,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2454d6] focus-visible:ring-offset-4"
                   style={{ borderColor: `${accent}66` }}
                 >
                   <img
@@ -583,8 +583,11 @@ ${candidateSenderEmail.trim()}`
                     className="absolute inset-0 h-full w-full scale-[1.2] object-cover transition duration-500 group-hover:scale-[1.24]"
                   />
                   <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,18,24,0.02)_0%,rgba(9,18,24,0.08)_48%,rgba(9,18,24,0.88)_100%)]" />
+                  <span className="absolute right-5 top-5 rounded-full border border-white/60 bg-white/88 px-4 py-1 text-sm font-black text-[#14213d] shadow-[0_8px_24px_rgba(20,33,61,0.12)]">
+                    {badge}
+                  </span>
                   <span className="absolute inset-x-[8%] top-[39%] flex -translate-y-1/2 flex-col items-center">
-                    <span className="block text-2xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,44,138,0.85)] sm:text-3xl">{label}</span>
+                    <span className="block text-3xl font-black text-white drop-shadow-[0_2px_12px_rgba(0,44,138,0.85)] sm:text-4xl">{label}</span>
                   </span>
                   <span className="absolute inset-x-[8%] bottom-[7%] flex flex-col items-center">
                     <span className="block text-base font-semibold leading-7 text-white/95 sm:text-lg">{description}</span>
@@ -595,6 +598,22 @@ ${candidateSenderEmail.trim()}`
                   </span>
                 </button>
               ))}
+              </div>
+              <button
+                type="button"
+                onClick={goToGroupBuildingTop}
+                className="group mx-auto flex w-full max-w-3xl flex-col items-center justify-between gap-4 rounded-[1.75rem] border border-[#d99513]/45 bg-white/88 p-5 text-center shadow-[0_14px_42px_rgba(20,33,61,0.1)] transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_55px_rgba(217,149,19,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d99513] focus-visible:ring-offset-4 sm:flex-row sm:text-right"
+              >
+                <span>
+                  <span className="block text-xs font-black uppercase tracking-[0.22em] text-[#d99513]">תשתית ההצטרפות</span>
+                  <span className="mt-1 block text-2xl font-black text-[#14213d]">בניית קבוצה</span>
+                  <span className="mt-1 block text-base font-semibold leading-7 text-[#52627a]">מצרפים חברים לקול משותף כדי לאפשר את שני ערוצי המעורבות.</span>
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#14213d] px-5 py-3 text-sm font-black text-white">
+                  כניסה לבניית הקבוצה
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                </span>
+              </button>
             </div>
 
             <div className="rounded-3xl border border-[#bfe4de] bg-white/92 p-7 text-right shadow-[0_16px_45px_rgba(20,33,61,0.06)]">
